@@ -3,9 +3,10 @@ import 'package:campus_app/models/friend_request.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class FriendRequestItem extends StatelessWidget {
-  const FriendRequestItem(this.request, {super.key});
+  const FriendRequestItem(this.request, this.onDelete, {super.key});
 
   final FriendRequest request;
+  final VoidCallback onDelete;
 
   @override
   Widget build(context) {
@@ -49,13 +50,16 @@ class FriendRequestItem extends StatelessWidget {
                       ElevatedButton(
                         onPressed: () {},
                         style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 28),
-                            backgroundColor:
-                                const Color.fromARGB(255, 30, 53, 235),
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(3))),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 10,
+                            horizontal: 28,
+                          ),
+                          backgroundColor: const Color.fromARGB(255, 30, 53, 235),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(3),
+                          ),
+                        ),
                         child: Text(
                           'Confirm',
                           textAlign: TextAlign.center,
@@ -68,15 +72,18 @@ class FriendRequestItem extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: onDelete,
                         style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 33),
-                            backgroundColor:
-                                const Color.fromARGB(255, 161, 161, 161),
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(3))),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 10,
+                            horizontal: 33,
+                          ),
+                          backgroundColor: const Color.fromARGB(255, 161, 161, 161),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(3),
+                          ),
+                        ),
                         child: Text(
                           'Delete',
                           textAlign: TextAlign.center,

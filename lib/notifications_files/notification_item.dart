@@ -3,9 +3,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:campus_app/models/notification_object.dart';
 
 class NotificationItem extends StatelessWidget {
-  const NotificationItem(this.notificationAvaliable, {super.key});
+  const NotificationItem(this.notificationAvaliable, this.onDelete, {super.key});
 
   final NotificationObject notificationAvaliable;
+  final VoidCallback onDelete;
 
   @override
   Widget build(context) {
@@ -22,7 +23,7 @@ class NotificationItem extends StatelessWidget {
               backgroundImage: notificationAvaliable.notficationImg.image,
               radius: 40,
             ),
-            const SizedBox(width: 20), // Increased space before the text
+            const SizedBox(width: 20),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,12 +41,37 @@ class NotificationItem extends StatelessWidget {
                 ],
               ),
             ),
-            IconButton(
-              icon: const Icon(Icons.more_vert),
-              onPressed: () {
-                // Add your settings icon action here
+            PopupMenuButton<String>(
+              onSelected: (value) {
+                if (value == 'delete') {
+                  onDelete();
+                }
               },
-              alignment: Alignment.topRight,
+              itemBuilder: (BuildContext context) {
+                return [
+                  PopupMenuItem(
+                    value: 'delete',
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 6.0),
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 239, 239, 239),
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      child: const Row(
+                        children: [
+                          Icon(Icons.delete, color: Color.fromARGB(255, 0, 0, 0)),
+                          SizedBox(width: 8.0),
+                          Text(
+                            'Delete',
+                            style: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ];
+              },
+              icon: const Icon(Icons.more_vert),
             ),
           ],
         ),
