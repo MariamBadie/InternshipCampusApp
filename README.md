@@ -1,10 +1,10 @@
-# Internship project: Campus App
+# Internship project
 You will be building an application to be used by GUC students and staff. The app serves many useful purposes. You should target the virality of the app among the students so your UI/UX should take this into consideration.
 
 ## A. Sign up:
 1. OnlyGUCemailsareallowed(@student.guc.edu.eg).Email verification is required via firebase. User has to create a username (a handle)
 2. Create 1 admin account of your choice.
-3. 
+   
 ## B. App functionalities:
 1. Confessions: you can post as yourself or anonymous.Other users can comment. No image upload is allowed.
 a. Bonus: tag people using their usernames and they shall receive a notification.
