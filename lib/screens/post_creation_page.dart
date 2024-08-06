@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/post.dart';
 
-
 class PostCreationPage extends StatefulWidget {
   final String type;
   final Function(Post) onPostCreated;
@@ -25,6 +24,7 @@ class _PostCreationPageState extends State<PostCreationPage> {
       body: Padding(
         padding: EdgeInsets.all(16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextField(
               controller: _contentController,
@@ -50,24 +50,29 @@ class _PostCreationPageState extends State<PostCreationPage> {
               ),
             SizedBox(height: 16),
             ElevatedButton(
-  onPressed: () {
-    if (_contentController.text.isNotEmpty) {
-      final newPost = Post(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        username: 'CurrentUser',
-        type: widget.type,
-        content: _contentController.text,
-        reactions: {'like': 0, 'dislike': 0, 'love': 0, 'haha': 0},
-        comments: [],
-        isAnonymous: _isAnonymous,
-        timestamp: DateTime.now(), // Add this line
-      );
-      widget.onPostCreated(newPost);
-      Navigator.pop(context);
-    }
-  },
-  child: Text('Post'),
-),
+              onPressed: () {
+                if (_contentController.text.isNotEmpty) {
+                  final newPost = Post(
+                    id: DateTime.now().millisecondsSinceEpoch.toString(),
+                    username: 'CurrentUser', // Replace with actual username if possible
+                    type: widget.type,
+                    content: _contentController.text,
+                    reactions: {'like': 0, 'dislike': 0, 'love': 0, 'haha': 0},
+                    comments: [],
+                    isAnonymous: _isAnonymous,
+                    timestamp: DateTime.now(),
+                  );
+                  widget.onPostCreated(newPost);
+                  Navigator.pop(context);
+                } else {
+                  // Show error message if content is empty
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Please enter some content')),
+                  );
+                }
+              },
+              child: Text('Post'),
+            ),
           ],
         ),
       ),

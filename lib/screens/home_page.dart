@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-//import 'package:intl/intl.dart';
+import 'package:flashy_tab_bar2/flashy_tab_bar2.dart'; // Import the package
+import 'package:campus_app/screens/settings.dart';
 import '../models/post.dart';
 import '../models/event.dart';
 import '../widgets/post_card.dart';
@@ -9,8 +10,6 @@ import 'post_details_page.dart';
 import 'event_details_page.dart';
 import '../models/comment.dart';
 export 'home_page.dart';
-
-
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -25,7 +24,6 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   String _filter = 'All';
 
-  // Updated Post class with timestamp
   final List<Post> _posts = [
     Post(
       id: '1',
@@ -69,9 +67,14 @@ class _MyHomePageState extends State<MyHomePage> {
     ),
   ];
 
-  void _onItemTapped(int index) {
+
+  void _onItemSelected(int index) {
     setState(() {
-      _selectedIndex = index;
+      if (index == 2) { // Check if the "Add Post" tab is selected
+        _navigateToPostCreation(context, 'Confession'); // Navigate to PostCreationPage
+      } else {
+        _selectedIndex = index;
+      }
     });
   }
 
@@ -161,7 +164,9 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      drawer: Drawer(
+     
+
+drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
@@ -237,24 +242,34 @@ class _MyHomePageState extends State<MyHomePage> {
         tooltip: 'Post',
         child: const Icon(Icons.add),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
+      bottomNavigationBar: FlashyTabBar(
+        selectedIndex: _selectedIndex,
+        onItemSelected: _onItemSelected,
+        items: [
+          FlashyTabBarItem(
             icon: Icon(Icons.home),
-            label: 'Home',
+            title: Text('Home'),
           ),
-          BottomNavigationBarItem(
+          FlashyTabBarItem(
             icon: Icon(Icons.map),
-            label: 'Map',
+            title: Text('Map'),
           ),
-          BottomNavigationBarItem(
+          FlashyTabBarItem(
+            icon: Icon(Icons.add),
+            title: Text(''),
+          ),
+          
+         FlashyTabBarItem(
+            icon: Icon(Icons.notifications), // Notification icon
+            title: Text('Notification'),
+          ),
+          FlashyTabBarItem(
             icon: Icon(Icons.settings),
-            label: 'Settings',
+            title: Text('Settings'),
           ),
+
+          
         ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
-        onTap: _onItemTapped,
       ),
     );
   }
@@ -265,8 +280,10 @@ class _MyHomePageState extends State<MyHomePage> {
         return _buildHomeTab();
       case 1:
         return _buildMapTab();
-      case 2:
+      case 4:
         return _buildSettingsTab();
+      case 3:
+        return Center(child: Text('Notifications functionality coming soon.'));
       default:
         return Container();
     }
@@ -310,14 +327,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _buildSettingsTab() {
-    return Center(
-      child: Text('Settings options will be available here.'),
-    );
-  }
-    Widget notificationsTab() {
-    return Center(
-      child: Text('Will be implemented'),
-    );
+    return SettingsPage2();
   }
 
   void _navigateToPostDetails(Post post) {
