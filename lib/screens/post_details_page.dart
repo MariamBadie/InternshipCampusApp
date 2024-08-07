@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // For Clipboard
+import 'package:share_plus/share_plus.dart'; // For sharing
 import '../models/post.dart';
-import '../models/comment.dart';
 import '../widgets/post_card.dart';
 import '../widgets/comment_card.dart';
-
 
 class PostDetailsPage extends StatelessWidget {
   final Post post;
@@ -11,20 +11,37 @@ class PostDetailsPage extends StatelessWidget {
   final Function(String, String, String) onComment;
   final Function(String, int, String) onReactToComment;
 
-  PostDetailsPage({required this.post, required this.onReact, required this.onComment, required this.onReactToComment});
+  PostDetailsPage({
+    required this.post,
+    required this.onReact,
+    required this.onComment,
+    required this.onReactToComment,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Post Details'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.share),
+            onPressed: () => _sharePost(context),
+          ),
+          IconButton(
+            icon: Icon(Icons.copy),
+            onPressed: () => _copyPostLink(context),
+          ),
+        ],
       ),
       body: ListView(
         children: [
           PostCard(
             post: post,
-            onReact: onReact,
+            onReact: (postId, reactionType) => onReact(postId, reactionType),
             onComment: onComment,
+            onShare: () => _sharePost(context),
+            onCopyLink: () => _copyPostLink(context),
             onTap: () {}, // No action needed here
           ),
           ...post.comments.asMap().entries.map((entry) {
@@ -44,6 +61,19 @@ class PostDetailsPage extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  void _sharePost(BuildContext context) {
+    final postUrl = 'https://example.com/posts/${post.id}'; // Example URL format
+    Share.share('Check out this post: $postUrl');
+  }
+
+  void _copyPostLink(BuildContext context) {
+    final postUrl = 'https://example.com/posts/${post.id}'; // Example URL format
+    Clipboard.setData(ClipboardData(text: postUrl));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Link copied to clipboard!')),
     );
   }
 

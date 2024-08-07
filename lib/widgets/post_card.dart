@@ -7,8 +7,17 @@ class PostCard extends StatelessWidget {
   final Function(String, String) onReact;
   final Function(String, String, String) onComment;
   final VoidCallback onTap;
+  final VoidCallback onShare; // New callback for sharing
+  final VoidCallback onCopyLink; // New callback for copying link
 
-  PostCard({required this.post, required this.onReact, required this.onComment, required this.onTap});
+  PostCard({
+    required this.post,
+    required this.onReact,
+    required this.onComment,
+    required this.onTap,
+    required this.onShare, // Include in constructor
+    required this.onCopyLink, // Include in constructor
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +47,24 @@ class PostCard extends StatelessWidget {
             ),
             Padding(
               padding: EdgeInsets.all(8),
-              child: Text('Comments: ${post.comments.length}'),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Comments: ${post.comments.length}'),
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.share),
+                        onPressed: onShare,
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.copy),
+                        onPressed: onCopyLink,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),

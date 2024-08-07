@@ -1,7 +1,3 @@
-import 'comment.dart';
-
-
-
 class Post {
   final String id;
   final String username;
@@ -19,7 +15,19 @@ class Post {
     required this.content,
     required this.reactions,
     required this.comments,
-    this.isAnonymous = false,
+    required this.isAnonymous,
     required this.timestamp,
+  });
+}
+
+class Comment {
+  final String username;
+  final String content;
+  final Map<String, int> reactions;
+
+  Comment({
+    required this.username,
+    required this.content,
+    required this.reactions,
   });
 }

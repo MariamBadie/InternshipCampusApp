@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flashy_tab_bar2/flashy_tab_bar2.dart'; // Import the package
-import 'package:campus_app/screens/settings.dart';
+import 'package:flutter/services.dart'; // For Clipboard
+import 'package:share_plus/share_plus.dart'; // For sharing
+
 import '../models/post.dart';
 import '../models/event.dart';
 import '../widgets/post_card.dart';
 import '../widgets/event_card.dart';
-import 'post_creation_page.dart';
-import 'post_details_page.dart';
-import 'event_details_page.dart';
-import '../models/comment.dart';
-export 'home_page.dart';
+import '../utils/home_page_utils.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -21,7 +18,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _selectedIndex = 0;
   String _filter = 'All';
 
   final List<Post> _posts = [
@@ -49,85 +45,28 @@ class _MyHomePageState extends State<MyHomePage> {
     ),
   ];
 
-  // Dummy data for events
   final List<Event> _events = [
     Event(
       id: '1',
       title: "Mother's Day Bazaar",
       description: "Join us for a special Mother's Day Bazaar at the basketball court!",
-      date: DateTime(2024, 5, 12, 10, 0), // May 12, 2024, 10:00 AM
+      date: DateTime(2024, 5, 12, 10, 0),
       location: "Basketball Court",
     ),
     Event(
       id: '2',
       title: "Computer Science Club Meetup",
       description: "Learn about the latest trends in AI and Machine Learning",
-      date: DateTime(2024, 5, 15, 14, 0), // May 15, 2024, 2:00 PM
+      date: DateTime(2024, 5, 15, 14, 0),
       location: "Room 301, Computer Science Building",
     ),
   ];
-
-
-  void _onItemSelected(int index) {
-    setState(() {
-      if (index == 2) { // Check if the "Add Post" tab is selected
-        _navigateToPostCreation(context, 'Confession'); // Navigate to PostCreationPage
-      } else {
-        _selectedIndex = index;
-      }
-    });
-  }
 
   void _refreshPosts() {
     setState(() {
       _posts.shuffle();
       _events.shuffle();
     });
-  }
-
-  void _showPostOptions(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return Wrap(
-          children: [
-            ListTile(
-              leading: Icon(Icons.note),
-              title: Text('Post Confession'),
-              onTap: () {
-                Navigator.pop(context);
-                _navigateToPostCreation(context, 'Confession');
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.question_answer),
-              title: Text('Post Academic Question'),
-              onTap: () {
-                Navigator.pop(context);
-                _navigateToPostCreation(context, 'Help');
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.event),
-              title: Text('Post an Event/Activity'),
-              onTap: () {
-                Navigator.pop(context);
-                _navigateToPostCreation(context, 'Event');
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _navigateToPostCreation(BuildContext context, String type) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => PostCreationPage(type: type, onPostCreated: _addNewPost),
-      ),
-    );
   }
 
   void _addNewPost(Post newPost) {
@@ -157,6 +96,21 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _sharePost(String postId) {
+    final post = _posts.firstWhere((post) => post.id == postId);
+    final postUrl = 'https://example.com/posts/$postId'; // Example URL format
+    Share.share('Check out this post: $postUrl');
+  }
+
+  void _copyPostLink(String postId) {
+    final post = _posts.firstWhere((post) => post.id == postId);
+    final postUrl = 'https://example.com/posts/$postId'; // Example URL format
+    Clipboard.setData(ClipboardData(text: postUrl));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Link copied to clipboard!')),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -164,9 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-     
-
-drawer: Drawer(
+      drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
@@ -188,7 +140,6 @@ drawer: Drawer(
               onTap: () {
                 setState(() {
                   _filter = 'All';
-                  _selectedIndex = 0;
                 });
                 Navigator.pop(context);
               },
@@ -199,7 +150,6 @@ drawer: Drawer(
               onTap: () {
                 setState(() {
                   _filter = 'Confessions';
-                  _selectedIndex = 0;
                 });
                 Navigator.pop(context);
               },
@@ -210,7 +160,6 @@ drawer: Drawer(
               onTap: () {
                 setState(() {
                   _filter = 'Help';
-                  _selectedIndex = 0;
                 });
                 Navigator.pop(context);
               },
@@ -221,7 +170,6 @@ drawer: Drawer(
               onTap: () {
                 setState(() {
                   _filter = 'Events';
-                  _selectedIndex = 0;
                 });
                 Navigator.pop(context);
               },
@@ -236,119 +184,52 @@ drawer: Drawer(
           ],
         ),
       ),
-      body: _getBody(),
+      body: _buildHomeScreen(),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _showPostOptions(context),
+        onPressed: () => showPostOptions(context, (type) => navigateToPostCreation(context, type, _addNewPost)),
         tooltip: 'Post',
         child: const Icon(Icons.add),
-      ),
-      bottomNavigationBar: FlashyTabBar(
-        selectedIndex: _selectedIndex,
-        onItemSelected: _onItemSelected,
-        items: [
-          FlashyTabBarItem(
-            icon: Icon(Icons.home),
-            title: Text('Home'),
-          ),
-          FlashyTabBarItem(
-            icon: Icon(Icons.map),
-            title: Text('Map'),
-          ),
-          FlashyTabBarItem(
-            icon: Icon(Icons.add),
-            title: Text(''),
-          ),
-          
-         FlashyTabBarItem(
-            icon: Icon(Icons.notifications), // Notification icon
-            title: Text('Notification'),
-          ),
-          FlashyTabBarItem(
-            icon: Icon(Icons.settings),
-            title: Text('Settings'),
-          ),
-
-          
-        ],
       ),
     );
   }
 
-  Widget _getBody() {
-    switch (_selectedIndex) {
-      case 0:
-        return _buildHomeTab();
-      case 1:
-        return _buildMapTab();
-      case 4:
-        return _buildSettingsTab();
-      case 3:
-        return Center(child: Text('Notifications functionality coming soon.'));
-      default:
-        return Container();
-    }
-  }
-
-  Widget _buildHomeTab() {
-    List<Widget> items = [];
-
-    if (_filter == 'All' || _filter == 'Confessions' || _filter == 'Help') {
-      items.addAll(_posts
-          .where((post) => _filter == 'All' || post.type == _filter)
-          .map((post) => PostCard(
-                post: post,
-                onReact: _reactToPost,
-                onComment: _addCommentToPost,
-                onTap: () => _navigateToPostDetails(post),
-              )));
-    }
-
-    if (_filter == 'All' || _filter == 'Events') {
-      items.addAll(_events.map((event) => EventCard(
-            event: event,
-            onTap: () => _navigateToEventDetails(event),
-          )));
-    }
+  Widget _buildHomeScreen() {
+    final filteredPosts = _filter == 'All'
+        ? _posts
+        : _posts.where((post) => post.type == _filter).toList();
 
     return RefreshIndicator(
       onRefresh: () async {
         _refreshPosts();
       },
-      child: ListView(
-        children: items,
-      ),
-    );
-  }
-
-  Widget _buildMapTab() {
-    return Center(
-      child: Text('Map functionality coming soon.'),
-    );
-  }
-
-  Widget _buildSettingsTab() {
-    return SettingsPage2();
-  }
-
-  void _navigateToPostDetails(Post post) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => PostDetailsPage(
-          post: post,
-          onReact: _reactToPost,
-          onComment: _addCommentToPost,
-          onReactToComment: _reactToComment,
-        ),
-      ),
-    );
-  }
-
-  void _navigateToEventDetails(Event event) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EventDetailsPage(event: event),
+      child: ListView.builder(
+        itemCount: filteredPosts.length,
+        itemBuilder: (context, index) {
+          final post = filteredPosts[index];
+          return GestureDetector(
+            onTap: () => navigateToPostDetails(
+              context,
+              post,
+              _reactToPost,
+              _addCommentToPost,
+              _reactToComment,
+            ),
+            child: PostCard(
+              post: post,
+              onReact: _reactToPost,
+              onComment: _addCommentToPost,
+              onShare: () => _sharePost(post.id),
+              onCopyLink: () => _copyPostLink(post.id),
+              onTap: () => navigateToPostDetails(
+                context,
+                post,
+                _reactToPost,
+                _addCommentToPost,
+                _reactToComment,
+              ),
+            ),
+          );
+        },
       ),
     );
   }
