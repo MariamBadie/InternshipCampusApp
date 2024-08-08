@@ -29,26 +29,45 @@ class _ActivitiesState extends State<Activities> {
 
   final List<NotificationModel> _notifications = [
     NotificationModel(
-      type: 'alert',
-      content: 'Job fair alert! Discover new job opportunities available next week!',
-      timestamp: DateTime.now().subtract(const Duration(days: 1)),
+      type: 'comment',
+      content: 'New Comment! Mayar Ahmed commented on your post!',
+      timestamp: DateTime.now().subtract(const Duration(hours: 1)),
     ),
     NotificationModel(
-      type: 'like',
-      content: '@Anas liked your post.',
+      type: 'alert',
+      content: 'Job Fair Alert! Discover companies and internships available next Monday!',
+      timestamp: DateTime.now().subtract(const Duration(hours: 5)),
+    ),
+    NotificationModel(
+      type: 'mention',
+      content: 'Mention Alert! Salma Sayed mentioned you in a comment. See what they have to say!',
       timestamp: DateTime.now().subtract(const Duration(days: 2)),
     ),
     NotificationModel(
-      type: 'comment',
-      content: '@Hussien commented on your post.',
-      timestamp: DateTime.now().subtract(const Duration(days: 3)),
+      type: 'offer',
+      content: 'Special Offer! Enjoy discounts and special offers at Cerave Booth on campus. Don\'t miss out on the great deals!',
+      timestamp: DateTime.now().subtract(const Duration(days: 5)),
     ),
     NotificationModel(
-      type: 'other',
-      content: 'You have a new notification.',
-      timestamp: DateTime.now().subtract(const Duration(days: 4)),
+      type: 'tag',
+      content: 'You\'ve been tagged! Laila Khaled mentioned you in a post!',
+      timestamp: DateTime.now().subtract(const Duration(days: 6)),
     ),
-    NotificationModel(type: 'event', content: 'Dont miss the christmas discount!', timestamp: DateTime.now()),
+    NotificationModel(
+      type: 'like',
+      content: 'Your post just got a like! Nour Khaled liked your post. Check it out!',
+      timestamp: DateTime.now().subtract(const Duration(days: 31)),
+    ),
+    NotificationModel(
+      type: 'event',
+      content: 'New Booth Alert! BreadFast is opening a booth on campus in 2 days. Plan your visit!',
+      timestamp: DateTime.now().subtract(const Duration(days: 32)),
+    ),
+    NotificationModel(
+      type: 'like_comment',
+      content: 'Your comment just got a like! Mariam Mohamed liked your comment!',
+      timestamp: DateTime.now().subtract(const Duration(days: 64)),
+    ),
   ];
 
   void _deleteFriendRequest(int index) {
@@ -156,12 +175,19 @@ class _ActivitiesState extends State<Activities> {
       case 'alert':
         return AssetImage('assets/images/announcement.png');
       case 'like':
+      return AssetImage('assets/images/like.png');
       case 'comment':
+      return AssetImage('assets/images/comment.png');
+      case 'like_comment':
         return AssetImage('assets/images/profile-pic.png');
       case 'event':
         return AssetImage('assets/images/party-hat.png');
-      default:
+      case 'offer':
+      case 'mention':
+      case 'tag':
         return AssetImage('assets/images/bell.png');
+      default:
+        return AssetImage('assets/images/default.png');
     }
   }
 }
