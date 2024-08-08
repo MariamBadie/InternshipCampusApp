@@ -32,8 +32,8 @@ dependencies:
     sdk: flutter
   timeago: ^3.1.0
   flashy_tab_bar2: ^0.0.10
-  image_picker: ^0.8.4+5
-  share_plus: ^3.0.2
+  image_picker: ^1.1.2
+  share_plus: ^10.0.0
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -52,7 +52,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^3.0.0
+  flutter_lints: ^4.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
