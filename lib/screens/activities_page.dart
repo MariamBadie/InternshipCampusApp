@@ -1,12 +1,9 @@
 import 'package:campus_app/models/notification_object.dart';
-import 'package:campus_app/widgets/notification_item.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/friend_request.dart';
-import '../models/notification.dart';
 import '../widgets/friend_requests_list.dart';
 import '../widgets/notification_list.dart';
-import '../widgets/general_notification_item.dart';
 
 class Activities extends StatefulWidget {
   const Activities({Key? key}) : super(key: key);
