@@ -6,10 +6,12 @@ class GeneralNotificationItem extends StatelessWidget {
   const GeneralNotificationItem({
     Key? key,
     required this.notification,
+    required this.profilePic,
     required this.onDelete,
   }) : super(key: key);
 
   final NotificationModel notification;
+  final AssetImage profilePic;
   final VoidCallback onDelete;
 
   @override
@@ -23,10 +25,9 @@ class GeneralNotificationItem extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(
-              Icons.notifications,
-              size: 40,
-              color: Colors.blue,
+            CircleAvatar(
+              backgroundImage: profilePic,
+              radius: 25,
             ),
             const SizedBox(width: 40),
             Expanded(
@@ -52,28 +53,9 @@ class GeneralNotificationItem extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      ElevatedButton(
+                      IconButton(
+                        icon: const Icon(Icons.delete, color: Colors.grey),
                         onPressed: onDelete,
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 28,
-                          ),
-                          backgroundColor: Colors.grey,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(3),
-                          ),
-                        ),
-                        child: Text(
-                          'Delete',
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
                       ),
                     ],
                   ),
