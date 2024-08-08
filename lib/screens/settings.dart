@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:campus_app/screens/feedback_screen.dart'; // Import FeedbackScreen
 import 'package:campus_app/screens/about_us_page.dart'; // Import AboutUsPage
 import 'package:campus_app/screens/blocked_accounts_page.dart'; // Import BlockedAccounts
+import 'package:campus_app/screens/expenses_screen.dart'; // Import Expenses screen
 
 class SettingsPage2 extends StatefulWidget {
   const SettingsPage2({Key? key}) : super(key: key);
@@ -87,6 +88,18 @@ class _SettingsPage2State extends State<SettingsPage2> {
                     const _CustomListTile(
                       title: "Calendar",
                       icon: Icons.calendar_today_rounded,
+                    ),
+                    _CustomListTile(
+                      title: "Expense Tracker",
+                      icon: Icons.add_chart_rounded,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const Expenses(),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),

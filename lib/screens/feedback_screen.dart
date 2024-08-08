@@ -18,8 +18,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: const Text('Warning!'),
-            content: const Text(
-                'Feedback cannot be empty. Please enter your feedback.'),
+            content: const Text('Feedback cannot be empty. Please enter your feedback.'),
             actions: <Widget>[
               TextButton(
                 child: const Text('Okay'),
@@ -55,8 +54,10 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus(); // Close the keyboard when tapping outside
+      },
       child: Scaffold(
         appBar: AppBar(
           title: Text(
@@ -68,10 +69,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
             ),
           ),
         ),
-        body: Container(
-          color: Colors.white, // Set the background color of the screen
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(25, 40, 25, 8),
+        body: Padding(
+          padding: const EdgeInsets.all(25.0),
+          child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
