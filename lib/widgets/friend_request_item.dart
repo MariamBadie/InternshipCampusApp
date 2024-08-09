@@ -1,21 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:campus_app/models/friend_request.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../models/friend_request.dart';
 
 class FriendRequestItem extends StatelessWidget {
-  const FriendRequestItem({
-    Key? key,
-    required this.request,
-    required this.onDelete,
-    required this.onConfirm,
-  }) : super(key: key);
+  const FriendRequestItem(this.request, this.onDelete, {super.key});
 
   final FriendRequest request;
   final VoidCallback onDelete;
-  final VoidCallback onConfirm;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(context) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.symmetric(
@@ -26,10 +20,10 @@ class FriendRequestItem extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             CircleAvatar(
-              backgroundImage: request.profilePic,
+              backgroundImage: request.profilepic.image,
               radius: 40,
             ),
-            const SizedBox(width: 40),
+            const SizedBox(width: 40), // Increased space before the name
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,7 +34,7 @@ class FriendRequestItem extends StatelessWidget {
                         child: Text(
                           request.name,
                           style: GoogleFonts.montserrat(
-                            color: Colors.black,
+                            color: const Color.fromARGB(255, 0, 0, 0),
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
@@ -54,13 +48,13 @@ class FriendRequestItem extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       ElevatedButton(
-                        onPressed: onConfirm,
+                        onPressed: () {},
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
                             vertical: 10,
                             horizontal: 28,
                           ),
-                          backgroundColor: Colors.blue,
+                          backgroundColor: const Color.fromARGB(255, 30, 53, 235),
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(3),
@@ -84,7 +78,7 @@ class FriendRequestItem extends StatelessWidget {
                             vertical: 10,
                             horizontal: 33,
                           ),
-                          backgroundColor: Colors.grey,
+                          backgroundColor: const Color.fromARGB(255, 161, 161, 161),
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(3),

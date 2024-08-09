@@ -1,5 +1,5 @@
 import 'package:campus_app/models/blocked_account_object.dart';
-import 'package:campus_app/view_blocked_accounts/blocked_accounts_list.dart';
+import 'package:campus_app/widgets/blocked_accounts_list.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -47,7 +47,7 @@ class _BlockedAccountsState extends State<BlockedAccounts> {
   @override
   Widget build(context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 35, 0, 0),
+      padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
       child: Scaffold(
         appBar: AppBar(
           title: Row(
@@ -56,7 +56,7 @@ class _BlockedAccountsState extends State<BlockedAccounts> {
                 "Blocked Accounts",
                 style: GoogleFonts.roboto(
                   color: const Color.fromARGB(255, 0, 0, 0),
-                  fontSize: 26,
+                  fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
               ),

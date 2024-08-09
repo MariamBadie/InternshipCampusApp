@@ -51,7 +51,7 @@ class _MainScreenState extends State<MainScreen> {
           ),
           FlashyTabBarItem(
             icon: Icon(Icons.notifications),
-            title: Text('Notifications'),
+            title: Text('Notif'),
           ),
           FlashyTabBarItem(
             icon: Icon(Icons.person),
