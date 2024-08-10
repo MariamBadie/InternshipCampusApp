@@ -25,6 +25,10 @@ class PostDetailsPage extends StatelessWidget {
         title: Text('Post Details'),
         actions: [
           IconButton(
+            icon: Icon(Icons.more_vert),
+            onPressed: () =>{},
+          ),
+          IconButton(
             icon: Icon(Icons.share),
             onPressed: () => _sharePost(context),
           ),
@@ -111,4 +115,6 @@ class PostDetailsPage extends StatelessWidget {
       },
     );
   }
+
+  
 }

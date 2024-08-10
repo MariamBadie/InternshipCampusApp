@@ -101,6 +101,21 @@ class _SettingsPage2State extends State<SettingsPage2> {
                         );
                       },
                     ),
+                    _CustomListTile(
+                      title: "Favorites",
+                      icon: Icons.favorite,
+                      onTap: () {},
+                    ),
+                    _CustomListTile(
+                      title: "Your activity",
+                      icon: Icons.timeline,
+                      onTap: () {},
+                    ),                    
+                    _CustomListTile(
+                      title: "Archives",
+                      icon: Icons.archive,
+                      onTap: () {},
+                    ),
                   ],
                 ),
                 const Divider(),
@@ -134,6 +149,16 @@ class _SettingsPage2State extends State<SettingsPage2> {
                     const _CustomListTile(
                       title: "Sign out",
                       icon: Icons.exit_to_app_rounded,
+                    ),
+                    TextButton.icon(
+                      onPressed: ()=> _deleteDialog(context),
+                      icon: const Icon(Icons.delete,
+                          color: Colors.red), // Customize the icon
+                      label: const Text(
+                        'DELETE ACCOUNT',
+                        style:
+                            TextStyle(color: Colors.red), // Make the text red
+                      ),
                     ),
                   ],
                 ),
@@ -198,4 +223,54 @@ class _SingleSection extends StatelessWidget {
       ],
     );
   }
+}
+
+ void _deleteDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      String commentText = '';
+      String reasonText = '';
+
+      return AlertDialog(
+        title: const Text('Sorry to see u go! 😢'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Type DELETE to confirm that you want to delete your account')
+            ,
+            TextField(
+              onChanged: (value) {
+                commentText = value;
+              },
+              decoration: const InputDecoration(hintText: "Type DELETE to confirm"),
+            ),
+            TextField(
+              onChanged: (value) {
+                reasonText = value;
+              },
+              decoration: const InputDecoration(hintText: "Reason for deletion"),
+            ),
+          ],
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Cancel'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          TextButton(
+            child: const Text('DELETE'),
+            onPressed: () {
+              if (commentText == 'DELETE') {
+                // Perform the deletion action here, and optionally use reasonText
+                Navigator.of(context).pop();
+              }
+            },
+          ),
+        ],
+      );
+    },
+  );
 }
