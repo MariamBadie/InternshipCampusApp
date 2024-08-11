@@ -6,8 +6,10 @@ import 'package:campus_app/screens/activities_page.dart';
 import 'package:campus_app/screens/profile_page.dart';
 import 'package:campus_app/screens/add_post_page.dart';
 
+// ignore: use_key_in_widget_constructors
 class MainScreen extends StatefulWidget {
   @override
+  // ignore: library_private_types_in_public_api
   _MainScreenState createState() => _MainScreenState();
 }
 
@@ -15,10 +17,10 @@ class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
   final List<Widget> _screens = [
-    MyHomePage(title: 'Campus App'),
+    const MyHomePage(title: 'Campus App'),
     SearchPage(),
     AddPostPage(),
-    Activities(),
+    const Activities(),
     ProfilePage(),
   ];
 
@@ -38,24 +40,39 @@ class _MainScreenState extends State<MainScreen> {
         onItemSelected: _onItemSelected,
         items: [
           FlashyTabBarItem(
-            icon: Icon(Icons.home),
-            title: Text('Home'),
+            icon: const Icon(Icons.home),
+            title: const Text(
+              'Home',
+              style: TextStyle(fontSize: 12),
+            ),
           ),
           FlashyTabBarItem(
-            icon: Icon(Icons.search),
-            title: Text('Search'),
+            icon: const Icon(Icons.search),
+            title: const Text(
+              'Search',
+              style: TextStyle(fontSize: 12),
+            ),
           ),
           FlashyTabBarItem(
-            icon: Icon(Icons.add),
-            title: Text('Add Post'),
+            icon: const Icon(Icons.add),
+            title: const Text(
+              'Add Post',
+              style: TextStyle(fontSize: 12),
+            ),
           ),
           FlashyTabBarItem(
-            icon: Icon(Icons.notifications),
-            title: Text('Notif'),
+            icon: const Icon(Icons.notifications),
+            title: const Text(
+              'Notification',
+              style: TextStyle(fontSize: 12),
+            ),
           ),
           FlashyTabBarItem(
-            icon: Icon(Icons.person),
-            title: Text('Profile'),
+            icon: const Icon(Icons.person),
+            title: const Text(
+              'Profile',
+              style: TextStyle(fontSize: 12),
+            ),
           ),
         ],
       ),
