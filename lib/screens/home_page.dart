@@ -1,3 +1,4 @@
+import 'package:campus_app/screens/content_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For Clipboard
 import 'package:share_plus/share_plus.dart'; // For sharing
@@ -28,7 +29,10 @@ class _MyHomePageState extends State<MyHomePage> {
       content: "I really admire Professor Ali's teaching style!",
       reactions: {'like': 5, 'dislike': 1, 'love': 2, 'haha': 0},
       comments: [
-        Comment(username: 'Sara', content: 'I agree! His lectures are great.', reactions: {'like': 2, 'dislike': 0, 'love': 1}),
+        Comment(
+            username: 'Sara',
+            content: 'I agree! His lectures are great.',
+            reactions: {'like': 2, 'dislike': 0, 'love': 1}),
       ],
       isAnonymous: false,
       timestamp: DateTime.now().subtract(Duration(hours: 2)),
@@ -49,7 +53,8 @@ class _MyHomePageState extends State<MyHomePage> {
     Event(
       id: '1',
       title: "Mother's Day Bazaar",
-      description: "Join us for a special Mother's Day Bazaar at the basketball court!",
+      description:
+          "Join us for a special Mother's Day Bazaar at the basketball court!",
       date: DateTime(2024, 5, 12, 10, 0),
       location: "Basketball Court",
     ),
@@ -85,14 +90,18 @@ class _MyHomePageState extends State<MyHomePage> {
   void _addCommentToPost(String postId, String username, String content) {
     setState(() {
       final post = _posts.firstWhere((post) => post.id == postId);
-      post.comments.add(Comment(username: username, content: content, reactions: {'like': 0, 'dislike': 0, 'love': 0}));
+      post.comments.add(Comment(
+          username: username,
+          content: content,
+          reactions: {'like': 0, 'dislike': 0, 'love': 0}));
     });
   }
 
   void _reactToComment(String postId, int commentIndex, String reactionType) {
     setState(() {
       final post = _posts.firstWhere((post) => post.id == postId);
-      post.comments[commentIndex].reactions[reactionType] = (post.comments[commentIndex].reactions[reactionType] ?? 0) + 1;
+      post.comments[commentIndex].reactions[reactionType] =
+          (post.comments[commentIndex].reactions[reactionType] ?? 0) + 1;
     });
   }
 
@@ -165,6 +174,14 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             ),
             ListTile(
+              leading: const Icon(Icons.assignment),
+              title: Text("Studying content"),
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => ContentPage()));
+              },
+            ),
+            ListTile(
               leading: Icon(Icons.event),
               title: Text('Events'),
               onTap: () {
@@ -186,7 +203,8 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: _buildHomeScreen(),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => showPostOptions(context, (type) => navigateToPostCreation(context, type, _addNewPost)),
+        onPressed: () => showPostOptions(context,
+            (type) => navigateToPostCreation(context, type, _addNewPost)),
         tooltip: 'Post',
         child: const Icon(Icons.add),
       ),
@@ -214,7 +232,7 @@ class _MyHomePageState extends State<MyHomePage> {
               _addCommentToPost,
               _reactToComment,
             ),
-            child:  PostCard(
+            child: PostCard(
               post: post,
               onReact: _reactToPost,
               onComment: _addCommentToPost,
