@@ -17,6 +17,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Campus Connect',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
@@ -25,8 +26,13 @@ class MyApp extends StatelessWidget {
       routes: {
         '/search': (context) => SearchPage(),
         '/addPost': (context) => AddPostPage(),
-        '/notifications': (context) => Activities(),
+        '/notifications': (context) => const Activities(),
         '/profile': (context) => ProfilePage(),
+<<<<<<< HEAD
+=======
+        '/editProfile': (context) => EditProfilePage(),
+        '/settings': (context) => const SettingsPage2(),
+>>>>>>> b97b689a01e12f2269a08ba77168b24e2186bc4b
       },
     );
   }

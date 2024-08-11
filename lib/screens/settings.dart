@@ -4,7 +4,10 @@ import 'package:campus_app/screens/feedback_screen.dart'; // Import FeedbackScre
 import 'package:campus_app/screens/about_us_page.dart'; // Import AboutUsPage
 import 'package:campus_app/screens/blocked_accounts_page.dart'; // Import BlockedAccounts
 import 'package:campus_app/screens/expenses_screen.dart'; // Import Expenses screen
-
+import 'package:campus_app/screens/archive_page.dart';
+import 'package:campus_app/screens/favorites_page.dart';
+import 'package:campus_app/screens/my_activity_page.dart';
+import 'package:campus_app/screens/signin.dart';
 class SettingsPage2 extends StatefulWidget {
   const SettingsPage2({Key? key}) : super(key: key);
 
@@ -101,6 +104,39 @@ class _SettingsPage2State extends State<SettingsPage2> {
                         );
                       },
                     ),
+                    _CustomListTile(
+                      title: "Favorites",
+                      icon: Icons.favorite,
+                     onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const FavoritesPage(),
+                          ),
+                        );},
+                    ),
+                    _CustomListTile(
+                      title: "Your activity",
+                      icon: Icons.timeline,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const MyActivityPage(),
+                          ),
+                        );},
+                    ),                    
+                    _CustomListTile(
+                      title: "Archives",
+                      icon: Icons.archive,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ArchivePage(),
+                          ),
+                        );},
+                    ),
                   ],
                 ),
                 const Divider(),
@@ -131,9 +167,20 @@ class _SettingsPage2State extends State<SettingsPage2> {
                         );
                       },
                     ),
-                    const _CustomListTile(
-                      title: "Sign out",
+                    _CustomListTile(
+                      title: "Sign Out",
                       icon: Icons.exit_to_app_rounded,
+                      onTap: ()=>_logOut(context),
+                    ),
+                    TextButton.icon(
+                      onPressed: ()=> _deleteDialog(context),
+                      icon: const Icon(Icons.delete,
+                          color: Colors.red), // Customize the icon
+                      label: const Text(
+                        'DELETE ACCOUNT',
+                        style:
+                            TextStyle(color: Colors.red), // Make the text red
+                      ),
                     ),
                   ],
                 ),
@@ -198,4 +245,86 @@ class _SingleSection extends StatelessWidget {
       ],
     );
   }
+}
+
+ void _deleteDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      String commentText = '';
+      String reasonText = '';
+
+      return AlertDialog(
+        title: const Text('Sorry to see u go! 😢'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Type DELETE to confirm that you want to delete your account')
+            ,
+            TextField(
+              onChanged: (value) {
+                commentText = value;
+              },
+              decoration: const InputDecoration(hintText: "Type DELETE to confirm"),
+            ),
+            TextField(
+              onChanged: (value) {
+                reasonText = value;
+              },
+              decoration: const InputDecoration(hintText: "Reason for deletion"),
+            ),
+          ],
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Cancel'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          TextButton(
+            child: const Text('DELETE'),
+            onPressed: () { commentText == "DELETE" ?  Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) =>const Signin()),
+                ) : Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
+ void _logOut(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+
+
+      return AlertDialog(
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+             Text('Are You sure you want to Log Out?')
+          ],
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('No'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          TextButton(
+            child: const Text('Yes'),
+            onPressed: () {
+ Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) =>const Signin()),
+                );
+                            },
+          ),
+        ],
+      );
+    },
+  );
 }

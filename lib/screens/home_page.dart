@@ -214,7 +214,7 @@ class _MyHomePageState extends State<MyHomePage> {
               _addCommentToPost,
               _reactToComment,
             ),
-            child: PostCard(
+            child:  PostCard(
               post: post,
               onReact: _reactToPost,
               onComment: _addCommentToPost,
