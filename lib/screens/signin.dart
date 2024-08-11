@@ -27,6 +27,7 @@ class _SigninState extends State<Signin> {
                   controller: _usernameController,
                   decoration: InputDecoration(
                     labelText: "Username",
+                    prefixIcon: const Icon(Icons.person),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(35.0), // Rounded borders
                     ),
@@ -41,6 +42,7 @@ class _SigninState extends State<Signin> {
                   controller: _passwordController,
                   obscureText: true,
                   decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.security),
                     labelText: "Password",
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(35.0), // Rounded borders
