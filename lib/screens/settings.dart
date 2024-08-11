@@ -4,6 +4,9 @@ import 'package:campus_app/screens/feedback_screen.dart'; // Import FeedbackScre
 import 'package:campus_app/screens/about_us_page.dart'; // Import AboutUsPage
 import 'package:campus_app/screens/blocked_accounts_page.dart'; // Import BlockedAccounts
 import 'package:campus_app/screens/expenses_screen.dart'; // Import Expenses screen
+import 'package:campus_app/screens/archive_page.dart';
+import 'package:campus_app/screens/favorites_page.dart';
+import 'package:campus_app/screens/my_activity_page.dart';
 
 class SettingsPage2 extends StatefulWidget {
   const SettingsPage2({Key? key}) : super(key: key);
@@ -104,17 +107,35 @@ class _SettingsPage2State extends State<SettingsPage2> {
                     _CustomListTile(
                       title: "Favorites",
                       icon: Icons.favorite,
-                      onTap: () {},
+                     onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const FavoritesPage(),
+                          ),
+                        );},
                     ),
                     _CustomListTile(
                       title: "Your activity",
                       icon: Icons.timeline,
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const MyActivityPage(),
+                          ),
+                        );},
                     ),                    
                     _CustomListTile(
                       title: "Archives",
                       icon: Icons.archive,
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ArchivePage(),
+                          ),
+                        );},
                     ),
                   ],
                 ),
