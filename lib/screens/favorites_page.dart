@@ -195,9 +195,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                                   fontSize: 16,
                                 ),
                               ),
-                              IconButton(
-                                  onPressed: () {},
-                                  icon: Icon(Icons.more_vert_rounded)),
+                              
                             ]),
                         Text(post['content']!),
                         Row(
