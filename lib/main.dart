@@ -1,4 +1,3 @@
-import 'package:campus_app/screens/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:campus_app/screens/main_screen.dart';
 import 'package:campus_app/screens/search_page.dart';
@@ -28,8 +27,6 @@ class MyApp extends StatelessWidget {
         '/addPost': (context) => AddPostPage(),
         '/notifications': (context) => Activities(),
         '/profile': (context) => ProfilePage(),
-        '/editProfile': (context) => EditProfilePage(),
-        '/settings': (context) => SettingsPage2(),
       },
     );
   }
