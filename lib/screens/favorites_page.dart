@@ -156,6 +156,12 @@ class _FavoritesPageState extends State<FavoritesPage> {
                   });
                 },
               ),
+              const SizedBox(width: 50), // Space between dropdowns
+                TextButton(onPressed: ()=> _deleteDialog(context),
+                  child:const Row(
+                    children: [Icon(Icons.delete),Text("Clear All My Favorite")],
+                  )
+                   )
             ],
           ),
           const SizedBox(height: 20),
@@ -244,4 +250,36 @@ class _FavoritesPageState extends State<FavoritesPage> {
       ),
     );
   }
+}
+
+ void _deleteDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+
+
+      return AlertDialog(
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+             Text('Are You sure you want to clear Your Favorites?')
+          ],
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Cancel'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          TextButton(
+            child: const Text('DELETE'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
 }
