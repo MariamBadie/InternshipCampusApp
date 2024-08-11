@@ -27,10 +27,10 @@ class MyApp extends StatelessWidget {
       routes: {
         '/search': (context) => SearchPage(),
         '/addPost': (context) => AddPostPage(),
-        '/notifications': (context) => Activities(),
+        '/notifications': (context) => const Activities(),
         '/profile': (context) => ProfilePage(),
         '/editProfile': (context) => EditProfilePage(),
-        '/settings': (context) => SettingsPage2(),
+        '/settings': (context) => const SettingsPage2(),
       },
     );
   }
