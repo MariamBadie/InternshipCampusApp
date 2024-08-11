@@ -1,5 +1,4 @@
 import 'dart:io'; // Add this line to import the File class
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -31,6 +30,7 @@ class _AddPostPageState extends State<AddPostPage> {
       );
       return;
     }
+
     // Example of how to handle the submission
     print('Content: $postContent');
     print('Anonymous: $_isAnonymous');
@@ -54,57 +54,58 @@ class _AddPostPageState extends State<AddPostPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextField(
-              controller: _textController,
-              decoration: InputDecoration(
-                hintText: 'Enter your post here...',
-                border: OutlineInputBorder(),
-              ),
-              maxLines: 5,
-            ),
-            SizedBox(height: 16),
-            Row(
-              children: [
-                ElevatedButton(
-                  onPressed: _pickImage,
-                  child: Text('Pick Image'),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextField(
+                controller: _textController,
+                decoration: InputDecoration(
+                  hintText: 'Enter your post here...',
+                  border: OutlineInputBorder(),
                 ),
-                SizedBox(width: 16),
-                if (_image != null) ...[
-                  Image.file(
-                    File(_image!.path),
-                    height: 100,
-                    width: 100,
-                    fit: BoxFit.cover,
+                maxLines: 5,
+              ),
+              SizedBox(height: 16),
+              Row(
+                children: [
+                  ElevatedButton(
+                    onPressed: _pickImage,
+                    child: Text('Pick Image'),
                   ),
+                  SizedBox(width: 16),
+                  if (_image != null)
+                    Image.file(
+                      File(_image!.path),
+                      height: 100,
+                      width: 100,
+                      fit: BoxFit.cover,
+                    ),
                 ],
-              ],
-            ),
-            SizedBox(height: 16),
-            Row(
-              children: [
-                Checkbox(
-                  value: _isAnonymous,
-                  onChanged: (bool? value) {
-                    setState(() {
-                      _isAnonymous = value ?? false;
-                    });
-                  },
-                ),
-                Text('Post Anonymously'),
-              ],
-            ),
-            SizedBox(height: 16),
-            Center(
-              child: ElevatedButton(
-                onPressed: _submitPost,
-                child: Text('Submit Post'),
               ),
-            ),
-          ],
+              SizedBox(height: 16),
+              Row(
+                children: [
+                  Checkbox(
+                    value: _isAnonymous,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        _isAnonymous = value ?? false;
+                      });
+                    },
+                  ),
+                  Text('Post Anonymously'),
+                ],
+              ),
+              SizedBox(height: 16),
+              Center(
+                child: ElevatedButton(
+                  onPressed: _submitPost,
+                  child: Text('Submit Post'),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

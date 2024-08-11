@@ -17,19 +17,37 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _screens = [
     MyHomePage(title: 'Campus App'),
     SearchPage(),
-    AddPostPage(),
+    Container(), // Placeholder for AddPostPage, we'll handle this with the bottom navigation bar
     Activities(),
     ProfilePage(),
   ];
 
   void _onItemSelected(int index) {
-    setState(() {
-      _selectedIndex = index;
+    print('Selected Index: $index'); // Debug statement
+    if (index == 2) {
+      _navigateToAddPostPage();
+    } else {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
+  }
+
+  void _navigateToAddPostPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddPostPage(),
+      ),
+    ).then((_) {
+      // Debug statement for returning from AddPostPage
+      print('Returned from AddPostPage');
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    print('Building MainScreen with selected index $_selectedIndex'); // Debug statement
     return Scaffold(
       body: _screens[_selectedIndex],
       bottomNavigationBar: FlashyTabBar(

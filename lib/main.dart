@@ -4,7 +4,7 @@ import 'package:campus_app/screens/search_page.dart';
 import 'package:campus_app/screens/add_post_page.dart';
 import 'package:campus_app/screens/activities_page.dart';
 import 'package:campus_app/screens/profile_page.dart';
-import 'package:campus_app/screens/edit_profile_page.dart';
+import 'package:campus_app/screens/home_page.dart';
 
 void main() {
   runApp(const MyApp());
