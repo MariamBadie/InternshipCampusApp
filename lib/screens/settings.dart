@@ -7,7 +7,7 @@ import 'package:campus_app/screens/expenses_screen.dart'; // Import Expenses scr
 import 'package:campus_app/screens/archive_page.dart';
 import 'package:campus_app/screens/favorites_page.dart';
 import 'package:campus_app/screens/my_activity_page.dart';
-
+import 'package:campus_app/screens/signin.dart';
 class SettingsPage2 extends StatefulWidget {
   const SettingsPage2({Key? key}) : super(key: key);
 
@@ -167,9 +167,10 @@ class _SettingsPage2State extends State<SettingsPage2> {
                         );
                       },
                     ),
-                    const _CustomListTile(
-                      title: "Sign out",
+                    _CustomListTile(
+                      title: "Sign Out",
                       icon: Icons.exit_to_app_rounded,
+                      onTap: ()=>_logOut(context),
                     ),
                     TextButton.icon(
                       onPressed: ()=> _deleteDialog(context),
@@ -283,12 +284,44 @@ class _SingleSection extends StatelessWidget {
           ),
           TextButton(
             child: const Text('DELETE'),
-            onPressed: () {
-              if (commentText == 'DELETE') {
-                // Perform the deletion action here, and optionally use reasonText
-                Navigator.of(context).pop();
-              }
+            onPressed: () { commentText == "DELETE" ?  Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) =>const Signin()),
+                ) : Navigator.of(context).pop();
             },
+          ),
+        ],
+      );
+    },
+  );
+}
+
+ void _logOut(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+
+
+      return AlertDialog(
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+             Text('Are You sure you want to Log Out?')
+          ],
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('No'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          TextButton(
+            child: const Text('Yes'),
+            onPressed: () {
+ Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) =>const Signin()),
+                );
+                            },
           ),
         ],
       );
