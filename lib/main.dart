@@ -1,3 +1,5 @@
+import 'package:campus_app/screens/edit_profile_page.dart';
+import 'package:campus_app/screens/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:campus_app/screens/main_screen.dart';
 import 'package:campus_app/screens/search_page.dart';
@@ -28,11 +30,8 @@ class MyApp extends StatelessWidget {
         '/addPost': (context) => AddPostPage(),
         '/notifications': (context) => const Activities(),
         '/profile': (context) => ProfilePage(),
-<<<<<<< HEAD
-=======
         '/editProfile': (context) => EditProfilePage(),
         '/settings': (context) => const SettingsPage2(),
->>>>>>> b97b689a01e12f2269a08ba77168b24e2186bc4b
       },
     );
   }
