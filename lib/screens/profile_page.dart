@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'friends_list_page.dart'; // Import the FriendsListPage
 
 class ProfilePage extends StatelessWidget {
-  final String profilePictureUrl = 'https://www.example.com/path/to/profile-picture.jpg';
   final String username = 'Anas Tamer';
   final String bio = 'MET Major | Student at GUC';
   final int numberOfPosts = 42;
@@ -13,10 +12,10 @@ class ProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile'),
+        title: const Text('Profile'),
         actions: [
           IconButton(
-            icon: Icon(Icons.settings),
+            icon: const Icon(Icons.settings),
             onPressed: () => Navigator.pushNamed(context, '/settings'),
           ),
         ],
@@ -28,11 +27,11 @@ class ProfilePage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildProfileHeader(),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               _buildProfileStats(context),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               _buildEditProfileButton(context),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               _buildUserPosts(context),
             ],
           ),
@@ -46,19 +45,20 @@ class ProfilePage extends StatelessWidget {
       children: [
         CircleAvatar(
           radius: 50,
-          backgroundImage: NetworkImage(profilePictureUrl),
+          backgroundImage: const AssetImage("assets/images/profile-pic.png"),
           backgroundColor: Colors.grey[200],
         ),
-        SizedBox(width: 16),
+        const SizedBox(width: 16),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 username,
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Text(
                 bio,
                 style: TextStyle(fontSize: 16, color: Colors.grey[600]),
@@ -97,9 +97,9 @@ class ProfilePage extends StatelessWidget {
         children: [
           Text(
             count.toString(),
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
-          SizedBox(height: 4),
+          const SizedBox(height: 4),
           Text(
             label,
             style: TextStyle(fontSize: 16, color: Colors.grey[600]),
@@ -113,10 +113,10 @@ class ProfilePage extends StatelessWidget {
     return Center(
       child: ElevatedButton(
         onPressed: () => Navigator.pushNamed(context, '/editProfile'),
-        child: Text('Edit Profile'),
         style: ElevatedButton.styleFrom(
-          padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
         ),
+        child: const Text('Edit Profile'),
       ),
     );
   }
@@ -125,22 +125,22 @@ class ProfilePage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Recent Posts',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
         ListView.builder(
           shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           itemCount: 5, // Show only 5 most recent posts
           itemBuilder: (context, index) {
             return Card(
-              margin: EdgeInsets.only(bottom: 16),
+              margin: const EdgeInsets.only(bottom: 16),
               child: ListTile(
-                leading: Icon(Icons.post_add),
+                leading: const Icon(Icons.post_add),
                 title: Text('Post Title ${index + 1}'),
-                subtitle: Text('Post content preview...'),
+                subtitle: const Text('Post content preview...'),
                 onTap: () => Navigator.pushNamed(
                   context,
                   '/postDetails',
