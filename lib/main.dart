@@ -7,9 +7,15 @@ import 'package:campus_app/screens/add_post_page.dart';
 import 'package:campus_app/screens/activities_page.dart';
 import 'package:campus_app/screens/profile_page.dart';
 import 'package:campus_app/screens/home_page.dart';
+import 'package:device_preview/device_preview.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    DevicePreview(
+      enabled: true,
+      builder: (context) => const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -18,6 +24,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      useInheritedMediaQuery: true,
+      locale: DevicePreview.locale(context),
+      builder: DevicePreview.appBuilder,
       title: 'Campus Connect',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
