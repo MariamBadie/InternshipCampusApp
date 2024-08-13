@@ -188,25 +188,45 @@ class _ContentPageState extends State<ContentPage> {
   final String serverBaseUrl =
       'https://your-server.com/lectures/'; // Replace with your server URL
 
-  Future<void> _downloadFile(String fileName) async {
-    try {
-      var status = await Permission.storage.request();
-      if (!status.isGranted) {
-        throw Exception('Storage permission not granted');
-      }
+  bool _isLoading = false;
 
+  void _showLoadingDialog() {
+    if (!_isLoading) {
+      setState(() {
+        _isLoading = true;
+      });
       showDialog(
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context) {
-          return const Center(child: CircularProgressIndicator());
+          return WillPopScope(
+            onWillPop: () async => false,
+            child: const Center(child: CircularProgressIndicator()),
+          );
         },
       );
+    }
+  }
+
+  void _hideLoadingDialog() {
+    if (_isLoading) {
+      Navigator.of(context).pop();
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _downloadFile(String fileName) async {
+    try {
+      _showLoadingDialog();
+
+      var status = await Permission.storage.request();
+      if (!status.isGranted) throw Exception('Storage permission not granted');
 
       final Directory? downloadsDir = await getDownloadsDirectory();
-      if (downloadsDir == null) {
+      if (downloadsDir == null)
         throw Exception('Could not access the downloads directory');
-      }
 
       final filePath = '${downloadsDir.path}/$fileName';
       final file = File(filePath);
@@ -215,17 +235,15 @@ class _ContentPageState extends State<ContentPage> {
 
       if (response.statusCode == 200) {
         await file.writeAsBytes(response.bodyBytes);
-        Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('File downloaded to: $filePath')),
-        );
+        _showSnackBar('File downloaded to: $filePath');
       } else {
         throw Exception('Failed to download file');
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error downloading file: $e')),
-      );
+      _showSnackBar('Error downloading file: $e');
+      rethrow;
+    } finally {
+      _hideLoadingDialog();
     }
   }
 
@@ -242,19 +260,21 @@ class _ContentPageState extends State<ContentPage> {
       if (await file.exists()) {
         await OpenFile.open(filePath);
       } else {
-        // If the file doesn't exist locally, download it first
+        _showSnackBar('File does not exist, downloading now...');
         await _downloadFile(fileName);
         await OpenFile.open(filePath);
       }
     } catch (e) {
       print('Error opening file: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error opening file: $e')),
-      );
+      _showSnackBar('Error opening file: $e');
     }
   }
 
-  @override
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -274,166 +294,147 @@ class _ContentPageState extends State<ContentPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.black,
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 6,
-                    offset: Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: TextField(
-                decoration: InputDecoration(
-                  labelText: 'Search subjects or lectures',
-                  prefixIcon: const Icon(Icons.search, color: Colors.blue),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide.none,
-                  ),
-                  filled: true,
-                  fillColor: Colors.white,
-                  hintText: 'Enter keywords...',
-                  hintStyle: TextStyle(color: Colors.blueGrey[300]),
-                ),
-                onChanged: performSearch,
-              ),
-            ),
+            _buildSearchBar(),
             const SizedBox(height: 20),
             if (searchQuery.isEmpty) ...[
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 6,
-                      offset: Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: DropdownButtonFormField<String>(
-                  decoration: InputDecoration(
-                    labelText: 'Select Semester',
-                    labelStyle: const TextStyle(color: Colors.black),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide.none,
-                    ),
-                    filled: true,
-                    fillColor: Colors.white,
-                  ),
-                  dropdownColor: Colors.white,
-                  value: selectedSemester,
-                  items: semesters.map((String semester) {
-                    return DropdownMenuItem<String>(
-                      value: semester,
-                      child: Text(
-                        semester,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.blue[700],
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      selectedSemester = newValue;
-                      selectedSubject = null;
-                    });
-                  },
-                ),
-              ),
+              _buildSemesterDropdown(),
               const SizedBox(height: 20),
-              if (selectedSemester != null)
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 6,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: DropdownButtonFormField<String>(
-                    decoration: InputDecoration(
-                      labelText: 'Select Subject',
-                      labelStyle: const TextStyle(color: Colors.black),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide.none,
-                      ),
-                      filled: true,
-                      fillColor: Colors.white,
-                    ),
-                    dropdownColor: Colors.white,
-                    value: selectedSubject,
-                    items: semesterSubjects[selectedSemester]
-                        ?.map((String subject) {
-                      return DropdownMenuItem<String>(
-                        value: subject,
-                        child: Text(
-                          subject,
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.blue[700],
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedSubject = newValue;
-                      });
-                    },
-                  ),
-                ),
+              if (selectedSemester != null) _buildSubjectDropdown(),
               const SizedBox(height: 20),
-              if (selectedSubject != null)
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: subjectLectures[selectedSubject]?.length ?? 0,
-                    itemBuilder: (context, index) {
-                      final lecture = subjectLectures[selectedSubject]![index];
-                      return _buildLectureCard(lecture);
-                    },
-                  ),
-                ),
+              if (selectedSubject != null) _buildLectureList(),
             ] else
-              Expanded(
-                child: ListView.builder(
-                  itemCount: searchResults.length,
-                  itemBuilder: (context, index) {
-                    final subject = searchResults[index].key;
-                    final lectures = searchResults[index].value;
-                    return ExpansionTile(
-                        title: Text(
-                          subject,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blue[700],
-                          ),
-                        ),
-                        backgroundColor: Colors.blue[50],
-                        iconColor: Colors.blue[700],
-                        collapsedIconColor: Colors.blue[700],
-                        children: lectures
-                            .map((lecture) => _buildLectureCard(lecture))
-                            .toList());
-                  },
-                ),
-              ),
+              _buildSearchResults(),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildSearchBar() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: const [
+          BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2))
+        ],
+      ),
+      child: TextField(
+        decoration: InputDecoration(
+          labelText: 'Search subjects or lectures',
+          prefixIcon: const Icon(Icons.search, color: Colors.blue),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide.none),
+          filled: true,
+          fillColor: Colors.white,
+          hintText: 'Enter keywords...',
+          hintStyle: TextStyle(color: Colors.blueGrey[300]),
+        ),
+        onChanged: performSearch,
+      ),
+    );
+  }
+
+  Widget _buildSemesterDropdown() {
+    return _buildDropdown(
+      value: selectedSemester,
+      items: semesters,
+      onChanged: (String? newValue) {
+        setState(() {
+          selectedSemester = newValue;
+          selectedSubject = null;
+        });
+      },
+      labelText: 'Select Semester',
+    );
+  }
+
+  Widget _buildSubjectDropdown() {
+    return _buildDropdown(
+      value: selectedSubject,
+      items: semesterSubjects[selectedSemester] ?? [],
+      onChanged: (String? newValue) {
+        setState(() {
+          selectedSubject = newValue;
+        });
+      },
+      labelText: 'Select Subject',
+    );
+  }
+
+  Widget _buildDropdown({
+    required String? value,
+    required List<String> items,
+    required void Function(String?) onChanged,
+    required String labelText,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: const [
+          BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2))
+        ],
+      ),
+      child: DropdownButtonFormField<String>(
+        decoration: InputDecoration(
+          labelText: labelText,
+          labelStyle: const TextStyle(color: Colors.black),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide.none),
+          filled: true,
+          fillColor: Colors.white,
+        ),
+        dropdownColor: Colors.white,
+        value: value,
+        items: items.map((String item) {
+          return DropdownMenuItem<String>(
+            value: item,
+            child: Text(item,
+                style: TextStyle(fontSize: 16, color: Colors.blue[700])),
+          );
+        }).toList(),
+        onChanged: onChanged,
+      ),
+    );
+  }
+
+  Widget _buildLectureList() {
+    return Expanded(
+      child: ListView.builder(
+        itemCount: subjectLectures[selectedSubject]?.length ?? 0,
+        itemBuilder: (context, index) {
+          final lecture = subjectLectures[selectedSubject]![index];
+          return _buildLectureCard(lecture);
+        },
+      ),
+    );
+  }
+
+  Widget _buildSearchResults() {
+    return Expanded(
+      child: ListView.builder(
+        itemCount: searchResults.length,
+        itemBuilder: (context, index) {
+          final subject = searchResults[index].key;
+          final lectures = searchResults[index].value;
+          return ExpansionTile(
+            title: Text(
+              subject,
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue[700]),
+            ),
+            backgroundColor: Colors.blue[50],
+            iconColor: Colors.blue[700],
+            collapsedIconColor: Colors.blue[700],
+            children:
+                lectures.map((lecture) => _buildLectureCard(lecture)).toList(),
+          );
+        },
       ),
     );
   }
@@ -442,18 +443,15 @@ class _ContentPageState extends State<ContentPage> {
     return Card(
       elevation: 5,
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: ListTile(
         contentPadding: const EdgeInsets.all(16),
         title: Text(
           lecture.title,
           style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-            color: Colors.blueAccent,
-          ),
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              color: Colors.blueAccent),
         ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
