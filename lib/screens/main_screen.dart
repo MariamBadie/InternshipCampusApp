@@ -6,10 +6,8 @@ import 'package:campus_app/screens/activities_page.dart';
 import 'package:campus_app/screens/profile_page.dart';
 import 'package:campus_app/screens/add_post_page.dart';
 
-// ignore: use_key_in_widget_constructors
 class MainScreen extends StatefulWidget {
   @override
-  // ignore: library_private_types_in_public_api
   _MainScreenState createState() => _MainScreenState();
 }
 
@@ -17,7 +15,7 @@ class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
   final List<Widget> _screens = [
-    const MyHomePage(title: 'Campus App'),
+    MyHomePage(title: 'Campus App'),
     SearchPage(),
     Container(), // Placeholder for AddPostPage, we'll handle this with the bottom navigation bar
     Activities(),
@@ -25,9 +23,8 @@ class _MainScreenState extends State<MainScreen> {
   ];
 
   void _onItemSelected(int index) {
-    print('Selected Index: $index'); // Debug statement
     if (index == 2) {
-      _navigateToAddPostPage();
+      _showPostOptions(); // Show options when plus icon is tapped
     } else {
       setState(() {
         _selectedIndex = index;
@@ -35,16 +32,49 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
-  void _navigateToAddPostPage() {
+  void _showPostOptions() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Wrap(
+          children: [
+            ListTile(
+              leading: Icon(Icons.school),
+              title: Text('Post Academic Help'),
+              onTap: () {
+                Navigator.pop(context);
+                _navigateToAddPostPage('Help');
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.event),
+              title: Text('Post Event'),
+              onTap: () {
+                Navigator.pop(context);
+                _navigateToAddPostPage('Event');
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.forum),
+              title: Text('Post Confession'),
+              onTap: () {
+                Navigator.pop(context);
+                _navigateToAddPostPage('Confession');
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _navigateToAddPostPage(String postType) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => AddPostPage(),
+        builder: (context) => AddPostPage(postType: postType),
       ),
-    ).then((_) {
-      // Debug statement for returning from AddPostPage
-      print('Returned from AddPostPage');
-    });
+    );
   }
 
   @override
@@ -80,7 +110,7 @@ class _MainScreenState extends State<MainScreen> {
           FlashyTabBarItem(
             icon: const Icon(Icons.notifications),
             title: const Text(
-              'Notification',
+              'Activities',
               style: TextStyle(fontSize: 12),
             ),
           ),

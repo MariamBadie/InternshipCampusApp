@@ -1,8 +1,12 @@
-import 'dart:io'; // Add this line to import the File class
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AddPostPage extends StatefulWidget {
+  final String postType;
+
+  AddPostPage({Key? key, required this.postType}) : super(key: key);
+
   @override
   _AddPostPageState createState() => _AddPostPageState();
 }
@@ -32,6 +36,7 @@ class _AddPostPageState extends State<AddPostPage> {
     }
 
     // Example of how to handle the submission
+    print('Type: ${widget.postType}');
     print('Content: $postContent');
     print('Anonymous: $_isAnonymous');
     print('Image path: ${_image?.path}');
@@ -50,7 +55,7 @@ class _AddPostPageState extends State<AddPostPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Post'),
+        title: Text('Add ${widget.postType}'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -61,7 +66,7 @@ class _AddPostPageState extends State<AddPostPage> {
               TextField(
                 controller: _textController,
                 decoration: InputDecoration(
-                  hintText: 'Enter your post here...',
+                  hintText: 'Enter your ${widget.postType.toLowerCase()} here...',
                   border: OutlineInputBorder(),
                 ),
                 maxLines: 5,
@@ -101,7 +106,7 @@ class _AddPostPageState extends State<AddPostPage> {
               Center(
                 child: ElevatedButton(
                   onPressed: _submitPost,
-                  child: Text('Submit Post'),
+                  child: Text('Submit ${widget.postType}'),
                 ),
               ),
             ],

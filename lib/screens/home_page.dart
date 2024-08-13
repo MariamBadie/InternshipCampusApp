@@ -11,13 +11,11 @@ import '../widgets/event_card.dart';
 import '../utils/home_page_utils.dart';
 
 class MyHomePage extends StatefulWidget {
-   MyHomePage({super.key, required this.title});
+  MyHomePage({super.key, required this.title});
 
   final String title;
   final List<Post> _confessionsAndHelpPosts = [];
   final List<Event> _events = [];
-
-
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -76,11 +74,11 @@ class _MyHomePageState extends State<MyHomePage> {
   ];
 
   void _refreshPosts() {
-  setState(() {
-    _posts.shuffle();
-    _events.shuffle();
-  });
-}
+    setState(() {
+      _posts.shuffle();
+      _events.shuffle();
+    });
+  }
 
   void _addNewPost(Post newPost) {
     setState(() {
@@ -160,12 +158,6 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       body: _buildHomeScreen(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => showPostOptions(context,
-            (type) => navigateToPostCreation(context, type, _addNewPost)),
-        tooltip: 'Post',
-        child: const Icon(Icons.add),
-      ),
     );
   }
 
@@ -201,9 +193,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _buildHomeScreen() {
-  final filteredPosts = _filter == 'All'
-      ? _posts
-      : _posts.where((post) => post.type == _filter).toList();
+    final filteredPosts = _filter == 'All'
+        ? _posts
+        : _posts.where((post) => post.type == _filter).toList();
 
     return RefreshIndicator(
       onRefresh: () async {
