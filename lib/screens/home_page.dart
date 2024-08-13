@@ -1,3 +1,4 @@
+import 'package:campus_app/screens/NotesPage.dart';
 import 'package:campus_app/screens/content_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For Clipboard
@@ -130,74 +131,24 @@ class _MyHomePageState extends State<MyHomePage> {
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
-          children: <Widget>[
+          children: [
             DrawerHeader(
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.primary,
               ),
               child: Text(
                 'Menu',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
+                style: TextStyle(color: Colors.white, fontSize: 24),
               ),
             ),
-            ListTile(
-              leading: Icon(Icons.all_inclusive),
-              title: Text('All'),
-              onTap: () {
-                setState(() {
-                  _filter = 'All';
-                });
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.forum),
-              title: Text('Confessions'),
-              onTap: () {
-                setState(() {
-                  _filter = 'Confessions';
-                });
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.help),
-              title: Text('Help'),
-              onTap: () {
-                setState(() {
-                  _filter = 'Help';
-                });
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.assignment),
-              title: Text("Studying content"),
-              onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => ContentPage()));
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.event),
-              title: Text('Events'),
-              onTap: () {
-                setState(() {
-                  _filter = 'Events';
-                });
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.logout),
-              title: Text('Log Out'),
-              onTap: () {
-                // Add functionality to log out
-              },
-            ),
+            _buildDrawerItem(Icons.all_inclusive, 'All'),
+            _buildDrawerItem(Icons.forum, 'Confessions'),
+            _buildDrawerItem(Icons.help, 'Help'),
+            _buildStudyingContent(),
+            _buildDrawerItem(Icons.event, 'Events'),
+            _buildDrawerItem(Icons.logout, 'Log Out', onTap: () {
+              // Add functionality to log out
+            }),
           ],
         ),
       ),
@@ -208,6 +159,37 @@ class _MyHomePageState extends State<MyHomePage> {
         tooltip: 'Post',
         child: const Icon(Icons.add),
       ),
+    );
+  }
+
+  Widget _buildDrawerItem(IconData icon, String title, {VoidCallback? onTap}) {
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(title),
+      onTap: onTap ??
+          () {
+            setState(() => _filter = title);
+            Navigator.pop(context);
+          },
+    );
+  }
+
+  Widget _buildStudyingContent() {
+    return ExpansionTile(
+      leading: Icon(Icons.assignment),
+      title: Text("Studying content"),
+      children: [
+        ListTile(
+          title: Text('Content Page'),
+          onTap: () => Navigator.push(
+              context, MaterialPageRoute(builder: (context) => ContentPage())),
+        ),
+        ListTile(
+          title: Text('Notes Page'),
+          onTap: () => Navigator.push(
+              context, MaterialPageRoute(builder: (context) => NotesPage())),
+        ),
+      ],
     );
   }
 
