@@ -79,9 +79,6 @@ class _MyHomePageState extends State<MyHomePage> {
   setState(() {
     _posts.shuffle();
     _events.shuffle();
-
-    _confessionsAndHelpPosts = _posts.where((post) => post.type == 'Confession' || post.type == 'Help').toList();
-    _eventPosts = _posts.where((post) => post.type == 'Event').toList();
   });
 }
 
