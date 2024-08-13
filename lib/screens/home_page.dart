@@ -9,15 +9,22 @@ import '../widgets/event_card.dart';
 import '../utils/home_page_utils.dart';
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+   MyHomePage({super.key, required this.title});
 
   final String title;
+  final List<Post> _confessionsAndHelpPosts = [];
+  final List<Event> _events = [];
+
+
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final List<Post> _confessionsAndHelpPosts = [];
+  final List<Event> _eventPosts = [];
+
   String _filter = 'All';
 
   final List<Post> _posts = [
@@ -63,11 +70,14 @@ class _MyHomePageState extends State<MyHomePage> {
   ];
 
   void _refreshPosts() {
-    setState(() {
-      _posts.shuffle();
-      _events.shuffle();
-    });
-  }
+  setState(() {
+    _posts.shuffle();
+    _events.shuffle();
+
+    _confessionsAndHelpPosts = _posts.where((post) => post.type == 'Confession' || post.type == 'Help').toList();
+    _eventPosts = _posts.where((post) => post.type == 'Event').toList();
+  });
+}
 
   void _addNewPost(Post newPost) {
     setState(() {
@@ -194,43 +204,138 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _buildHomeScreen() {
-    final filteredPosts = _filter == 'All'
-        ? _posts
-        : _posts.where((post) => post.type == _filter).toList();
+  final filteredPosts = _filter == 'All'
+      ? _posts
+      : _posts.where((post) => post.type == _filter).toList();
 
-    return RefreshIndicator(
-      onRefresh: () async {
-        _refreshPosts();
-      },
-      child: ListView.builder(
-        itemCount: filteredPosts.length,
-        itemBuilder: (context, index) {
-          final post = filteredPosts[index];
-          return GestureDetector(
-            onTap: () => navigateToPostDetails(
-              context,
-              post,
-              _reactToPost,
-              _addCommentToPost,
-              _reactToComment,
+  return RefreshIndicator(
+    onRefresh: () async {
+      _refreshPosts();
+    },
+    child: ListView(
+      children: [
+        // Feed section
+        if (_filter == 'All' || _filter == 'Confessions' || _filter == 'Help') 
+          Container(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Feed', style: Theme.of(context).textTheme.titleLarge),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: _confessionsAndHelpPosts.length,
+                  itemBuilder: (context, index) {
+                    final post = _confessionsAndHelpPosts[index];
+                    return GestureDetector(
+                      onTap: () => navigateToPostDetails(
+                        context,
+                        post,
+                        _reactToPost,
+                        _addCommentToPost,
+                        _reactToComment,
+                      ),
+                      child: PostCard(
+                        post: post,
+                        onReact: _reactToPost,
+                        onComment: _addCommentToPost,
+                        onShare: () => _sharePost(post.id),
+                        onCopyLink: () => _copyPostLink(post.id),
+                        onTap: () => navigateToPostDetails(
+                          context,
+                          post,
+                          _reactToPost,
+                          _addCommentToPost,
+                          _reactToComment,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
-            child:  PostCard(
-              post: post,
-              onReact: _reactToPost,
-              onComment: _addCommentToPost,
-              onShare: () => _sharePost(post.id),
-              onCopyLink: () => _copyPostLink(post.id),
-              onTap: () => navigateToPostDetails(
-                context,
-                post,
-                _reactToPost,
-                _addCommentToPost,
-                _reactToComment,
-              ),
+          ),
+
+        // Events section
+        if (_filter == 'All' || _filter == 'Events')
+          Container(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Events', style: Theme.of(context).textTheme.titleLarge),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: _eventPosts.length,
+                  itemBuilder: (context, index) {
+                    final post = _eventPosts[index];
+                    return GestureDetector(
+                      onTap: () => navigateToPostDetails(
+                        context,
+                        post,
+                        _reactToPost,
+                        _addCommentToPost,
+                        _reactToComment,
+                      ),
+                      child: PostCard(
+                        post: post,
+                        onReact: _reactToPost,
+                        onComment: _addCommentToPost,
+                        onShare: () => _sharePost(post.id),
+                        onCopyLink: () => _copyPostLink(post.id),
+                        onTap: () => navigateToPostDetails(
+                          context,
+                          post,
+                          _reactToPost,
+                          _addCommentToPost,
+                          _reactToComment,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
-          );
-        },
-      ),
-    );
-  }
+          ),
+
+        // Rest of the posts
+        if (_filter == 'All')
+          ListView.builder(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            itemCount: filteredPosts.length,
+            itemBuilder: (context, index) {
+              final post = filteredPosts[index];
+              return GestureDetector(
+                onTap: () => navigateToPostDetails(
+                  context,
+                  post,
+                  _reactToPost,
+                  _addCommentToPost,
+                  _reactToComment,
+                ),
+                child: PostCard(
+                  post: post,
+                  onReact: _reactToPost,
+                  onComment: _addCommentToPost,
+                  onShare: () => _sharePost(post.id),
+                  onCopyLink: () => _copyPostLink(post.id),
+                  onTap: () => navigateToPostDetails(
+                    context,
+                    post,
+                    _reactToPost,
+                    _addCommentToPost,
+                    _reactToComment,
+                  ),
+                ),
+              );
+            },
+          ),
+      ],
+    ),
+  );
+}
+
 }
