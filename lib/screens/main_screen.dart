@@ -49,7 +49,6 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print('Building MainScreen with selected index $_selectedIndex'); // Debug statement
     return Scaffold(
       body: _screens[_selectedIndex],
       bottomNavigationBar: FlashyTabBar(
@@ -97,4 +96,3 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 }
-
