@@ -1,93 +1,107 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io'; // Import this to use File class
 
 class NotesPage extends StatefulWidget {
   final String? courseName;
 
-  NotesPage({this.courseName});
+  const NotesPage({super.key, this.courseName});
 
   @override
+  // ignore: library_private_types_in_public_api
   _NotesPageState createState() => _NotesPageState();
 }
 
 class _NotesPageState extends State<NotesPage> {
-  List<Note> notes = [];
-  TextEditingController _titleController = TextEditingController();
-  TextEditingController _numberController = TextEditingController();
-  TextEditingController _contentController = TextEditingController();
-  String? _pdfPath;
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _numberController = TextEditingController();
+  final TextEditingController _contentController = TextEditingController();
+  final List<String> _attachmentPaths = [];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Notes'),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: notes.length,
-              itemBuilder: (context, index) {
-                return NoteCard(note: notes[index]);
-              },
-            ),
+        appBar: AppBar(
+          title: const Text('Notes'),
+        ),
+        body: Align(
+          alignment: Alignment.bottomCenter,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                child: const Text('Add New Note'),
+                onPressed: () => _showAddNoteDialog(),
+              ),
+            ],
           ),
-          ElevatedButton(
-            child: Text('Add New Note'),
-            onPressed: () => _showAddNoteDialog(),
-          ),
-        ],
-      ),
-    );
+        ));
   }
 
   void _showAddNoteDialog() {
+    _titleController.clear();
+    _numberController.clear();
+    _contentController.clear();
+    _attachmentPaths.clear();
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Add New Note'),
+          title: const Text('Add New Note'),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
                   controller: _titleController,
-                  decoration:
-                      InputDecoration(hintText: 'Lecture/Tutorial Name'),
+                  decoration: const InputDecoration(hintText: 'Subject name'),
                 ),
                 TextField(
                   controller: _numberController,
-                  decoration:
-                      InputDecoration(hintText: 'Lecture/Tutorial Number'),
+                  decoration: const InputDecoration(
+                      hintText: 'Lecture/Tutorial Number'),
                   keyboardType: TextInputType.number,
                 ),
                 TextField(
                   controller: _contentController,
-                  decoration: InputDecoration(hintText: 'Note Content'),
+                  decoration: const InputDecoration(hintText: 'Note Content'),
                   maxLines: 3,
                 ),
                 ElevatedButton(
-                  child: Text('Attach PDF'),
-                  onPressed: _pickPDF,
-                ),
-                if (_pdfPath != null)
-                  Text('PDF attached: ${_pdfPath!.split('/').last}'),
+                    onPressed: _showAttachmentSourceDialog,
+                    child: const Text('Attach Files')),
+                if (_attachmentPaths.isNotEmpty)
+                  Wrap(
+                    children: _attachmentPaths.map((path) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Image.file(
+                          File(path),
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.cover,
+                        ),
+                      );
+                    }).toList(),
+                  ),
               ],
             ),
           ),
           actions: [
             TextButton(
-              child: Text('Cancel'),
-              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _clearFields();
+              },
             ),
             TextButton(
-              child: Text('Add'),
+              child: const Text('Add'),
               onPressed: () {
-                _addNote();
-                Navigator.of(context).pop();
+                //add functionality
               },
             ),
           ],
@@ -96,70 +110,81 @@ class _NotesPageState extends State<NotesPage> {
     );
   }
 
-  void _pickPDF() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['pdf'],
-    );
-
-    if (result != null) {
-      setState(() {
-        _pdfPath = result.files.single.path;
-      });
-    }
-  }
-
-  void _addNote() {
-    if (_titleController.text.isNotEmpty && _numberController.text.isNotEmpty) {
-      setState(() {
-        notes.add(Note(
-          title: _titleController.text,
-          number: int.parse(_numberController.text),
-          content: _contentController.text,
-          pdfPath: _pdfPath,
-        ));
-        _titleController.clear();
-        _numberController.clear();
-        _contentController.clear();
-        _pdfPath = null;
-      });
-    }
-  }
-}
-
-class Note {
-  final String title;
-  final int number;
-  final String content;
-  final String? pdfPath;
-
-  Note(
-      {required this.title,
-      required this.number,
-      required this.content,
-      this.pdfPath});
-}
-
-class NoteCard extends StatelessWidget {
-  final Note note;
-
-  NoteCard({required this.note});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: ListTile(
-        title: Text('${note.title} - #${note.number}'),
-        subtitle: Text(note.content),
-        trailing: note.pdfPath != null
-            ? IconButton(
-                icon: Icon(Icons.attachment),
-                onPressed: () {
-                  // Implement PDF viewing functionality here
+  void _showAttachmentSourceDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Select Attachment Source'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.insert_drive_file),
+                title: const Text('Pick from File System'),
+                onTap: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                  _pickFile();
                 },
-              )
-            : null,
-      ),
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Pick from Photos'),
+                onTap: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                  _pickImageFromGallery();
+                },
+              ),
+            ],
+          ),
+        );
+      },
     );
+  }
+
+  void _pickFile() async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.any,
+        allowMultiple: true,
+      );
+
+      if (result != null) {
+        setState(() {
+          _attachmentPaths.addAll(
+              result.paths.where((path) => path != null).cast<String>());
+        });
+      }
+    } catch (e) {
+      print('Error picking file: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to pick file.')),
+      );
+    }
+  }
+
+  void _pickImageFromGallery() async {
+    try {
+      final ImagePicker picker = ImagePicker();
+      final List<XFile>? images = await picker.pickMultiImage();
+
+      if (images != null) {
+        setState(() {
+          _attachmentPaths.addAll(images.map((image) => image.path));
+        });
+      }
+    } catch (e) {
+      print('Error picking image: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to pick images.')),
+      );
+    }
+  }
+
+  void _clearFields() {
+    _titleController.clear();
+    _numberController.clear();
+    _contentController.clear();
+    _attachmentPaths.clear();
   }
 }
