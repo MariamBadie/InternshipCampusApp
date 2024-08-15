@@ -28,7 +28,7 @@ class _MyHomePageState extends State<MyHomePage>
       username: 'Hussien Haitham',
       type: 'Confession',
       content: "I really admire Professor Mervat's teaching style!",
-      reactions: {'like': 5, 'dislike': 1, 'love': 2, 'haha': 0},
+      reactions: {'like': 5, 'dislike': 1, 'love': 2},
       comments: [
         Comment(
           username: 'Anas',
@@ -52,7 +52,7 @@ class _MyHomePageState extends State<MyHomePage>
       username: 'Ahmed Hany',
       type: 'Help',
       content: 'Can someone help me with Math203 problems?',
-      reactions: {'like': 3, 'dislike': 0, 'love': 1, 'haha': 0},
+      reactions: {'like': 3, 'dislike': 0, 'love': 1},
       comments: [
         Comment(
           username: 'Ibrahim',
