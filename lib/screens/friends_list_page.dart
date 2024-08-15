@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'Friendprofilepage.dart'; // Import the FriendProfilePage
 
 class FriendsListPage extends StatefulWidget {
   final String profileName;
@@ -13,26 +14,22 @@ class _FriendsListPageState extends State<FriendsListPage> {
   // Sample friends data with profile picture URLs
   List<Map<String, String>> friends = [
     {
-      'name': 'Alice',
-      'profilePic': 'https://www.example.com/path/to/alice-profile-pic.jpg'
+      'name': 'Hussien',
+      'profilePic': 'assets/images/hussien.jpg'
     },
     {
-      'name': 'Bob',
-      'profilePic': 'https://www.example.com/path/to/bob-profile-pic.jpg'
+      'name': 'Ibrahim',
+      'profilePic': 'assets/images/ibrahim.jpg'
     },
     {
-      'name': 'Charlie',
-      'profilePic': 'https://www.example.com/path/to/charlie-profile-pic.jpg'
+      'name': 'Mohannad',
+      'profilePic': 'assets/images/mohanad.jpg'
     },
     {
-      'name': 'David',
-      'profilePic': 'https://www.example.com/path/to/david-profile-pic.jpg'
+      'name': 'Ahmed',
+      'profilePic': 'assets/images/ahmed.jpg'
     },
-    {
-      'name': 'Eva',
-      'profilePic': 'https://www.example.com/path/to/eva-profile-pic.jpg'
-    },
-    // Add more friends here
+   
   ];
 
   List<Map<String, String>> filteredFriends = [];
@@ -78,14 +75,24 @@ class _FriendsListPageState extends State<FriendsListPage> {
               itemBuilder: (context, index) {
                 final friend = filteredFriends[index];
                 return Card(
-                  margin:
-                      const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                   child: ListTile(
                     leading: CircleAvatar(
                       backgroundImage: NetworkImage(friend['profilePic'] ?? ''),
                       radius: 25,
                     ),
                     title: Text(friend['name'] ?? 'Unknown'),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => FriendProfilePage(
+                            name: friend['name'] ?? 'Unknown',
+                            profilePic: friend['profilePic'] ?? '',
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 );
               },
