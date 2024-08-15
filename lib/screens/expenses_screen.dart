@@ -1,7 +1,7 @@
 import 'package:campus_app/models/expense.dart';
 import 'package:campus_app/screens/add_new_expense_screen.dart';
 import 'package:campus_app/widgets/chart/chart.dart';
-import 'package:campus_app/widgets/expense_list.dart';
+import 'package:campus_app/widgets/expenses/expense_list.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 

@@ -2,8 +2,8 @@ import 'package:campus_app/models/notification_object.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/friend_request.dart';
-import '../widgets/friend_requests_list.dart';
-import '../widgets/notification_list.dart';
+import '../widgets/friend_requests/friend_requests_list.dart';
+import '../widgets/notifications_files/notification_list.dart';
 
 class Activities extends StatefulWidget {
   const Activities({Key? key}) : super(key: key);
@@ -142,17 +142,22 @@ class _ActivitiesState extends State<Activities> {
     );
   }
 
-  Widget FriendRequestsTab() {
+Widget FriendRequestsTab() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: Theme.of(context).brightness == Brightness.dark
+              ? Colors.black
+              : Colors.white,
           title: Row(
             children: [
               Text(
                 "Friend Requests",
                 style: GoogleFonts.roboto(
-                  color: const Color.fromARGB(255, 0, 0, 0),
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white
+                      : Colors.black,
                   fontSize: 26,
                   fontWeight: FontWeight.bold,
                 ),
@@ -196,15 +201,20 @@ class _ActivitiesState extends State<Activities> {
     );
   }
 
-  Widget NotificationItem(){
+  Widget NotificationItem() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: Theme.of(context).brightness == Brightness.dark
+              ? Colors.black
+              : Colors.white,
           title: Text(
             "General Notifications",
             style: GoogleFonts.roboto(
-              color: const Color.fromARGB(255, 0, 0, 0),
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white
+                  : Colors.black,
               fontSize: 26,
               fontWeight: FontWeight.bold,
             ),

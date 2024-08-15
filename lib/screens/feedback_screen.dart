@@ -65,7 +65,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
           title: Text(
             "Feedback and Suggestions",
             style: GoogleFonts.roboto(
-              color: const Color.fromARGB(255, 0, 0, 0),
+              color: Color.fromARGB(255, 255, 255, 255),
               fontSize: 22,
               fontWeight: FontWeight.bold,
             ),
@@ -80,7 +80,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                 Text(
                   "We value your input! Share your thoughts to help us make the application even better",
                   style: GoogleFonts.montserrat(
-                    color: const Color.fromARGB(255, 0, 0, 0),
+                    //color: const Color.fromARGB(255, 0, 0, 0),
                     fontSize: 18,
                     fontWeight: FontWeight.w500,
                   ),

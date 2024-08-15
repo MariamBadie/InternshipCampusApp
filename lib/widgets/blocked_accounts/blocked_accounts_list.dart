@@ -1,5 +1,5 @@
 import 'package:campus_app/models/blocked_account_object.dart';
-import 'package:campus_app/widgets/blocked_account_item.dart';
+import 'package:campus_app/widgets/blocked_accounts/blocked_account_item.dart';
 import 'package:flutter/material.dart';
 
 

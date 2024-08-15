@@ -1,4 +1,4 @@
-import 'package:campus_app/widgets/friend_request_item.dart';
+import 'package:campus_app/widgets/friend_requests/friend_request_item.dart';
 import 'package:flutter/material.dart';
 import 'package:campus_app/models/friend_request.dart';
 

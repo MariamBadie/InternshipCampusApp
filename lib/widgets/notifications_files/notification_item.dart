@@ -31,7 +31,7 @@ class NotificationItem extends StatelessWidget {
                   Text(
                     notificationAvaliable.notficationText,
                     style: GoogleFonts.montserrat(
-                      color: const Color.fromARGB(255, 0, 0, 0),
+                     // color: const Color.fromARGB(255, 0, 0, 0),
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -59,11 +59,13 @@ class NotificationItem extends StatelessWidget {
                       ),
                       child: const Row(
                         children: [
-                          Icon(Icons.delete, color: Color.fromARGB(255, 0, 0, 0)),
+                          Icon(Icons.delete, 
+                          //color: Color.fromARGB(255, 0, 0, 0),
+                          ),
                           SizedBox(width: 8.0),
                           Text(
                             'Delete',
-                            style: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                            //style: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
                           ),
                         ],
                       ),

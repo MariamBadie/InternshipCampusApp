@@ -1,5 +1,5 @@
 import 'package:campus_app/models/blocked_account_object.dart';
-import 'package:campus_app/widgets/blocked_accounts_list.dart';
+import 'package:campus_app/widgets/blocked_accounts/blocked_accounts_list.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -58,7 +58,7 @@ class _BlockedAccountsState extends State<BlockedAccounts> {
               Text(
                 "Blocked Accounts",
                 style: GoogleFonts.roboto(
-                  color: const Color.fromARGB(255, 0, 0, 0),
+                  color: Color.fromARGB(255, 255, 255, 255),
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
@@ -67,8 +67,8 @@ class _BlockedAccountsState extends State<BlockedAccounts> {
               Text(
                 '${_avaliableBlockedAccounts.length}',
                 style: GoogleFonts.roboto(
-                  color: const Color.fromARGB(255, 213, 12, 12),
-                  fontSize: 22,
+                  color: Color.fromARGB(255, 255, 255, 255),
+                  fontSize: 18,
                   fontWeight: FontWeight.w500,
                 ),
               ),

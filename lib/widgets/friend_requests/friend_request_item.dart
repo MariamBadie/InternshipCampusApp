@@ -34,7 +34,7 @@ class FriendRequestItem extends StatelessWidget {
                         child: Text(
                           request.name,
                           style: GoogleFonts.montserrat(
-                            color: const Color.fromARGB(255, 0, 0, 0),
+                            //color: const Color.fromARGB(255, 0, 0, 0),
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),

@@ -11,7 +11,7 @@ class AboutUsPage extends StatelessWidget {
         title: Text(
           "About Us",
           style: GoogleFonts.poppins(
-            color: const Color.fromARGB(255, 0, 0, 0),
+            color: Color.fromARGB(255, 255, 255, 255),
             fontSize: 24, // Adjusted font size
             fontWeight: FontWeight.bold,
           ),
@@ -25,7 +25,7 @@ class AboutUsPage extends StatelessWidget {
             Text(
               "Welcome to GUC Pulse!",
               style: GoogleFonts.poppins(
-                color: const Color.fromARGB(255, 0, 0, 0),
+                //color: const Color.fromARGB(255, 0, 0, 0),
                 fontSize: 18, // Adjusted font size
                 fontWeight: FontWeight.bold,
               ),
@@ -34,7 +34,7 @@ class AboutUsPage extends StatelessWidget {
             Text(
               "At GUC Pulse, we enhance campus life at GUC by offering a central hub for various services and information. Connect with peers, get academic support, and find important resources easily.",
               style: GoogleFonts.poppins(
-                color: const Color.fromARGB(255, 0, 0, 0),
+                //color: const Color.fromARGB(255, 0, 0, 0),
                 fontSize: 14, // Adjusted font size
                 fontWeight: FontWeight.w500,
               ),
