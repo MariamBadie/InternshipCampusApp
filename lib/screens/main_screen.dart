@@ -18,7 +18,7 @@ class _MainScreenState extends State<MainScreen> {
     MyHomePage(title: 'Campus Connect'),
     SearchPage(),
     Container(), // Placeholder for AddPostPage, we'll handle this with the bottom navigation bar
-    Activities(),
+    const Activities(),
     ProfilePage(),
   ];
 
@@ -39,24 +39,24 @@ class _MainScreenState extends State<MainScreen> {
         return Wrap(
           children: [
             ListTile(
-              leading: Icon(Icons.school),
-              title: Text('Post Academic Help'),
+              leading: const Icon(Icons.school),
+              title: const Text('Post Academic Help'),
               onTap: () {
                 Navigator.pop(context);
                 _navigateToAddPostPage('Help');
               },
             ),
             ListTile(
-              leading: Icon(Icons.event),
-              title: Text('Post Event'),
+              leading: const Icon(Icons.event),
+              title: const Text('Post Event'),
               onTap: () {
                 Navigator.pop(context);
                 _navigateToAddPostPage('Event');
               },
             ),
             ListTile(
-              leading: Icon(Icons.forum),
-              title: Text('Post Confession'),
+              leading: const Icon(Icons.forum),
+              title: const Text('Post Confession'),
               onTap: () {
                 Navigator.pop(context);
                 _navigateToAddPostPage('Confession');

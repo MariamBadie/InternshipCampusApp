@@ -15,25 +15,29 @@ class BlockedAccounts extends StatefulWidget {
 class _BlockedAccountsState extends State<BlockedAccounts> {
   final List<BlockedAccountObject> _avaliableBlockedAccounts = [
     BlockedAccountObject(
-      blockedAccountName: 'Yara Sherif', 
-      blockedAccountProfilePic: Image.asset('assets/images/profile-pic.png', width: 200),
+      blockedAccountName: 'Yara Sherif',
+      blockedAccountProfilePic:
+          Image.asset('assets/images/profile-pic.png', width: 200),
     ),
     BlockedAccountObject(
-      blockedAccountName: 'Sara Ayman', 
-      blockedAccountProfilePic: Image.asset('assets/images/profile-pic.png', width: 200),
+      blockedAccountName: 'Sara Ayman',
+      blockedAccountProfilePic:
+          Image.asset('assets/images/profile-pic.png', width: 200),
     ),
     BlockedAccountObject(
-      blockedAccountName: 'Mahmoud Aly', 
-      blockedAccountProfilePic: Image.asset('assets/images/profile-pic.png', width: 200),
+      blockedAccountName: 'Mahmoud Aly',
+      blockedAccountProfilePic:
+          Image.asset('assets/images/profile-pic.png', width: 200),
     ),
     BlockedAccountObject(
-      blockedAccountName: 'Shorouk Adel', 
-      blockedAccountProfilePic: Image.asset('assets/images/profile-pic.png', width: 200),
+      blockedAccountName: 'Shorouk Adel',
+      blockedAccountProfilePic:
+          Image.asset('assets/images/profile-pic.png', width: 200),
     ),
-
     BlockedAccountObject(
-      blockedAccountName: 'Wael Elserafy', 
-      blockedAccountProfilePic: Image.asset('assets/images/profile-pic.png', width: 200),
+      blockedAccountName: 'Wael Elserafy',
+      blockedAccountProfilePic:
+          Image.asset('assets/images/profile-pic.png', width: 200),
     ),
   ];
 
@@ -42,7 +46,6 @@ class _BlockedAccountsState extends State<BlockedAccounts> {
       _avaliableBlockedAccounts.removeAt(index);
     });
   }
-
 
   @override
   Widget build(context) {

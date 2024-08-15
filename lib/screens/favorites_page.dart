@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
@@ -157,11 +156,14 @@ class _FavoritesPageState extends State<FavoritesPage> {
                 },
               ),
               const SizedBox(width: 50), // Space between dropdowns
-                TextButton(onPressed: ()=> _deleteDialog(context),
-                  child:const Row(
-                    children: [Icon(Icons.delete),Text("Clear All My Favorite")],
-                  )
-                   )
+              TextButton(
+                  onPressed: () => _deleteDialog(context),
+                  child: const Row(
+                    children: [
+                      Icon(Icons.delete),
+                      Text("Clear All My Favorite")
+                    ],
+                  ))
             ],
           ),
           const SizedBox(height: 20),
@@ -195,7 +197,6 @@ class _FavoritesPageState extends State<FavoritesPage> {
                                   fontSize: 16,
                                 ),
                               ),
-                              
                             ]),
                         Text(post['content']!),
                         Row(
@@ -250,18 +251,14 @@ class _FavoritesPageState extends State<FavoritesPage> {
   }
 }
 
- void _deleteDialog(BuildContext context) {
+void _deleteDialog(BuildContext context) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
-
-
       return AlertDialog(
         content: const Column(
           mainAxisSize: MainAxisSize.min,
-          children: [
-             Text('Are You sure you want to clear Your Favorites?')
-          ],
+          children: [Text('Are You sure you want to clear Your Favorites?')],
         ),
         actions: <Widget>[
           TextButton(

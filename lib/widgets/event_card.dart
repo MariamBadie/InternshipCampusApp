@@ -11,7 +11,7 @@ class EventCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.all(8),
+      margin: const EdgeInsets.all(8),
       child: InkWell(
         onTap: onTap,
         child: ListTile(
@@ -20,7 +20,7 @@ class EventCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(event.description),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Text('Date: ${DateFormat('MMM d, y h:mm a').format(event.date)}'),
               Text('Location: ${event.location}'),
             ],

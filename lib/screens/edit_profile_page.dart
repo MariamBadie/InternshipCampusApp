@@ -13,7 +13,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Profile'),
+        title: const Text('Edit Profile'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -22,22 +22,22 @@ class _EditProfilePageState extends State<EditProfilePage> {
           children: [
             TextField(
               controller: _nameController,
-              decoration: InputDecoration(labelText: 'Name'),
+              decoration: const InputDecoration(labelText: 'Name'),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextField(
               controller: _bioController,
-              decoration: InputDecoration(labelText: 'Bio'),
+              decoration: const InputDecoration(labelText: 'Bio'),
               maxLines: 3,
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             Center(
               child: ElevatedButton(
                 onPressed: () {
                   // Save profile changes
                   Navigator.pop(context);
                 },
-                child: Text('Save Changes'),
+                child: const Text('Save Changes'),
               ),
             ),
           ],

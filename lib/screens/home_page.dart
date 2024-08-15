@@ -1,4 +1,4 @@
-import 'package:campus_app/screens/NotesPage.dart';
+import 'package:campus_app/screens/note_page.dart';
 import 'package:campus_app/screens/content_page.dart';
 import 'package:campus_app/screens/event_details_page.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +20,8 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
+class _MyHomePageState extends State<MyHomePage>
+    with SingleTickerProviderStateMixin {
   final List<Post> _posts = [
     Post(
       id: '1',
@@ -70,7 +71,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     Event(
       id: '1',
       title: "Mother's Day Bazaar",
-      description: "Join us for a special Mother's Day Bazaar at the basketball court!",
+      description:
+          "Join us for a special Mother's Day Bazaar at the basketball court!",
       date: DateTime(2024, 5, 12, 10, 0),
       location: "Basketball Court",
     ),
@@ -144,7 +146,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       comment.replies?.add(Reply(
         username: 'Current User', // Replace with the actual username
         content: replyContent,
-        profilePictureUrl: 'assets/images/default_user.jpg', // Replace with the actual profile picture URL
+        profilePictureUrl:
+            'assets/images/default_user.jpg', // Replace with the actual profile picture URL
       ));
     });
   }
@@ -176,14 +179,24 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
             Tab(text: 'Feed'),
             Tab(text: 'Events'),
           ],
-          labelColor: Theme.of(context).colorScheme.onPrimary, // Selected tab text color
-          unselectedLabelColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.6), // Unselected tab text color
+          labelColor: Theme.of(context)
+              .colorScheme
+              .onPrimary, // Selected tab text color
+          unselectedLabelColor: Theme.of(context)
+              .colorScheme
+              .onSurface
+              .withOpacity(0.6), // Unselected tab text color
           indicator: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary, // Selected tab background color
-            borderRadius: BorderRadius.circular(8), // Rounded corners for the indicator
+            color: Theme.of(context)
+                .colorScheme
+                .primary, // Selected tab background color
+            borderRadius:
+                BorderRadius.circular(8), // Rounded corners for the indicator
           ),
-          indicatorSize: TabBarIndicatorSize.tab, // Indicator covers the whole tab
-          indicatorPadding: const EdgeInsets.symmetric(horizontal: 8.0), // Padding around the indicator
+          indicatorSize:
+              TabBarIndicatorSize.tab, // Indicator covers the whole tab
+          indicatorPadding: const EdgeInsets.symmetric(
+              horizontal: 8.0), // Padding around the indicator
         ),
       ),
       drawer: Drawer(
@@ -224,9 +237,10 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     return ListTile(
       leading: Icon(icon),
       title: Text(title),
-      onTap: onTap ?? () {
-        Navigator.pop(context);
-      },
+      onTap: onTap ??
+          () {
+            Navigator.pop(context);
+          },
     );
   }
 
@@ -254,7 +268,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   }
 
   Widget _buildFeedSection() {
-    final filteredPosts = _posts.where((post) => post.type == 'Confession' || post.type == 'Help').toList();
+    final filteredPosts = _posts
+        .where((post) => post.type == 'Confession' || post.type == 'Help')
+        .toList();
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -312,7 +328,12 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     );
   }
 
-  void navigateToPostDetails(BuildContext context, Post post, Function(String, String) onReact, Function(String, String, String) onComment, Function(String, int, String) onReactToComment) {
+  void navigateToPostDetails(
+      BuildContext context,
+      Post post,
+      Function(String, String) onReact,
+      Function(String, String, String) onComment,
+      Function(String, int, String) onReactToComment) {
     Navigator.push(
       context,
       MaterialPageRoute(

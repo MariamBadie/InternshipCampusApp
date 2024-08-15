@@ -25,7 +25,7 @@ class CommentCard extends StatelessWidget {
           ),
           if (!isReply)
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -41,7 +41,8 @@ class CommentCard extends StatelessWidget {
     );
   }
 
-  Widget _buildReactionButton(BuildContext context, String type, IconData icon) {
+  Widget _buildReactionButton(
+      BuildContext context, String type, IconData icon) {
     return TextButton.icon(
       onPressed: () => onReact(type),
       icon: Icon(icon, size: 16),

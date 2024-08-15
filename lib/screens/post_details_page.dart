@@ -22,14 +22,14 @@ class PostDetailsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Post Details'),
+        title: const Text('Post Details'),
         actions: [
           IconButton(
-            icon: Icon(Icons.share),
+            icon: const Icon(Icons.share),
             onPressed: () => _sharePost(context),
           ),
           IconButton(
-            icon: Icon(Icons.copy),
+            icon: const Icon(Icons.copy),
             onPressed: () => _copyPostLink(context),
           ),
         ],
@@ -39,11 +39,12 @@ class PostDetailsPage extends StatelessWidget {
           ListTile(
             title: Text(post.isAnonymous ? 'Anonymous' : post.username),
             subtitle: Text(post.content),
-            trailing: Text(DateFormat('MMM d, y h:mm a').format(post.timestamp)),
+            trailing:
+                Text(DateFormat('MMM d, y h:mm a').format(post.timestamp)),
           ),
           if (post.type != 'Help')
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -59,9 +60,10 @@ class PostDetailsPage extends StatelessWidget {
             Comment comment = entry.value;
             return CommentCard(
               comment: comment,
-              onReact: (reactionType) => onReactToComment(post.id, idx, reactionType),
+              onReact: (reactionType) =>
+                  onReactToComment(post.id, idx, reactionType),
             );
-          }).toList(),
+          }),
           Padding(
             padding: EdgeInsets.all(8),
             child: ElevatedButton(
@@ -75,12 +77,14 @@ class PostDetailsPage extends StatelessWidget {
   }
 
   void _sharePost(BuildContext context) {
-    final postUrl = 'https://example.com/posts/${post.id}'; // Example URL format
+    final postUrl =
+        'https://example.com/posts/${post.id}'; // Example URL format
     Share.share('Check out this post: $postUrl');
   }
 
   void _copyPostLink(BuildContext context) {
-    final postUrl = 'https://example.com/posts/${post.id}'; // Example URL format
+    final postUrl =
+        'https://example.com/posts/${post.id}'; // Example URL format
     Clipboard.setData(ClipboardData(text: postUrl));
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Link copied to clipboard!')),
@@ -111,7 +115,8 @@ class PostDetailsPage extends StatelessWidget {
               child: Text('Post'),
               onPressed: () {
                 if (commentText.isNotEmpty) {
-                  onComment(post.id, 'CurrentUser', commentText); // Replace 'CurrentUser' with actual username
+                  onComment(post.id, 'CurrentUser',
+                      commentText); // Replace 'CurrentUser' with actual username
                   Navigator.of(context).pop();
                 }
               },
@@ -122,7 +127,8 @@ class PostDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildReactionButton(BuildContext context, String type, IconData icon) {
+  Widget _buildReactionButton(
+      BuildContext context, String type, IconData icon) {
     return TextButton.icon(
       onPressed: () => onReact(post.id, type),
       icon: Icon(icon),

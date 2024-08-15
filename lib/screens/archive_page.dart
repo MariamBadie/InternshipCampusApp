@@ -11,12 +11,36 @@ class _ArchivePageState extends State<ArchivePage> {
   String type = 'All Types';
 
   final List<Map<String, String>> posts = [
-    {'title': 'Post 1', 'content': 'This is the content of post 1.', 'type': 'normal Post'},
-    {'title': 'Post 2', 'content': 'This is the content of post 2.', 'type': 'Academic Post'},
-    {'title': 'Post 3', 'content': 'This is the content of post 3.', 'type': 'normal Post'},
-    {'title': 'Post 4', 'content': 'This is the content of post 4.', 'type': 'Academic Post'},
-    {'title': 'Post 5', 'content': 'This is the content of post 5.', 'type': 'normal Post'},
-    {'title': 'Post 6', 'content': 'This is the content of post 6.', 'type': 'Academic Post'},
+    {
+      'title': 'Post 1',
+      'content': 'This is the content of post 1.',
+      'type': 'normal Post'
+    },
+    {
+      'title': 'Post 2',
+      'content': 'This is the content of post 2.',
+      'type': 'Academic Post'
+    },
+    {
+      'title': 'Post 3',
+      'content': 'This is the content of post 3.',
+      'type': 'normal Post'
+    },
+    {
+      'title': 'Post 4',
+      'content': 'This is the content of post 4.',
+      'type': 'Academic Post'
+    },
+    {
+      'title': 'Post 5',
+      'content': 'This is the content of post 5.',
+      'type': 'normal Post'
+    },
+    {
+      'title': 'Post 6',
+      'content': 'This is the content of post 6.',
+      'type': 'Academic Post'
+    },
   ];
 
   @override
@@ -85,18 +109,19 @@ class _ArchivePageState extends State<ArchivePage> {
                                 const PopupMenuItem(
                                   value: 'restore',
                                   child: Row(
-                                    children:  [
-                                      Icon(Icons.restore_rounded, color: Colors.black),
+                                    children: [
+                                      Icon(Icons.restore_rounded,
+                                          color: Colors.black),
                                       SizedBox(width: 10),
                                       Text("Show back to my profile"),
                                     ],
                                   ),
                                 ),
-                             const   PopupMenuItem(
+                                const PopupMenuItem(
                                   value: 'edit',
                                   child: Row(
-                                    children:  [
-                                      Icon(Icons.edit, color: Colors.black ),
+                                    children: [
+                                      Icon(Icons.edit, color: Colors.black),
                                       SizedBox(width: 10),
                                       Text("Edit"),
                                     ],
@@ -105,7 +130,7 @@ class _ArchivePageState extends State<ArchivePage> {
                                 const PopupMenuItem(
                                   value: 'delete',
                                   child: Row(
-                                    children:  [
+                                    children: [
                                       Icon(Icons.delete, color: Colors.black),
                                       SizedBox(width: 10),
                                       Text("Delete"),
@@ -131,18 +156,14 @@ class _ArchivePageState extends State<ArchivePage> {
   }
 }
 
- void _deletePost(BuildContext context) {
+void _deletePost(BuildContext context) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
-
-
       return AlertDialog(
         content: const Column(
           mainAxisSize: MainAxisSize.min,
-          children: [
-             Text('Are You sure you want to delete?')
-          ],
+          children: [Text('Are You sure you want to delete?')],
         ),
         actions: <Widget>[
           TextButton(
@@ -162,4 +183,3 @@ class _ArchivePageState extends State<ArchivePage> {
     },
   );
 }
-

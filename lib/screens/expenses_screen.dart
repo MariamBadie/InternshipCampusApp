@@ -5,7 +5,6 @@ import 'package:campus_app/widgets/expense_list.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-
 class Expenses extends StatefulWidget {
   const Expenses({super.key});
 
@@ -17,50 +16,56 @@ class Expenses extends StatefulWidget {
 
 class _ExpensesState extends State<Expenses> {
   final List<Expense> _registeredExpenses = [
-  Expense(
-    title: 'Dorm Rent',
-    amount: 200.00,
-    date: DateTime(DateTime.now().year, DateTime.now().month - 1, 5), // Previous month, 5th day
-    category: Category.housing,
-  ),
-  Expense(
-    title: 'Machine Learning Textbook',
-    amount: 50.00,
-    date: DateTime(DateTime.now().year, DateTime.now().month, 14), // Current month, 14th day
-    category: Category.supplies,
-  ),
-  Expense(
-    title: 'Bus Ticket to Campus',
-    amount: 2.50,
-    date: DateTime(DateTime.now().year, DateTime.now().month - 2, 21), // Two months ago, 21st day
-    category: Category.transportation,
-  ),
-  Expense(
-    title: 'Lunch at the Cafeteria',
-    amount: 7.00,
-    date: DateTime(DateTime.now().year, DateTime.now().month, 3), // Current month, 3rd day
-    category: Category.food,
-  ),
-  Expense(
-    title: 'Club Outing',
-    amount: 15.00,
-    date: DateTime(DateTime.now().year, DateTime.now().month - 1, 28), // Previous month, 28th day
-    category: Category.activities,
-  ),
-  Expense(
-    title: 'Laptop Repair',
-    amount: 120.00,
-    date: DateTime(DateTime.now().year, DateTime.now().month - 3, 15), // Three months ago, 15th day
-    category: Category.technology,
-  ),
-  Expense(
-    title: 'Basketball Event',
-    amount: 15.00,
-    date: DateTime(DateTime.now().year, DateTime.now().month, 10), // Current month, 10th day
-    category: Category.activities,
-  ),
-];
-
+    Expense(
+      title: 'Dorm Rent',
+      amount: 200.00,
+      date: DateTime(DateTime.now().year, DateTime.now().month - 1,
+          5), // Previous month, 5th day
+      category: Category.housing,
+    ),
+    Expense(
+      title: 'Machine Learning Textbook',
+      amount: 50.00,
+      date: DateTime(DateTime.now().year, DateTime.now().month,
+          14), // Current month, 14th day
+      category: Category.supplies,
+    ),
+    Expense(
+      title: 'Bus Ticket to Campus',
+      amount: 2.50,
+      date: DateTime(DateTime.now().year, DateTime.now().month - 2,
+          21), // Two months ago, 21st day
+      category: Category.transportation,
+    ),
+    Expense(
+      title: 'Lunch at the Cafeteria',
+      amount: 7.00,
+      date: DateTime(DateTime.now().year, DateTime.now().month,
+          3), // Current month, 3rd day
+      category: Category.food,
+    ),
+    Expense(
+      title: 'Club Outing',
+      amount: 15.00,
+      date: DateTime(DateTime.now().year, DateTime.now().month - 1,
+          28), // Previous month, 28th day
+      category: Category.activities,
+    ),
+    Expense(
+      title: 'Laptop Repair',
+      amount: 120.00,
+      date: DateTime(DateTime.now().year, DateTime.now().month - 3,
+          15), // Three months ago, 15th day
+      category: Category.technology,
+    ),
+    Expense(
+      title: 'Basketball Event',
+      amount: 15.00,
+      date: DateTime(DateTime.now().year, DateTime.now().month,
+          10), // Current month, 10th day
+      category: Category.activities,
+    ),
+  ];
 
   void _openAddExpenseOverlay() {
     showModalBottomSheet(
@@ -116,14 +121,15 @@ class _ExpensesState extends State<Expenses> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-          "Expense Tracker",
-          style: GoogleFonts.poppins(
-            color: const Color.fromARGB(255, 0, 0, 0),
-            fontSize: 22, // Adjusted font size
-            fontWeight: FontWeight.w600,
+            "Expense Tracker",
+            style: GoogleFonts.poppins(
+              color: const Color.fromARGB(255, 0, 0, 0),
+              fontSize: 22, // Adjusted font size
+              fontWeight: FontWeight.w600,
+            ),
           ),
-        ),
-          backgroundColor: Color.fromARGB(255, 237, 229, 250), // Background color
+          backgroundColor:
+              const Color.fromARGB(255, 237, 229, 250), // Background color
           actions: [
             IconButton(
               onPressed: _openAddExpenseOverlay,

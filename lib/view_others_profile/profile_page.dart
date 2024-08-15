@@ -32,15 +32,17 @@ class ProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile'),
-        backgroundColor: Color.fromARGB(255, 58, 161, 139),
+        title: const Text('Profile'),
+        backgroundColor: const Color.fromARGB(255, 58, 161, 139),
         actions: [
           IconButton(
-            icon: Icon(Icons.copy), // Icon for copying URL
+            icon: const Icon(Icons.copy), // Icon for copying URL
             onPressed: () {
-              Clipboard.setData(ClipboardData(text: profilePageUrl)); // Copy profilePageUrl
+              Clipboard.setData(
+                  ClipboardData(text: profilePageUrl)); // Copy profilePageUrl
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Profile URL copied to clipboard!')),
+                const SnackBar(
+                    content: Text('Profile URL copied to clipboard!')),
               );
             },
           ),
@@ -56,7 +58,8 @@ class ProfilePage extends StatelessWidget {
                 // Image.asset('assets/hero_image.jpg'),
                 // User information
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Column(
                     children: [
                       Row(
@@ -65,11 +68,13 @@ class ProfilePage extends StatelessWidget {
                             radius: 40,
                             backgroundImage: NetworkImage(profileImageUrl),
                           ),
-                          SizedBox(width: 16),
+                          const SizedBox(width: 16),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(username, style: TextStyle(fontWeight: FontWeight.bold)),
+                              Text(username,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold)),
                               Text(fullName),
                             ],
                           ),
@@ -84,45 +89,55 @@ class ProfilePage extends StatelessWidget {
                               Text(location),
                             ],
                           ),
-                          Spacer(), // Pushes the button to the right
+                          const Spacer(), // Pushes the button to the right
                           ElevatedButton(
                             onPressed: () {},
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Color.fromARGB(255, 119, 160, 158),
-                              minimumSize: Size(60, 30),
+                              backgroundColor:
+                                  const Color.fromARGB(255, 119, 160, 158),
+                              minimumSize: const Size(60, 30),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
-                            child: const Text('Follow', style: TextStyle(color: Color.fromARGB(255, 27, 27, 27))),
+                            child: const Text('Follow',
+                                style: TextStyle(
+                                    color: Color.fromARGB(255, 27, 27, 27))),
                           ),
                         ],
-      ),
+                      ),
                     ],
                   ),
                 ),
                 // User stats
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       Column(
                         children: [
-                          Text('$postCount', style: TextStyle(fontWeight: FontWeight.bold)),
-                          Text('Posts'),
+                          Text('$postCount',
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold)),
+                          const Text('Posts'),
                         ],
                       ),
                       Column(
                         children: [
-                          Text('$followerCount', style: TextStyle(fontWeight: FontWeight.bold)),
-                          Text('Followers'),
+                          Text('$followerCount',
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold)),
+                          const Text('Followers'),
                         ],
                       ),
                       Column(
                         children: [
-                          Text('$followingCount', style: TextStyle(fontWeight: FontWeight.bold)),
-                          Text('Following'),
+                          Text('$followingCount',
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold)),
+                          const Text('Following'),
                         ],
                       ),
                     ],

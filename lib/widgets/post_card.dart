@@ -27,7 +27,7 @@ class PostCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.all(8),
+      margin: const EdgeInsets.all(8),
       child: InkWell(
         onTap: () => navigateToPostDetails(
           context,
@@ -42,29 +42,33 @@ class PostCard extends StatelessWidget {
             ListTile(
               leading: CircleAvatar(
                 backgroundImage: post.isAnonymous
-                    ? AssetImage('assets/images/anas.jpg')
+                    ? const AssetImage('assets/images/anas.jpg')
                     : AssetImage(post.profilePictureUrl),
                 radius: 26,
               ),
               title: Text(post.isAnonymous ? 'Anonymous' : post.username),
               subtitle: Text(post.content),
-              trailing: Text(DateFormat('MMM d, y h:mm a').format(post.timestamp)),
+              trailing:
+                  Text(DateFormat('MMM d, y h:mm a').format(post.timestamp)),
             ),
             if (post.type != 'Help')
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _buildReactionButton(context, 0, 'like', Icons.thumb_up), // Use correct parameters
-                    _buildReactionButton(context, 0, 'dislike', Icons.thumb_down),
+                    _buildReactionButton(context, 0, 'like',
+                        Icons.thumb_up), // Use correct parameters
+                    _buildReactionButton(
+                        context, 0, 'dislike', Icons.thumb_down),
                     _buildReactionButton(context, 0, 'love', Icons.favorite),
-                    _buildReactionButton(context, 0, 'haha', Icons.emoji_emotions),
+                    _buildReactionButton(
+                        context, 0, 'haha', Icons.emoji_emotions),
                   ],
                 ),
               ),
             Padding(
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -78,18 +82,18 @@ class PostCard extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
                     children: [
                       IconButton(
-                        icon: Icon(Icons.share),
+                        icon: const Icon(Icons.share),
                         onPressed: onShare,
                       ),
                       IconButton(
-                        icon: Icon(Icons.copy),
+                        icon: const Icon(Icons.copy),
                         onPressed: onCopyLink,
                       ),
                     ],
@@ -103,15 +107,18 @@ class PostCard extends StatelessWidget {
     );
   }
 
-  Widget _buildReactionButton(BuildContext context, int commentIndex, String type, IconData icon) {
+  Widget _buildReactionButton(
+      BuildContext context, int commentIndex, String type, IconData icon) {
     return TextButton.icon(
       onPressed: () => onReactToComment(post.id, commentIndex, type),
       icon: Icon(icon),
-      label: Text(post.comments[commentIndex].reactions[type].toString()),  // Ensure label is a String
+      label: Text(post.comments[commentIndex].reactions[type]
+          .toString()), // Ensure label is a String
     );
   }
 
-  Widget _buildCommentSection(BuildContext context, post_model.Comment comment, int commentIndex) {
+  Widget _buildCommentSection(
+      BuildContext context, post_model.Comment comment, int commentIndex) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
@@ -121,22 +128,27 @@ class PostCard extends StatelessWidget {
             backgroundImage: AssetImage(comment.profilePictureUrl),
             radius: 18,
           ),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(comment.username, style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(comment.username,
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
                 Text(comment.content),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _buildReactionButton(context, commentIndex, 'like', Icons.thumb_up),
-                    _buildReactionButton(context, commentIndex, 'dislike', Icons.thumb_down),
-                    _buildReactionButton(context, commentIndex, 'love', Icons.favorite),
-                    _buildReactionButton(context, commentIndex, 'haha', Icons.emoji_emotions),
+                    _buildReactionButton(
+                        context, commentIndex, 'like', Icons.thumb_up),
+                    _buildReactionButton(
+                        context, commentIndex, 'dislike', Icons.thumb_down),
+                    _buildReactionButton(
+                        context, commentIndex, 'love', Icons.favorite),
+                    _buildReactionButton(
+                        context, commentIndex, 'haha', Icons.emoji_emotions),
                     IconButton(
-                      icon: Icon(Icons.reply, size: 16),
+                      icon: const Icon(Icons.reply, size: 16),
                       onPressed: () => _showReplyDialog(context, commentIndex),
                     ),
                   ],
@@ -149,23 +161,31 @@ class PostCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           CircleAvatar(
-                            backgroundImage: AssetImage(reply.profilePictureUrl),
+                            backgroundImage:
+                                AssetImage(reply.profilePictureUrl),
                             radius: 18,
                           ),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(reply.username, style: TextStyle(fontWeight: FontWeight.bold)),
+                                Text(reply.username,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold)),
                                 Text(reply.content),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
                                   children: [
-                                    _buildReactionButton(context, 0, 'like', Icons.thumb_up),
-                                    _buildReactionButton(context, 0, 'dislike', Icons.thumb_down),
-                                    _buildReactionButton(context, 0, 'love', Icons.favorite),
-                                    _buildReactionButton(context, 0, 'haha', Icons.emoji_emotions),
+                                    _buildReactionButton(
+                                        context, 0, 'like', Icons.thumb_up),
+                                    _buildReactionButton(context, 0, 'dislike',
+                                        Icons.thumb_down),
+                                    _buildReactionButton(
+                                        context, 0, 'love', Icons.favorite),
+                                    _buildReactionButton(context, 0, 'haha',
+                                        Icons.emoji_emotions),
                                   ],
                                 ),
                               ],
@@ -174,7 +194,7 @@ class PostCard extends StatelessWidget {
                         ],
                       ),
                     );
-                  }).toList(),
+                  }),
               ],
             ),
           ),
@@ -189,22 +209,22 @@ class PostCard extends StatelessWidget {
       builder: (BuildContext context) {
         String replyText = '';
         return AlertDialog(
-          title: Text('Reply to Comment'),
+          title: const Text('Reply to Comment'),
           content: TextField(
             onChanged: (value) {
               replyText = value;
             },
-            decoration: InputDecoration(hintText: "Enter your reply"),
+            decoration: const InputDecoration(hintText: "Enter your reply"),
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Reply'),
+              child: const Text('Reply'),
               onPressed: () {
                 if (replyText.isNotEmpty) {
                   onReplyToComment(post.id, commentIndex, replyText);

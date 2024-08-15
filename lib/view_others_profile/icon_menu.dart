@@ -5,12 +5,12 @@ class IconMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<String>(
-      icon: Icon(Icons.more_vert),
+      icon: const Icon(Icons.more_vert),
       onSelected: (value) {
         if (value == 'block') {
           // Handle block action
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Blocked')),
+            const SnackBar(content: Text('Blocked')),
           );
         } else if (value == 'report') {
           // Show dialog to enter report reason
@@ -19,11 +19,11 @@ class IconMenu extends StatelessWidget {
       },
       itemBuilder: (BuildContext context) {
         return [
-          PopupMenuItem<String>(
+          const PopupMenuItem<String>(
             value: 'block',
             child: Text('Block'),
           ),
-          PopupMenuItem<String>(
+          const PopupMenuItem<String>(
             value: 'report',
             child: Text('Report'),
           ),
@@ -39,14 +39,14 @@ class IconMenu extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Report'),
+          title: const Text('Report'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Please provide a reason for reporting:'),
+              const Text('Please provide a reason for reporting:'),
               TextField(
                 controller: _reasonController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Enter reason here',
                 ),
                 maxLines: 3,
@@ -58,7 +58,7 @@ class IconMenu extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
@@ -70,12 +70,12 @@ class IconMenu extends StatelessWidget {
                   );
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Please enter a reason')),
+                    const SnackBar(content: Text('Please enter a reason')),
                   );
                 }
                 Navigator.of(context).pop(); // Close the dialog
               },
-              child: Text('Submit'),
+              child: const Text('Submit'),
             ),
           ],
         );

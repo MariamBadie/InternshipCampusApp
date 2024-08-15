@@ -18,7 +18,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: const Text('Warning!'),
-            content: const Text('Feedback cannot be empty. Please enter your feedback.'),
+            content: const Text(
+                'Feedback cannot be empty. Please enter your feedback.'),
             actions: <Widget>[
               TextButton(
                 child: const Text('Okay'),
@@ -56,7 +57,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        FocusScope.of(context).unfocus(); // Close the keyboard when tapping outside
+        FocusScope.of(context)
+            .unfocus(); // Close the keyboard when tapping outside
       },
       child: Scaffold(
         appBar: AppBar(

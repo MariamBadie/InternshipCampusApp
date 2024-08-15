@@ -30,7 +30,7 @@ class _AddPostPageState extends State<AddPostPage> {
     if (postContent.isEmpty && _image == null) {
       // Display error if both fields are empty
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please enter text or select an image.')),
+        const SnackBar(content: Text('Please enter text or select an image.')),
       );
       return;
     }
@@ -66,19 +66,20 @@ class _AddPostPageState extends State<AddPostPage> {
               TextField(
                 controller: _textController,
                 decoration: InputDecoration(
-                  hintText: 'Enter your ${widget.postType.toLowerCase()} here...',
-                  border: OutlineInputBorder(),
+                  hintText:
+                      'Enter your ${widget.postType.toLowerCase()} here...',
+                  border: const OutlineInputBorder(),
                 ),
                 maxLines: 5,
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Row(
                 children: [
                   ElevatedButton(
                     onPressed: _pickImage,
-                    child: Text('Pick Image'),
+                    child: const Text('Pick Image'),
                   ),
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   if (_image != null)
                     Image.file(
                       File(_image!.path),
@@ -88,7 +89,7 @@ class _AddPostPageState extends State<AddPostPage> {
                     ),
                 ],
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Row(
                 children: [
                   Checkbox(
@@ -99,10 +100,10 @@ class _AddPostPageState extends State<AddPostPage> {
                       });
                     },
                   ),
-                  Text('Post Anonymously'),
+                  const Text('Post Anonymously'),
                 ],
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Center(
                 child: ElevatedButton(
                   onPressed: _submitPost,

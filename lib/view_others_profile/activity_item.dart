@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // Import for Clipboard
 
 class ActivityItem extends StatelessWidget {
   final String profileImageUrl;
@@ -43,22 +42,14 @@ class ActivityItem extends StatelessWidget {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Text(userName, style: TextStyle(fontWeight: FontWeight.bold)),
+                            Text(userName,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold)),
                             const SizedBox(width: 8),
-                            Text(timestamp, style: TextStyle(color: Colors.grey[600])), // Updated color
-                            Spacer(), // Pushes the follow button to the right
-                            // if (showFollowButton)
-                            //   ElevatedButton(
-                            //     onPressed: () {},
-                            //     style: ElevatedButton.styleFrom(
-                            //       backgroundColor: Color.fromARGB(255, 119, 160, 158),
-                            //       minimumSize: Size(60, 30),
-                            //       shape: RoundedRectangleBorder(
-                            //         borderRadius: BorderRadius.circular(10), // Match container radius
-                            //       ),
-                            //     ),
-                            //     child: const Text('Follow', style: TextStyle(color: Color.fromARGB(255, 27, 27, 27))),
-                            //   ),
+                            Text(timestamp,
+                                style: TextStyle(
+                                    color: Colors.grey[600])), // Updated color
+                            const Spacer(), // Pushes the follow button to the right
                           ],
                         ),
                         const SizedBox(height: 4),
