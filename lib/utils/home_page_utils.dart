@@ -15,7 +15,13 @@ void navigateToPostCreation(BuildContext context, String type, Function(Post) on
   );
 }
 
-void navigateToPostDetails(BuildContext context, Post post, Function(String, String) onReact, Function(String, String, String) onComment, Function(String, int, String) onReactToComment) {
+void navigateToPostDetails(
+  BuildContext context,
+  Post post,
+  Function(String, String) onReact,
+  Function(String, String, String) onComment,
+  Function(String, int, String) onReactToComment,
+) {
   Navigator.push(
     context,
     MaterialPageRoute(

@@ -18,6 +18,8 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 # of the product and file versions while build-number is used as the build suffix.
 version: 1.0.0+1
 
+  
+
 environment:
   sdk: ">=3.4.4 <4.0.0"
 
@@ -28,13 +30,14 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  flutter:
+    sdk: flutter
   cupertino_icons: ^1.0.6
   device_preview: ^1.2.0
   file_picker: ^5.0.0
   fl_chart: ^0.68.0
   flashy_tab_bar2: ^0.0.10
-  flutter:
-    sdk: flutter
+  provider: ^6.0.3
   google_fonts: ^6.2.1
   http: ^1.2.2
   image_picker: ^1.1.2
@@ -55,6 +58,7 @@ dev_dependencies:
 # following page: https://dart.dev/tools/pub/pubspec
 # The following section is specific to Flutter packages.
 flutter:
+
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
@@ -69,6 +73,11 @@ flutter:
     - assets/images/bell.png
     - assets/images/party-hat.png
     - assets/images/liked-a-comment.png
+    - assets/images/ahmed.jpg
+    - assets/images/anas.jpg
+    - assets/images/hussien.jpg
+    - assets/images/ibrahim.jpg
+    - assets/images/mohanad.jpg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
   # For details regarding adding assets from package dependencies, see

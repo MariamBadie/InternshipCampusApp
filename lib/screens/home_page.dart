@@ -1,57 +1,68 @@
 import 'package:campus_app/screens/NotesPage.dart';
 import 'package:campus_app/screens/content_page.dart';
+import 'package:campus_app/screens/event_details_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For Clipboard
 import 'package:share_plus/share_plus.dart'; // For sharing
-
+import 'package:campus_app/screens/post_details_page.dart';
+import '../screens/settings.dart';
 import '../models/post.dart';
 import '../models/event.dart';
 import '../widgets/post_card.dart';
 import '../widgets/event_card.dart';
-import '../utils/home_page_utils.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({super.key, required this.title});
 
   final String title;
-  final List<Post> _confessionsAndHelpPosts = [];
-  final List<Event> _events = [];
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  final List<Post> _confessionsAndHelpPosts = [];
-  final List<Event> _eventPosts = [];
-
-  String _filter = 'All';
-
+class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
   final List<Post> _posts = [
     Post(
       id: '1',
-      username: 'Ahmed',
+      username: 'Hussien Haitham',
       type: 'Confession',
-      content: "I really admire Professor Ali's teaching style!",
+      content: "I really admire Professor Mervat's teaching style!",
       reactions: {'like': 5, 'dislike': 1, 'love': 2, 'haha': 0},
       comments: [
         Comment(
-            username: 'Sara',
-            content: 'I agree! His lectures are great.',
-            reactions: {'like': 2, 'dislike': 0, 'love': 1}),
+          username: 'Anas',
+          content: 'I agree! Her lectures are great.',
+          reactions: {'like': 2, 'dislike': 0, 'love': 1},
+          profilePictureUrl: 'assets/images/anas.jpg',
+        ),
+        Comment(
+          username: 'Mohanad',
+          content: 'What subjects does she teach?',
+          reactions: {'like': 2, 'dislike': 0, 'love': 1},
+          profilePictureUrl: 'assets/images/mohanad.jpg',
+        )
       ],
       isAnonymous: false,
-      timestamp: DateTime.now().subtract(Duration(hours: 2)),
+      timestamp: DateTime.now().subtract(const Duration(hours: 2)),
+      profilePictureUrl: 'assets/images/hussien.jpg',
     ),
     Post(
       id: '2',
-      username: 'Sara',
+      username: 'Ahmed Hany',
       type: 'Help',
       content: 'Can someone help me with Math203 problems?',
       reactions: {'like': 3, 'dislike': 0, 'love': 1, 'haha': 0},
-      comments: [],
+      comments: [
+        Comment(
+          username: 'Ibrahim',
+          content: 'Sure, tell me how can I help?',
+          reactions: {'like': 2, 'dislike': 0, 'love': 1},
+          profilePictureUrl: 'assets/images/ibrahim.jpg',
+        )
+      ],
       isAnonymous: false,
-      timestamp: DateTime.now().subtract(Duration(minutes: 30)),
+      timestamp: DateTime.now().subtract(const Duration(minutes: 30)),
+      profilePictureUrl: 'assets/images/ahmed.jpg',
     ),
   ];
 
@@ -59,8 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Event(
       id: '1',
       title: "Mother's Day Bazaar",
-      description:
-          "Join us for a special Mother's Day Bazaar at the basketball court!",
+      description: "Join us for a special Mother's Day Bazaar at the basketball court!",
       date: DateTime(2024, 5, 12, 10, 0),
       location: "Basketball Court",
     ),
@@ -72,6 +82,20 @@ class _MyHomePageState extends State<MyHomePage> {
       location: "Room 301, Computer Science Building",
     ),
   ];
+
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   void _refreshPosts() {
     setState(() {
@@ -97,9 +121,11 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       final post = _posts.firstWhere((post) => post.id == postId);
       post.comments.add(Comment(
-          username: username,
-          content: content,
-          reactions: {'like': 0, 'dislike': 0, 'love': 0}));
+        username: username,
+        content: content,
+        reactions: {'like': 0, 'dislike': 0, 'love': 0},
+        profilePictureUrl: '',
+      ));
     });
   }
 
@@ -108,6 +134,18 @@ class _MyHomePageState extends State<MyHomePage> {
       final post = _posts.firstWhere((post) => post.id == postId);
       post.comments[commentIndex].reactions[reactionType] =
           (post.comments[commentIndex].reactions[reactionType] ?? 0) + 1;
+    });
+  }
+
+  void _replyToComment(String postId, int commentIndex, String replyContent) {
+    setState(() {
+      final post = _posts.firstWhere((post) => post.id == postId);
+      final comment = post.comments[commentIndex];
+      comment.replies?.add(Reply(
+        username: 'Current User', // Replace with the actual username
+        content: replyContent,
+        profilePictureUrl: 'assets/images/default_user.jpg', // Replace with the actual profile picture URL
+      ));
     });
   }
 
@@ -122,7 +160,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final postUrl = 'https://example.com/posts/$postId'; // Example URL format
     Clipboard.setData(ClipboardData(text: postUrl));
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Link copied to clipboard!')),
+      const SnackBar(content: Text('Link copied to clipboard!')),
     );
   }
 
@@ -132,6 +170,21 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: const [
+            Tab(text: 'Feed'),
+            Tab(text: 'Events'),
+          ],
+          labelColor: Theme.of(context).colorScheme.onPrimary, // Selected tab text color
+          unselectedLabelColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.6), // Unselected tab text color
+          indicator: BoxDecoration(
+            color: Theme.of(context).colorScheme.primary, // Selected tab background color
+            borderRadius: BorderRadius.circular(8), // Rounded corners for the indicator
+          ),
+          indicatorSize: TabBarIndicatorSize.tab, // Indicator covers the whole tab
+          indicatorPadding: const EdgeInsets.symmetric(horizontal: 8.0), // Padding around the indicator
+        ),
       ),
       drawer: Drawer(
         child: ListView(
@@ -141,12 +194,12 @@ class _MyHomePageState extends State<MyHomePage> {
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.primary,
               ),
-              child: Text(
+              child: const Text(
                 'Menu',
                 style: TextStyle(color: Colors.white, fontSize: 24),
               ),
             ),
-            _buildDrawerItem(Icons.all_inclusive, 'All'),
+            _buildDrawerItem(Icons.home, 'Home'),
             _buildDrawerItem(Icons.forum, 'Confessions'),
             _buildDrawerItem(Icons.help, 'Help'),
             _buildStudyingContent(),
@@ -157,7 +210,13 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      body: _buildHomeScreen(),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          _buildFeedSection(),
+          _buildEventsSection(),
+        ],
+      ),
     );
   }
 
@@ -165,37 +224,37 @@ class _MyHomePageState extends State<MyHomePage> {
     return ListTile(
       leading: Icon(icon),
       title: Text(title),
-      onTap: onTap ??
-          () {
-            setState(() => _filter = title);
-            Navigator.pop(context);
-          },
+      onTap: onTap ?? () {
+        Navigator.pop(context);
+      },
     );
   }
 
   Widget _buildStudyingContent() {
     return ExpansionTile(
-      leading: Icon(Icons.assignment),
-      title: Text("Studying content"),
+      leading: const Icon(Icons.assignment),
+      title: const Text("Studying content"),
       children: [
         ListTile(
-          title: Text('Content Page'),
+          title: const Text('Content Page'),
           onTap: () => Navigator.push(
-              context, MaterialPageRoute(builder: (context) => ContentPage())),
+            context,
+            MaterialPageRoute(builder: (context) => const ContentPage()),
+          ),
         ),
         ListTile(
-          title: Text('Notes Page'),
+          title: const Text('Notes Page'),
           onTap: () => Navigator.push(
-              context, MaterialPageRoute(builder: (context) => NotesPage())),
+            context,
+            MaterialPageRoute(builder: (context) => const NotesPage()),
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildHomeScreen() {
-    final filteredPosts = _filter == 'All'
-        ? _posts
-        : _posts.where((post) => post.type == _filter).toList();
+  Widget _buildFeedSection() {
+    final filteredPosts = _posts.where((post) => post.type == 'Confession' || post.type == 'Help').toList();
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -217,18 +276,52 @@ class _MyHomePageState extends State<MyHomePage> {
               post: post,
               onReact: _reactToPost,
               onComment: _addCommentToPost,
+              onReactToComment: _reactToComment,
+              onReplyToComment: _replyToComment,
               onShare: () => _sharePost(post.id),
               onCopyLink: () => _copyPostLink(post.id),
-              onTap: () => navigateToPostDetails(
-                context,
-                post,
-                _reactToPost,
-                _addCommentToPost,
-                _reactToComment,
-              ),
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildEventsSection() {
+    return RefreshIndicator(
+      onRefresh: () async {
+        _refreshPosts();
+      },
+      child: ListView.builder(
+        itemCount: _events.length,
+        itemBuilder: (context, index) {
+          final event = _events[index];
+          return EventCard(
+            event: event,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EventDetailsPage(event: event),
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  void navigateToPostDetails(BuildContext context, Post post, Function(String, String) onReact, Function(String, String, String) onComment, Function(String, int, String) onReactToComment) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PostDetailsPage(
+          post: post,
+          onReact: onReact,
+          onComment: onComment,
+          onReactToComment: onReactToComment,
+        ),
       ),
     );
   }

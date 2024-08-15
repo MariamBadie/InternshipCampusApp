@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For Clipboard
+import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart'; // For sharing
 import '../models/post.dart';
-import '../widgets/post_card.dart';
 import '../widgets/comment_card.dart';
 
 class PostDetailsPage extends StatelessWidget {
@@ -36,14 +36,24 @@ class PostDetailsPage extends StatelessWidget {
       ),
       body: ListView(
         children: [
-          PostCard(
-            post: post,
-            onReact: (postId, reactionType) => onReact(postId, reactionType),
-            onComment: onComment,
-            onShare: () => _sharePost(context),
-            onCopyLink: () => _copyPostLink(context),
-            onTap: () {}, // No action needed here
+          ListTile(
+            title: Text(post.isAnonymous ? 'Anonymous' : post.username),
+            subtitle: Text(post.content),
+            trailing: Text(DateFormat('MMM d, y h:mm a').format(post.timestamp)),
           ),
+          if (post.type != 'Help')
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildReactionButton(context, 'like', Icons.thumb_up),
+                  _buildReactionButton(context, 'dislike', Icons.thumb_down),
+                  _buildReactionButton(context, 'love', Icons.favorite),
+                  _buildReactionButton(context, 'haha', Icons.emoji_emotions),
+                ],
+              ),
+            ),
           ...post.comments.asMap().entries.map((entry) {
             int idx = entry.key;
             Comment comment = entry.value;
@@ -51,7 +61,7 @@ class PostDetailsPage extends StatelessWidget {
               comment: comment,
               onReact: (reactionType) => onReactToComment(post.id, idx, reactionType),
             );
-          }),
+          }).toList(),
           Padding(
             padding: EdgeInsets.all(8),
             child: ElevatedButton(
@@ -101,7 +111,7 @@ class PostDetailsPage extends StatelessWidget {
               child: Text('Post'),
               onPressed: () {
                 if (commentText.isNotEmpty) {
-                  onComment(post.id, 'CurrentUser', commentText);
+                  onComment(post.id, 'CurrentUser', commentText); // Replace 'CurrentUser' with actual username
                   Navigator.of(context).pop();
                 }
               },
@@ -112,5 +122,11 @@ class PostDetailsPage extends StatelessWidget {
     );
   }
 
-  
+  Widget _buildReactionButton(BuildContext context, String type, IconData icon) {
+    return TextButton.icon(
+      onPressed: () => onReact(post.id, type),
+      icon: Icon(icon),
+      label: Text(post.reactions[type].toString()),
+    );
+  }
 }

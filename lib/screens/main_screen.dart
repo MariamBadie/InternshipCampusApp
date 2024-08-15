@@ -15,7 +15,7 @@ class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
   final List<Widget> _screens = [
-    MyHomePage(title: 'Campus App'),
+    MyHomePage(title: 'Campus Connect'),
     SearchPage(),
     Container(), // Placeholder for AddPostPage, we'll handle this with the bottom navigation bar
     Activities(),

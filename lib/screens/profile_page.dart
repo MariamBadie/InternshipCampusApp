@@ -4,7 +4,7 @@ import 'friends_list_page.dart'; // Import the FriendsListPage
 class ProfilePage extends StatelessWidget {
   final String username = 'Anas Tamer';
   final String bio = 'MET Major | Student at GUC';
-  final int numberOfPosts = 42;
+  final int numberOfPosts = 4;
   final int numberOfFriends = 120;
   final int karma = 350;
 
@@ -45,7 +45,7 @@ class ProfilePage extends StatelessWidget {
       children: [
         CircleAvatar(
           radius: 50,
-          backgroundImage: const AssetImage("assets/images/profile-pic.png"),
+          backgroundImage: const AssetImage("assets/images/anas.png"),
           backgroundColor: Colors.grey[200],
         ),
         const SizedBox(width: 16),

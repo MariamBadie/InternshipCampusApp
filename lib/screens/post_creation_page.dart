@@ -16,6 +16,12 @@ class _PostCreationPageState extends State<PostCreationPage> {
   bool _isAnonymous = false;
 
   @override
+  void dispose() {
+    _contentController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -30,6 +36,7 @@ class _PostCreationPageState extends State<PostCreationPage> {
               controller: _contentController,
               decoration: InputDecoration(
                 hintText: 'Enter your ${widget.type.toLowerCase()} here',
+                border: OutlineInputBorder(),
               ),
               maxLines: 5,
             ),
@@ -61,6 +68,7 @@ class _PostCreationPageState extends State<PostCreationPage> {
                     comments: [],
                     isAnonymous: _isAnonymous,
                     timestamp: DateTime.now(),
+                    profilePictureUrl: _isAnonymous ? 'assets/images/anonymous.jpg' : 'assets/images/current_user.jpg',
                   );
                   widget.onPostCreated(newPost);
                   Navigator.pop(context);
