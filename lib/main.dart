@@ -32,8 +32,9 @@ class MyApp extends StatelessWidget {
       title: 'Campus Connect',
       debugShowCheckedModeBanner: false,
       theme: _buildTheme(Brightness.light), // Light theme
-      darkTheme: _buildTheme(Brightness.dark),  // Dark theme
-      themeMode: themeProvider.themeMode,  // Use the theme mode from the provider
+      darkTheme: _buildTheme(Brightness.dark), // Dark theme
+      themeMode:
+          themeProvider.themeMode, // Use the theme mode from the provider
       home: MainScreen(),
       routes: {
         '/search': (context) => SearchPage(),
@@ -56,12 +57,18 @@ class MyApp extends StatelessWidget {
       ),
       useMaterial3: true,
       textTheme: TextTheme(
-        bodyLarge: TextStyle(color: isDark ? Colors.white70 : Colors.brown[900]),
-        bodyMedium: TextStyle(color: isDark ? Colors.white70 : Colors.brown[900]),
-        headlineSmall: TextStyle(color: isDark ? Colors.white : Colors.brown[900]),
-        headlineMedium: TextStyle(color: isDark ? Colors.white : Colors.brown[800]),
-        titleMedium: TextStyle(color: isDark ? Colors.white70 : Colors.brown[800]),
-        bodySmall: TextStyle(color: isDark ? Colors.white54 : Colors.brown[600]),
+        bodyLarge:
+            TextStyle(color: isDark ? Colors.white70 : Colors.brown[900]),
+        bodyMedium:
+            TextStyle(color: isDark ? Colors.white70 : Colors.brown[900]),
+        headlineSmall:
+            TextStyle(color: isDark ? Colors.white : Colors.brown[900]),
+        headlineMedium:
+            TextStyle(color: isDark ? Colors.white : Colors.brown[800]),
+        titleMedium:
+            TextStyle(color: isDark ? Colors.white70 : Colors.brown[800]),
+        bodySmall:
+            TextStyle(color: isDark ? Colors.white54 : Colors.brown[600]),
       ),
       appBarTheme: AppBarTheme(
         backgroundColor: isDark ? Colors.teal[900] : Colors.teal[800],
@@ -80,10 +87,12 @@ class MyApp extends StatelessWidget {
         filled: true,
         fillColor: isDark ? Colors.grey[800] : Colors.teal[50],
         focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: isDark ? Colors.teal[500]! : Colors.teal[800]!),
+          borderSide:
+              BorderSide(color: isDark ? Colors.teal[500]! : Colors.teal[800]!),
         ),
         enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: isDark ? Colors.teal[700]! : Colors.teal[600]!),
+          borderSide:
+              BorderSide(color: isDark ? Colors.teal[700]! : Colors.teal[600]!),
         ),
       ),
       cardTheme: CardTheme(
@@ -91,7 +100,8 @@ class MyApp extends StatelessWidget {
         elevation: 5,
         shadowColor: isDark ? Colors.black : Colors.teal[200],
       ),
-      iconTheme: IconThemeData(color: isDark ? Colors.teal[400] : Colors.teal[700]),
+      iconTheme:
+          IconThemeData(color: isDark ? Colors.teal[400] : Colors.teal[700]),
       tabBarTheme: TabBarTheme(
         labelColor: Colors.white,
         unselectedLabelColor: isDark ? Colors.teal[200] : Colors.teal[200],

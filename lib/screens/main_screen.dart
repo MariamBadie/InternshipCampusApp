@@ -62,6 +62,14 @@ class _MainScreenState extends State<MainScreen> {
                 _navigateToAddPostPage('Confession');
               },
             ),
+            ListTile(
+              leading: const Icon(Icons.watch),
+              title: const Text('Post Lost & Found'),
+              onTap: () {
+                Navigator.pop(context);
+                _navigateToAddPostPage('Lost & Found');
+              },
+            ),
           ],
         );
       },

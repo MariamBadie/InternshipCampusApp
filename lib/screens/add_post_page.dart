@@ -16,6 +16,8 @@ class _AddPostPageState extends State<AddPostPage> {
   XFile? _image;
   bool _isAnonymous = false;
   final ImagePicker _picker = ImagePicker();
+  String? _lostOrFound;
+  String? _category;
 
   Future<void> _pickImage() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
@@ -73,6 +75,80 @@ class _AddPostPageState extends State<AddPostPage> {
                 maxLines: 5,
               ),
               const SizedBox(height: 16),
+              if (widget.postType == 'Lost & Found')
+                Row(
+                  children: [
+                    const SizedBox(
+                      width: 16,
+                    ),
+                    DropdownButton<String>(
+                      hint: const Text('Select Post type'),
+                      value: _lostOrFound,
+                      items: const <DropdownMenuItem<String>>[
+                        DropdownMenuItem(
+                          value: 'lost',
+                          child: Text('Lost item'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'found',
+                          child: Text('Found item'),
+                        ),
+                      ],
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          _lostOrFound = newValue;
+                        });
+
+                        if (newValue == 'lost') {
+                          // Handle restore action
+                        } else if (newValue == 'found') {
+                          // Handle edit action
+                        }
+                      },
+                    ),
+                    const SizedBox(
+                      width: 80,
+                    ),
+                    DropdownButton<String>(
+                      hint: const Text('Select item category'),
+                      value: _category,
+                      items: const <DropdownMenuItem<String>>[
+                        DropdownMenuItem(
+                          value: 'electronics',
+                          child: Text('Electronics'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'book',
+                          child: Text('Books'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'clothing',
+                          child: Text('Clothing'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'accessories',
+                          child: Text('Accessories'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'keys',
+                          child: Text('Keys'),
+                        ),
+                      ],
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          _category = newValue;
+                        });
+
+                        if (newValue == 'lost') {
+                          // Handle restore action
+                        } else if (newValue == 'found') {
+                          // Handle edit action
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              const SizedBox(height: 16),
               Row(
                 children: [
                   ElevatedButton(
@@ -90,19 +166,20 @@ class _AddPostPageState extends State<AddPostPage> {
                 ],
               ),
               const SizedBox(height: 16),
-              Row(
-                children: [
-                  Checkbox(
-                    value: _isAnonymous,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        _isAnonymous = value ?? false;
-                      });
-                    },
-                  ),
-                  const Text('Post Anonymously'),
-                ],
-              ),
+              if (widget.postType != "Lost & Found")
+                Row(
+                  children: [
+                    Checkbox(
+                      value: _isAnonymous,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          _isAnonymous = value ?? false;
+                        });
+                      },
+                    ),
+                    const Text('Post Anonymously'),
+                  ],
+                ),
               const SizedBox(height: 16),
               Center(
                 child: ElevatedButton(
