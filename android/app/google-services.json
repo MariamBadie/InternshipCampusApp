@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "709052786972",
+    "firebase_url": "https://campus-app-d0e52-default-rtdb.firebaseio.com",
+    "project_id": "campus-app-d0e52",
+    "storage_bucket": "campus-app-d0e52.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:709052786972:android:459bbbae704376a3ef32d9",
+        "android_client_info": {
+          "package_name": "com.example.campus_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAjSTrqtODDsBODurZNyUTo0SSF7jEwfY4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
