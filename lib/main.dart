@@ -1,6 +1,8 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:campus_app/models/ThemeNotifier.dart'; // Import the ThemeNotifier
+import 'package:campus_app/models/ThemeNotifier.dart';
 import 'package:campus_app/screens/main_screen.dart';
 import 'package:campus_app/screens/settings.dart';
 import 'package:campus_app/screens/search_page.dart';
@@ -9,12 +11,26 @@ import 'package:campus_app/screens/profile_page.dart';
 import 'package:campus_app/screens/edit_profile_page.dart';
 import 'package:device_preview/device_preview.dart';
 
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/cupertino.dart';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+
+  if (kIsWeb) {
+    await Firebase.initializeApp(
+      options:const FirebaseOptions(
+        apiKey: "AIzaSyDdwt6XiHvlk46DtZXwrl6c4NPXfnw708o",
+        authDomain: "campus-app-d0e52.firebaseapp.com",
+        databaseURL: "https://campus-app-d0e52-default-rtdb.firebaseio.com",
+        projectId: "campus-app-d0e52",
+        storageBucket: "campus-app-d0e52.appspot.com",
+        messagingSenderId: "709052786972",
+        appId: "1:709052786972:web:ed7d94965cc1e8b1ef32d9",
+        measurementId: "G-G81QMC0GV2",
+      ),
+    );
+  } else {
+    await Firebase.initializeApp();
+  }
+
   runApp(
     ChangeNotifierProvider(
       create: (_) => ThemeNotifier(),
@@ -38,8 +54,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: _buildTheme(Brightness.light), // Light theme
       darkTheme: _buildTheme(Brightness.dark), // Dark theme
-      themeMode:
-          themeProvider.themeMode, // Use the theme mode from the provider
+      themeMode: themeProvider.themeMode, // Use the theme mode from the provider
       home: MainScreen(),
       routes: {
         '/search': (context) => SearchPage(),
