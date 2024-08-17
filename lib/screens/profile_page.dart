@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'friends_list_page.dart'; // Import the FriendsListPage
+import 'points_guide.dart'; // Import the PointsGuide
 
 class ProfilePage extends StatelessWidget {
   final String username = 'Anas Tamer';
@@ -90,6 +91,13 @@ class ProfilePage extends StatelessWidget {
             MaterialPageRoute(
               builder: (context) => FriendsListPage(profileName: username),
             ),
+          );
+        }else if (label == 'Karma') {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return KarmaDialog();
+            },
           );
         }
       },
