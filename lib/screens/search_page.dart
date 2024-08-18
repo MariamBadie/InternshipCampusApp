@@ -1,3 +1,4 @@
+import 'package:campus_app/screens/main_screen.dart';
 import 'package:flutter/material.dart';
 
 class SearchPage extends StatefulWidget {
@@ -8,15 +9,10 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
   List<String> _results = [];
-  List<String> _searchHistory = [];
+  static List previousSearchs = [];
   List<bool> rowVisiblity = [true, true, true];
 
   void _performSearch(String query) {
-    if (query.isNotEmpty && !_searchHistory.contains(query)) {
-      setState(() {
-        _searchHistory.add(query);
-      });
-    }
     setState(() {
       _results = List.generate(10, (index) => 'Result $index for "$query"');
     });
@@ -42,6 +38,10 @@ class _SearchPageState extends State<SearchPage> {
                 ),
               ),
               onSubmitted: (query) => _performSearch(query),
+              onEditingComplete: () {
+                previousSearchs.add(_searchController.text);
+                _performSearch(_searchController.text);
+              },
             ),
           ),
           Container(height: 5),
@@ -143,92 +143,22 @@ class _SearchPageState extends State<SearchPage> {
                   ),
                 ]),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-            child: Column(
-              children: [
-                if (rowVisiblity[0])
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.access_alarm,
-                        size: 30,
-                        color: Colors.grey,
-                      ),
-                      SizedBox(width: 5),
-                      Text(
-                        "Dr mervat",
-                        style: TextStyle(fontSize: 20),
-                      ),
-                      Spacer(),
-                      IconButton(
-                        icon: const Icon(Icons.cancel, color: Colors.grey),
-                        onPressed: () {
-                          setState(() {
-                            rowVisiblity[0] = false;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                if (rowVisiblity[1])
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.access_alarm,
-                        size: 30,
-                        color: Colors.grey,
-                      ),
-                      SizedBox(width: 5),
-                      Text(
-                        "cs3",
-                        style: TextStyle(fontSize: 20),
-                      ),
-                      Spacer(),
-                      IconButton(
-                        icon: const Icon(Icons.cancel_rounded,
-                            color: Colors.grey),
-                        onPressed: () {
-                          setState(() {
-                            rowVisiblity[1] = false;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                if (rowVisiblity[2])
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.access_alarm,
-                        size: 30,
-                        color: Colors.grey,
-                      ),
-                      SizedBox(width: 5),
-                      Text(
-                        "AISEC",
-                        style: TextStyle(fontSize: 20),
-                      ),
-                      Spacer(),
-                      IconButton(
-                        icon: const Icon(Icons.cancel, color: Colors.grey),
-                        onPressed: () {
-                          setState(() {
-                            rowVisiblity[2] = false;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-              ],
-            ),
+          // Previous Searches
+          Container(
+            color: Colors.white,
+            child: ListView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: previousSearchs.length,
+                itemBuilder: (context, index) => previousSearchsItem(index)),
+          ),
+          const SizedBox(
+            height: 8,
           ),
           GestureDetector(
             onTap: () {
               setState(() {
-                rowVisiblity[0] = false;
-                rowVisiblity[1] = false;
-                rowVisiblity[2] = false;
+                previousSearchs.clear();
               });
             },
             child: Text(
@@ -236,6 +166,7 @@ class _SearchPageState extends State<SearchPage> {
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ),
+
           Expanded(
             child: ListView.builder(
               itemCount: _results.length,
@@ -250,6 +181,47 @@ class _SearchPageState extends State<SearchPage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  previousSearchsItem(int index) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      child: InkWell(
+        onTap: () {},
+        child: Dismissible(
+          key: GlobalKey(),
+          onDismissed: (DismissDirection dir) {
+            setState(() {});
+            previousSearchs.removeAt(index);
+          },
+          child: Row(
+            children: [
+              const Icon(
+                Icons.access_alarm,
+                size: 30,
+                color: Colors.grey,
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              Text(
+                previousSearchs[index],
+                style: TextStyle(fontSize: 20),
+              ),
+              const Spacer(),
+              IconButton(
+                icon: const Icon(Icons.cancel, color: Colors.grey),
+                onPressed: () {
+                  setState(() {
+                    previousSearchs.removeAt(index);
+                  });
+                },
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
