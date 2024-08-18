@@ -2,6 +2,10 @@ import 'package:campus_app/models/blocked_account_object.dart';
 import 'package:campus_app/widgets/blocked_accounts/blocked_accounts_list.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+import '../backend/Controller/userController.dart';
+
 
 class BlockedAccounts extends StatefulWidget {
   const BlockedAccounts({super.key});
@@ -13,79 +17,62 @@ class BlockedAccounts extends StatefulWidget {
 }
 
 class _BlockedAccountsState extends State<BlockedAccounts> {
-  final List<BlockedAccountObject> _avaliableBlockedAccounts = [
-    BlockedAccountObject(
-      blockedAccountName: 'Yara Sherif',
-      blockedAccountProfilePic:
-          Image.asset('assets/images/profile-pic.png', width: 200),
-    ),
-    BlockedAccountObject(
-      blockedAccountName: 'Sara Ayman',
-      blockedAccountProfilePic:
-          Image.asset('assets/images/profile-pic.png', width: 200),
-    ),
-    BlockedAccountObject(
-      blockedAccountName: 'Mahmoud Aly',
-      blockedAccountProfilePic:
-          Image.asset('assets/images/profile-pic.png', width: 200),
-    ),
-    BlockedAccountObject(
-      blockedAccountName: 'Shorouk Adel',
-      blockedAccountProfilePic:
-          Image.asset('assets/images/profile-pic.png', width: 200),
-    ),
-    BlockedAccountObject(
-      blockedAccountName: 'Wael Elserafy',
-      blockedAccountProfilePic:
-          Image.asset('assets/images/profile-pic.png', width: 200),
-    ),
-  ];
+  List<BlockedAccountObject> _availableBlockedAccounts = [];
 
-  void _unblockBlockedAccount(int index) {
+  @override
+  void initState() {
+    super.initState();
+    _fetchBlockedAccounts();
+  }
+
+  Future<void> _fetchBlockedAccounts() async {
+    String userID = 'yq2Z9NaQdPz0djpnLynN'; // Replace with actual user ID
+    List<Map<String, dynamic>> blockedAccountsData = await viewBlockedAccounts(userID);
+
     setState(() {
-      _avaliableBlockedAccounts.removeAt(index);
+      _availableBlockedAccounts = blockedAccountsData.map((data) {
+        return BlockedAccountObject(
+          blockedAccountID: data['id'],
+          blockedAccountName: data['data']['name'],
+          blockedAccountProfilePic: Image.asset('assets/images/profile-pic.png', width: 200),
+        );
+      }).toList();
     });
   }
 
+void _unblockBlockedAccount(int index) async {
+  String userID = 'yq2Z9NaQdPz0djpnLynN'; // Replace with actual user ID
+  String blockedUserID = _availableBlockedAccounts[index].blockedAccountID; // Use the ID
+
+  await removeFromBlockedAccounts(userID, blockedUserID);
+
+  setState(() {
+    _availableBlockedAccounts.removeAt(index);
+  });
+}
+
+
+
+
   @override
-  Widget build(context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Row(
-            children: [
-              Text(
-                "Blocked Accounts",
-                style: GoogleFonts.roboto(
-                  color: Color.fromARGB(255, 255, 255, 255),
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(width: 10),
-              Text(
-                '${_avaliableBlockedAccounts.length}',
-                style: GoogleFonts.roboto(
-                  color: Color.fromARGB(255, 255, 255, 255),
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Blocked Accounts",
+          style: GoogleFonts.roboto(
+            color: Colors.white,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
           ),
         ),
-        body: Column(
-          children: [
-            Expanded(
-              child: BlockedAccountsList(
-                accounts: _avaliableBlockedAccounts,
-                onUnblock: _unblockBlockedAccount,
-              ),
-            ),
-          ],
-        ),
       ),
+      body: _availableBlockedAccounts.isEmpty
+          ? Center(child: Text('No blocked accounts found'))
+          : BlockedAccountsList(
+              accounts: _availableBlockedAccounts,
+              onUnblock: _unblockBlockedAccount,
+            ),
     );
   }
 }

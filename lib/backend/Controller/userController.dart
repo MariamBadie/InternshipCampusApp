@@ -184,7 +184,7 @@ void addToArchived(String postID, String userID) async {
   } // Example: Further processing of the snapshot can be done here
 }
 
-void viewBlockedAccounts(String userID) async {
+Future<List<Map<String, dynamic>>> viewBlockedAccounts(String userID) async {
   // Ensure Firebase is initialized
   await firebaseService.initialize();
 
@@ -197,35 +197,38 @@ void viewBlockedAccounts(String userID) async {
         List<DocumentReference<Map<String, dynamic>>>.from(
             userSnapshot.data()?['blocked'] ?? []);
 
-    print("Blocked Accounts:");
+    List<Map<String, dynamic>> blockedAccountData = [];
     for (var blockedRef in blockedAccounts) {
       var blockedSnapshot = await blockedRef.get();
       if (blockedSnapshot.exists) {
-        print('Blocked User ID: ${blockedSnapshot.id}');
-        print('Blocked User Data: ${blockedSnapshot.data()}');
-      } else {
-        print('Blocked user does not exist.');
+        blockedAccountData.add({
+          'id': blockedSnapshot.id,
+          'data': blockedSnapshot.data(),
+        });
       }
     }
+    return blockedAccountData;
   } else {
-    print("User does not exist.");
+    return [];
   }
 }
 
 
-void removeFromBlockedAccounts(String userID, String blockedUserID) async {
+Future<void> removeFromBlockedAccounts(String userID, String blockedUserID) async {
   // Ensure Firebase is initialized
   await firebaseService.initialize();
 
-  // Create a reference to the 'User' collection
+  // Reference the user document in Firestore
   var userRef = firebaseService.firestore.collection('User').doc(userID);
 
-  // Create a reference to the blocked user
+  // Reference the blocked user using the blockedUserID
   DocumentReference<Map<String, dynamic>> blockedUserRef =
-      firebaseService.firestore.doc('/User/$blockedUserID');
+      firebaseService.firestore.collection('User').doc(blockedUserID);
 
-  // Perform the removal of the blocked account
+  // Remove the blocked user reference from the 'blocked' array
   await userRef.update({
     'blocked': FieldValue.arrayRemove([blockedUserRef])
   });
 }
+
+
