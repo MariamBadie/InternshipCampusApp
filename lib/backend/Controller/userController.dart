@@ -35,20 +35,85 @@ class FirebaseService {
 
 final FirebaseService firebaseService = FirebaseService.instance;
 
-Future<List<DocumentReference<Map<String, dynamic>>>> getListArchived(String userID) async {
+void deleteAccount(String userID) async {
+  // Ensure Firebase is initialized
+  await firebaseService.initialize();
+
+  var userSnapshot =
+      await firebaseService.firestore.collection('User').doc(userID).delete();
+}
+
+void removeFromFavorites(String userID, String postID) async {
+  // Ensure Firebase is initialized
+  await firebaseService.initialize();
+
+  // Create a reference to the specific document in the 'Posts' collection
+  DocumentReference<Map<String, dynamic>> postRef =
+      firebaseService.firestore.doc('/Posts/$postID');
+
+  // Create a reference to the 'User' collection and filter the document
+  var querySnapshot = await firebaseService.firestore
+      .collection('User')
+      .where(FieldPath.documentId, isEqualTo: userID)
+      .where('favorites', arrayContains: postRef)
+      .get();
+
+  for (var doc in querySnapshot.docs) {
+    await doc.reference.update({
+      'favorites': FieldValue.arrayRemove([postRef])
+    });
+  }
+}
+
+void addToFavorites(String userID, String postID) async {
+  // Ensure Firebase is initialized
+  await firebaseService.initialize();
+
+  // Create a reference to the 'users' collection
+  var usersRef = await firebaseService.firestore
+      .collection('User')
+      .where(FieldPath.documentId, isEqualTo: userID)
+      .get();
+  DocumentReference<Map<String, dynamic>> postRef =
+      firebaseService.firestore.doc('/Posts/$postID');
+
+  // Perform operations without printing
+  for (var doc in usersRef.docs) {
+    await doc.reference.update({
+      'favorites': FieldValue.arrayUnion([postRef])
+    });
+  } // Example: Further processing of the snapshot can be done here
+}
+
+void clearMyFavorites(String userID) async {
+  // Ensure Firebase is initialized
+  await firebaseService.initialize();
+
+  // Create a reference to the 'users' collection
+  var usersRef = await firebaseService.firestore
+      .collection('User')
+      .where(FieldPath.documentId, isEqualTo: userID)
+      .get();
+  // Perform operations without printing
+  for (var doc in usersRef.docs) {
+    await doc.reference.update({'favorites': []});
+  } // Example: Further processing of the snapshot can be done here
+}
+
+Future<List<DocumentReference<Map<String, dynamic>>>> getListArchived(
+    String userID) async {
   // Ensure Firebase is initialized
   await firebaseService.initialize();
 
   // Create a reference to the 'User' collection
-  var userSnapshot = await firebaseService.firestore
-      .collection('User')
-      .doc(userID)
-      .get();
+  var userSnapshot =
+      await firebaseService.firestore.collection('User').doc(userID).get();
 
   // Check if the document exists
   if (userSnapshot.exists) {
     // Return the list of archived document references
-    return List<DocumentReference<Map<String, dynamic>>>.from(userSnapshot.data()?['archived'] ?? []);
+    return List<DocumentReference<Map<String, dynamic>>>.from(
+        userSnapshot.data()?['archived'] ?? []);
   } else {
     // Return an empty list if the document doesn't exist
     return [];
@@ -75,12 +140,13 @@ void getArchivedPostData(String userID) async {
   }
 }
 
-void removeFromArchived(String postID,String userID) async {
+void removeFromArchived(String postID, String userID) async {
   // Ensure Firebase is initialized
   await firebaseService.initialize();
 
   // Create a reference to the specific document in the 'Posts' collection
-  DocumentReference<Map<String, dynamic>> postRef = firebaseService.firestore.doc('/Posts/$postID');
+  DocumentReference<Map<String, dynamic>> postRef =
+      firebaseService.firestore.doc('/Posts/$postID');
 
   // Create a reference to the 'User' collection and filter the document
   var querySnapshot = await firebaseService.firestore
@@ -93,23 +159,25 @@ void removeFromArchived(String postID,String userID) async {
     await doc.reference.update({
       'archived': FieldValue.arrayRemove([postRef])
     });
-
   }
 }
 
-
-void addToArchived(String postID,String userID) async {
+void addToArchived(String postID, String userID) async {
   // Ensure Firebase is initialized
   await firebaseService.initialize();
 
   // Create a reference to the 'users' collection
-  var usersRef =await firebaseService.firestore.collection('User').where(FieldPath.documentId,isEqualTo: userID).get();
-  DocumentReference<Map<String, dynamic>> postRef = firebaseService.firestore.doc('/Posts/$postID');
+  var usersRef = await firebaseService.firestore
+      .collection('User')
+      .where(FieldPath.documentId, isEqualTo: userID)
+      .get();
+  DocumentReference<Map<String, dynamic>> postRef =
+      firebaseService.firestore.doc('/Posts/$postID');
 
   // Perform operations without printing
   for (var doc in usersRef.docs) {
     await doc.reference.update({
       'archived': FieldValue.arrayUnion([postRef])
     });
-      }  // Example: Further processing of the snapshot can be done here
+  } // Example: Further processing of the snapshot can be done here
 }
