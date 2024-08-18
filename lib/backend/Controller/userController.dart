@@ -1,3 +1,5 @@
+
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
@@ -180,4 +182,50 @@ void addToArchived(String postID, String userID) async {
       'archived': FieldValue.arrayUnion([postRef])
     });
   } // Example: Further processing of the snapshot can be done here
+}
+
+void viewBlockedAccounts(String userID) async {
+  // Ensure Firebase is initialized
+  await firebaseService.initialize();
+
+  // Retrieve the user document
+  var userSnapshot = await firebaseService.firestore.collection('User').doc(userID).get();
+
+  if (userSnapshot.exists) {
+    // Retrieve the list of blocked references
+    List<DocumentReference<Map<String, dynamic>>> blockedAccounts =
+        List<DocumentReference<Map<String, dynamic>>>.from(
+            userSnapshot.data()?['blocked'] ?? []);
+
+    print("Blocked Accounts:");
+    for (var blockedRef in blockedAccounts) {
+      var blockedSnapshot = await blockedRef.get();
+      if (blockedSnapshot.exists) {
+        print('Blocked User ID: ${blockedSnapshot.id}');
+        print('Blocked User Data: ${blockedSnapshot.data()}');
+      } else {
+        print('Blocked user does not exist.');
+      }
+    }
+  } else {
+    print("User does not exist.");
+  }
+}
+
+
+void removeFromBlockedAccounts(String userID, String blockedUserID) async {
+  // Ensure Firebase is initialized
+  await firebaseService.initialize();
+
+  // Create a reference to the 'User' collection
+  var userRef = firebaseService.firestore.collection('User').doc(userID);
+
+  // Create a reference to the blocked user
+  DocumentReference<Map<String, dynamic>> blockedUserRef =
+      firebaseService.firestore.doc('/User/$blockedUserID');
+
+  // Perform the removal of the blocked account
+  await userRef.update({
+    'blocked': FieldValue.arrayRemove([blockedUserRef])
+  });
 }
