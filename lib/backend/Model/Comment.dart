@@ -8,9 +8,11 @@ class Comment {
   List<String> upVoters;
   List<String> downVoters;
   DateTime createdAt;
+  String content;
+
 
   Comment({required this.id, required this.replies, required this.authorID, required this.upVoters,
-  required this.downVoters, required this.createdAt});
+  required this.downVoters, required this.createdAt, required this.content});
 
   Map<String, dynamic> toMap() {
     return {
@@ -19,7 +21,8 @@ class Comment {
       'authorID': authorID,
       'upVoters': upVoters,
       'downVoters': downVoters,
-      'createdAt': createdAt
+      'createdAt': createdAt,
+      'content': content
     };
   }
 
@@ -30,7 +33,8 @@ class Comment {
       authorID: map['authorID'],
       upVoters: map['upVoters'],
       downVoters: map['downVoters'],
-      createdAt: map['createdAt']
+      createdAt: map['createdAt'],
+      content: map['content']
     );
   }
 

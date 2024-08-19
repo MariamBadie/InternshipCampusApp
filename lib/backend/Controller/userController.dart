@@ -36,6 +36,19 @@ class FirebaseService {
 
 final FirebaseService firebaseService = FirebaseService.instance;
 
+Future<bool> signIn(String email ,String password) async {
+
+await firebaseService.initialize();
+  var userSnapshot =
+      await firebaseService.firestore.collection('User').get();
+  for(var doc in userSnapshot.docs ){
+    if(doc['email']==email && doc['password']==password){
+      return true;
+    }
+  }
+  return false;
+
+}
 
 
 void deleteAccount(String userID) async {
