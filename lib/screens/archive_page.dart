@@ -100,7 +100,7 @@ class _ArchivePageState extends State<ArchivePage> {
                                 if (value == 'restore') {
                                   // Handle restore action
                                 } else if (value == 'edit') {
-                                  // Handle edit action
+                                _editPost(context, 'Current Title', 'Current Content','Postid');
                                 } else if (value == 'delete') {
                                   _deletePost(context);
                                 }
@@ -179,6 +179,67 @@ void _deletePost(BuildContext context) {
             },
           ),
         ],
+      );
+    },
+  );
+}
+
+void _editPost(BuildContext context, String initialTitle, String initialContent,String id) {
+  final TextEditingController _titleController = TextEditingController(text: initialTitle);
+  final TextEditingController _contentController = TextEditingController(text: initialContent);
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Edit the Title of the post'),
+            const SizedBox(height: 16), // Add spacing between the fields
+
+            SizedBox(
+              child: TextField(
+                controller: _titleController,
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.edit),
+                  labelText: "Edit the Title",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(35.0), // Rounded borders
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 20.0), // Adjust padding to fit inside the SizedBox
+                ),
+              ),
+            ),
+            const SizedBox(height: 16), // Add spacing between the fields
+            SizedBox(
+              child: TextField(
+                controller: _contentController,
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.edit),
+                  labelText: "Edit the content",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(35.0), // Rounded borders
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 20.0), // Adjust padding to fit inside the SizedBox
+                ),
+              ),
+            ),
+            const SizedBox(height: 16), // Add spacing between the fields
+            TextButton(
+              onPressed: () {
+                // Handle submit action here
+                // Example: Update the post with the new title and content
+                String updatedTitle = _titleController.text;
+                String updatedContent = _contentController.text;
+
+                // Perform the update operation here
+
+              },
+              child: const Text('Submit'),
+            )
+          ],
+        ),
       );
     },
   );

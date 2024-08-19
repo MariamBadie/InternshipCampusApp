@@ -16,13 +16,13 @@ class User {
   DateTime registeredAt;
   double karma;
   UserType type;
-  List<String> favourites; // fav posts
+  List<Map<String, dynamic>> favorites; // List of maps with 'post' reference and 'timestamp'
   List<String> archived; // archived posts
   List<String> blocked; // blocked users
 
   User({required this.id, required this.name, required this.email, required this.password,
   required this.year, required this.registeredAt, required this.karma, required this.type,
-    this.favourites = const [], this.archived = const[], this.blocked = const []});
+    this.favorites = const [], this.archived = const[], this.blocked = const []});
 
   Map<String, dynamic> toMap() {
     return {
@@ -34,7 +34,7 @@ class User {
       'registrationDate': registeredAt,
       'karma': karma,
       'type': type,
-      'favourites': favourites,
+      'favorites': favorites,
       'archived': archived,
       'blocked': blocked
     };
@@ -50,7 +50,7 @@ class User {
       registeredAt: map['registrationDate'],
       karma: map['karma'],
       type: map['type'],
-      favourites: map['favourites'],
+      favorites: List<Map<String, dynamic>>.from(map['favorites'] ?? []),
       archived: map['archived'],
       blocked: map['blocked']
     );

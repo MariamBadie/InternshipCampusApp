@@ -46,3 +46,14 @@ void deletePost(String postID) async {
  return usersRef;
 
 }
+void editPost(String postID,String content,String title) async {
+    // Ensure Firebase is initialized
+  await firebaseService.initialize();
+
+  // Create a reference to the 'Posts' collection and delete specific post by sending their IDs
+  var usersRef = await firebaseService.firestore.collection('Posts').doc(postID).update({'content':content,'title':title});
+
+  // Perform operations without printing
+ return usersRef;
+
+}

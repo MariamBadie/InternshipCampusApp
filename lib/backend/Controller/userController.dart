@@ -1,5 +1,4 @@
 
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
@@ -37,12 +36,14 @@ class FirebaseService {
 
 final FirebaseService firebaseService = FirebaseService.instance;
 
+
+
 void deleteAccount(String userID) async {
   // Ensure Firebase is initialized
   await firebaseService.initialize();
-
   var userSnapshot =
       await firebaseService.firestore.collection('User').doc(userID).delete();
+  return;
 }
 
 void removeFromFavorites(String userID, String postID) async {
@@ -57,50 +58,131 @@ void removeFromFavorites(String userID, String postID) async {
   var querySnapshot = await firebaseService.firestore
       .collection('User')
       .where(FieldPath.documentId, isEqualTo: userID)
-      .where('favorites', arrayContains: postRef)
       .get();
 
   for (var doc in querySnapshot.docs) {
+    var favorites = (doc.data()['favorites'] as List<dynamic>?) ?? [];
+    var updatedFavorites = favorites.where((fav) {
+      var map = fav as Map<String, dynamic>;
+      return map['post'] != postRef;
+    }).toList();
+
     await doc.reference.update({
-      'favorites': FieldValue.arrayRemove([postRef])
+      'favorites': updatedFavorites,
     });
   }
 }
+
 
 void addToFavorites(String userID, String postID) async {
   // Ensure Firebase is initialized
   await firebaseService.initialize();
 
-  // Create a reference to the 'users' collection
-  var usersRef = await firebaseService.firestore
-      .collection('User')
-      .where(FieldPath.documentId, isEqualTo: userID)
-      .get();
+  // Create a reference to the specific post
   DocumentReference<Map<String, dynamic>> postRef =
       firebaseService.firestore.doc('/Posts/$postID');
 
-  // Perform operations without printing
-  for (var doc in usersRef.docs) {
+  // Create a reference to the 'User' collection and filter the document
+  var querySnapshot = await firebaseService.firestore
+      .collection('User')
+      .where(FieldPath.documentId, isEqualTo: userID)
+      .get();
+
+  for (var doc in querySnapshot.docs) {
     await doc.reference.update({
-      'favorites': FieldValue.arrayUnion([postRef])
+      'favorites': FieldValue.arrayUnion([
+        {
+          'post': postRef,
+          'timestamp': Timestamp.now(),
+        }
+      ]),
     });
-  } // Example: Further processing of the snapshot can be done here
+  }
 }
+
 
 void clearMyFavorites(String userID) async {
   // Ensure Firebase is initialized
   await firebaseService.initialize();
 
-  // Create a reference to the 'users' collection
-  var usersRef = await firebaseService.firestore
+  // Create a reference to the 'User' collection and filter the document
+  var querySnapshot = await firebaseService.firestore
       .collection('User')
       .where(FieldPath.documentId, isEqualTo: userID)
       .get();
-  // Perform operations without printing
-  for (var doc in usersRef.docs) {
-    await doc.reference.update({'favorites': []});
-  } // Example: Further processing of the snapshot can be done here
+
+  for (var doc in querySnapshot.docs) {
+    await doc.reference.update({
+      'favorites': [],
+    });
+  }
 }
+
+
+
+Future<List<DocumentReference<Map<String, dynamic>>>> getListFavorites(
+    String userID) async {
+  // Ensure Firebase is initialized
+  await firebaseService.initialize();
+
+  // Create a reference to the 'User' collection
+  var userSnapshot =
+      await firebaseService.firestore.collection('User').doc(userID).get();
+
+  // Check if the document exists
+  if (userSnapshot.exists) {
+    var favorites = userSnapshot.data()?['favorites'] as List<dynamic>? ?? [];
+    // Return the list of post references from the favorites
+    return favorites
+        .map((item) => (item as Map<String, dynamic>)['post'] as DocumentReference<Map<String, dynamic>>)
+        .toList();
+  } else {
+    // Return an empty list if the document doesn't exist
+    return [];
+  }
+}
+Future<List<String>> getFavoritesPostData(String userID) async {
+  // Ensure Firebase is initialized
+  await firebaseService.initialize();
+
+  // Retrieve the list of favorite posts
+  var favoritesList = await getListFavorites(userID);
+
+  // List to store the post ID, title, content, and timestamp
+  List<String> favoritesPostData = [];
+  // Loop through the list of post references and fetch their data
+  for (var postRef in favoritesList) {
+    var postSnapshot = await postRef.get();
+    // Check if the post exists and add the post ID, title, content to the list
+    if (postSnapshot.exists) {
+      var postData = postSnapshot.data() ?? {};
+      var postID = postRef.id;
+      var title = postData['title'] ?? '';
+      var content = postData['content'] ?? '';
+
+      // Retrieve the favorites array from the user document
+      var userSnapshot = await firebaseService.firestore.collection('User').doc(userID).get();
+      var favorites = List<Map<String, dynamic>>.from(userSnapshot.data()?['favorites'] ?? []);
+
+      // Find the corresponding favorite entry
+      for (var favorite in favorites) {
+        var postReference = favorite['post'] as DocumentReference<Map<String, dynamic>>?;
+        var timestamp = favorite['timestamp'] as Timestamp?;
+
+        if (postReference != null && timestamp != null && postReference==postRef) {
+          favoritesPostData.add(
+            '${postID}, $title, $content, ${timestamp.toDate()}'
+          );
+        }
+      }
+    }
+  }
+
+  print("favoritesPostData: $favoritesPostData");
+  // Return the list of post ID, title, content, and timestamp strings
+  return favoritesPostData;
+}
+
 
 Future<List<DocumentReference<Map<String, dynamic>>>> getListArchived(
     String userID) async {
@@ -122,25 +204,32 @@ Future<List<DocumentReference<Map<String, dynamic>>>> getListArchived(
   }
 }
 
-void getArchivedPostData(String userID) async {
+Future<List<String>> getArchivedPostData(String userID) async {
   // Ensure Firebase is initialized
   await firebaseService.initialize();
 
   // Retrieve the list of archived document references
   var archivedList = await getListArchived(userID);
 
+  // List to store the titles and contents
+  List<String> archivedPostData = [];
+
   // Loop through the list of archived references and fetch their data
   for (var postRef in archivedList) {
     var postSnapshot = await postRef.get();
 
-    // Print the data of each archived post
+    // Check if the post exists and add the title and content to the list
     if (postSnapshot.exists) {
-      print(postSnapshot.data());
-    } else {
-      print('Archived post does not exist.');
+      archivedPostData.add(
+        '${postSnapshot.data()?['title'] ?? ''}, ${postSnapshot.data()?['content'] ?? ''},${postSnapshot.id}'
+      );
     }
   }
+  print('archivedPostData:$archivedPostData');
+  // Return the list of title and content strings
+  return archivedPostData;
 }
+
 
 void removeFromArchived(String postID, String userID) async {
   // Ensure Firebase is initialized
