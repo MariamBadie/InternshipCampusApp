@@ -73,7 +73,7 @@ flutter:
     - assets/images/party-hat.png
     - assets/images/liked-a-comment.png
     - assets/images/friends.png
-    - assets/images/events.png
+    - assets/images/events.jpg
     - assets/images/officess.png
     - assets/images/Staff.png
     - assets/images/posts.png
@@ -82,6 +82,8 @@ flutter:
     - assets/images/hussien.jpg
     - assets/images/ibrahim.jpg
     - assets/images/mohanad.jpg
+    - assets/images/outlets.png
+
 
 
 
