@@ -1,5 +1,6 @@
 import 'package:campus_app/backend/Model/Expense.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class NewExpense extends StatefulWidget {
   const NewExpense({super.key, required this.onAddExpense});
@@ -42,7 +43,8 @@ class _NewExpenseState extends State<NewExpense> {
         context: context,
         builder: (ctx) => AlertDialog(
           title: const Text('Invalid input'),
-          content: const Text('Please make sure a valid title, amount, date, and category were entered.'),
+          content: const Text(
+              'Please make sure a valid title, amount, date, and category were entered.'),
           actions: [
             TextButton(
               onPressed: () {
@@ -56,14 +58,14 @@ class _NewExpenseState extends State<NewExpense> {
       return;
     }
 
-     widget.onAddExpense(
-       Expense(
-         title: _titleController.text,
-         amount: enteredAmount,
-         createdAt: _selectedDate!,
-         category: _selectedCategory,
-       ),
-     );
+    widget.onAddExpense(
+      Expense(
+        title: _titleController.text,
+        amount: enteredAmount,
+        createdAt: _selectedDate!,
+        category: _selectedCategory,
+      ),
+    );
     Navigator.pop(context);
   }
 
@@ -76,6 +78,8 @@ class _NewExpenseState extends State<NewExpense> {
 
   @override
   Widget build(BuildContext context) {
+    final dateFormat = DateFormat('dd/MM/yyyy'); // Change to 'dd-MM-yyyy' for hyphen
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 48, 16, 16),
       child: Column(
@@ -108,7 +112,7 @@ class _NewExpenseState extends State<NewExpense> {
                     Text(
                       _selectedDate == null
                           ? 'No date selected'
-                          : _selectedDate.toString(),
+                          : dateFormat.format(_selectedDate!),
                     ),
                     IconButton(
                       onPressed: _presentDatePicker,

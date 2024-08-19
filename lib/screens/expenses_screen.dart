@@ -18,6 +18,7 @@ class Expenses extends StatefulWidget {
 class _ExpensesState extends State<Expenses> {
   final List<Expense> _registeredExpenses = [];
   final String userID = 'yq2Z9NaQdPz0djpnLynN'; // Hardcoded userID
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -30,8 +31,12 @@ class _ExpensesState extends State<Expenses> {
       List<Expense> expenses = await getAllExpenses(userID);
       setState(() {
         _registeredExpenses.addAll(expenses);
+        _isLoading = false; // Stop loading once data is fetched
       });
     } catch (e) {
+      setState(() {
+        _isLoading = false; // Stop loading even if there is an error
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to load expenses: $e')),
       );
@@ -106,7 +111,11 @@ class _ExpensesState extends State<Expenses> {
       child: Text('No expenses found. Start adding some!'),
     );
 
-    if (_registeredExpenses.isNotEmpty) {
+    if (_isLoading) {
+      mainContent = const Center(
+        child: CircularProgressIndicator(),
+      );
+    } else if (_registeredExpenses.isNotEmpty) {
       mainContent = ExpensesList(
         expenses: _registeredExpenses,
         onRemoveExpense: _removeExpense,

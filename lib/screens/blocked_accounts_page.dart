@@ -1,9 +1,7 @@
 import 'package:campus_app/models/blocked_account_object.dart';
 import 'package:campus_app/widgets/blocked_accounts/blocked_accounts_list.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../backend/Controller/userController.dart';
 
@@ -18,6 +16,7 @@ class BlockedAccounts extends StatefulWidget {
 
 class _BlockedAccountsState extends State<BlockedAccounts> {
   List<BlockedAccountObject> _availableBlockedAccounts = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -27,19 +26,30 @@ class _BlockedAccountsState extends State<BlockedAccounts> {
 
   Future<void> _fetchBlockedAccounts() async {
     String userID = 'yq2Z9NaQdPz0djpnLynN'; // Replace with actual user ID
-    List<Map<String, dynamic>> blockedAccountsData =
-        await viewBlockedAccounts(userID);
 
-    setState(() {
-      _availableBlockedAccounts = blockedAccountsData.map((data) {
-        return BlockedAccountObject(
-          blockedAccountID: data['id'],
-          blockedAccountName: data['data']['name'],
-          blockedAccountProfilePic:
-              Image.asset('assets/images/profile-pic.png', width: 200),
-        );
-      }).toList();
-    });
+    try {
+      List<Map<String, dynamic>> blockedAccountsData =
+          await viewBlockedAccounts(userID);
+
+      setState(() {
+        _availableBlockedAccounts = blockedAccountsData.map((data) {
+          return BlockedAccountObject(
+            blockedAccountID: data['id'],
+            blockedAccountName: data['data']['name'],
+            blockedAccountProfilePic:
+                Image.asset('assets/images/profile-pic.png', width: 200),
+          );
+        }).toList();
+        _isLoading = false; // Stop loading once data is fetched
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false; // Stop loading even if there is an error
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to load blocked accounts: $e')),
+      );
+    }
   }
 
   void _unblockBlockedAccount(int index) async {
@@ -80,20 +90,24 @@ class _BlockedAccountsState extends State<BlockedAccounts> {
           ],
         ),
       ),
-      body: _availableBlockedAccounts.isEmpty
+      body: _isLoading
           ? const Center(
-              child: Text(
-                'No Blocked Accounts Found',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
+              child: CircularProgressIndicator(),
             )
-          : BlockedAccountsList(
-              accounts: _availableBlockedAccounts,
-              onUnblock: _unblockBlockedAccount,
-            ),
+          : _availableBlockedAccounts.isEmpty
+              ? const Center(
+                  child: Text(
+                    'No Blocked Accounts Found',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                )
+              : BlockedAccountsList(
+                  accounts: _availableBlockedAccounts,
+                  onUnblock: _unblockBlockedAccount,
+                ),
     );
   }
 }
