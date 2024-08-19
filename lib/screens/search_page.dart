@@ -205,7 +205,7 @@ class CustomSearch3 extends SearchDelegate {
                   ),
                   Container(width: 7),
                   Text(
-                    "${Profiles[i]}",
+                    "${Filter![i]}",
                     style: TextStyle(fontSize: 15),
                   ),
                 ],
@@ -345,7 +345,7 @@ class _SearchPageState extends State<SearchPage> {
                               borderRadius: BorderRadius.circular(100),
                             ),
                             child: Image.asset(
-                              'assets/images/Outlets.png',
+                              'assets/images/outlets.png',
                               height: 45,
                               width: 45,
                             ),
