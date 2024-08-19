@@ -1,4 +1,4 @@
-import 'package:campus_app/models/expense.dart';
+import 'package:campus_app/backend/Model/Expense.dart';
 import 'package:flutter/material.dart';
 
 class NewExpense extends StatefulWidget {
@@ -56,14 +56,14 @@ class _NewExpenseState extends State<NewExpense> {
       return;
     }
 
-    widget.onAddExpense(
-      Expense(
-        title: _titleController.text,
-        amount: enteredAmount,
-        date: _selectedDate!,
-        category: _selectedCategory,
-      ),
-    );
+     widget.onAddExpense(
+       Expense(
+         title: _titleController.text,
+         amount: enteredAmount,
+         createdAt: _selectedDate!,
+         category: _selectedCategory,
+       ),
+     );
     Navigator.pop(context);
   }
 
@@ -108,7 +108,7 @@ class _NewExpenseState extends State<NewExpense> {
                     Text(
                       _selectedDate == null
                           ? 'No date selected'
-                          : formatter.format(_selectedDate!),
+                          : _selectedDate.toString(),
                     ),
                     IconButton(
                       onPressed: _presentDatePicker,

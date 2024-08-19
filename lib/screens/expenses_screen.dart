@@ -1,4 +1,5 @@
-import 'package:campus_app/models/expense.dart';
+import 'package:campus_app/backend/Controller/expenseController.dart';
+import 'package:campus_app/backend/Model/Expense.dart';
 import 'package:campus_app/screens/add_new_expense_screen.dart';
 import 'package:campus_app/widgets/chart/chart.dart';
 import 'package:campus_app/widgets/expenses/expense_list.dart';
@@ -15,91 +16,87 @@ class Expenses extends StatefulWidget {
 }
 
 class _ExpensesState extends State<Expenses> {
-  final List<Expense> _registeredExpenses = [
-    Expense(
-      title: 'Dorm Rent',
-      amount: 200.00,
-      date: DateTime(DateTime.now().year, DateTime.now().month - 1,
-          5), // Previous month, 5th day
-      category: Category.housing,
-    ),
-    Expense(
-      title: 'Machine Learning Textbook',
-      amount: 50.00,
-      date: DateTime(DateTime.now().year, DateTime.now().month,
-          14), // Current month, 14th day
-      category: Category.supplies,
-    ),
-    Expense(
-      title: 'Bus Ticket to Campus',
-      amount: 2.50,
-      date: DateTime(DateTime.now().year, DateTime.now().month - 2,
-          21), // Two months ago, 21st day
-      category: Category.transportation,
-    ),
-    Expense(
-      title: 'Lunch at the Cafeteria',
-      amount: 7.00,
-      date: DateTime(DateTime.now().year, DateTime.now().month,
-          3), // Current month, 3rd day
-      category: Category.food,
-    ),
-    Expense(
-      title: 'Club Outing',
-      amount: 15.00,
-      date: DateTime(DateTime.now().year, DateTime.now().month - 1,
-          28), // Previous month, 28th day
-      category: Category.activities,
-    ),
-    Expense(
-      title: 'Laptop Repair',
-      amount: 120.00,
-      date: DateTime(DateTime.now().year, DateTime.now().month - 3,
-          15), // Three months ago, 15th day
-      category: Category.technology,
-    ),
-    Expense(
-      title: 'Basketball Event',
-      amount: 15.00,
-      date: DateTime(DateTime.now().year, DateTime.now().month,
-          10), // Current month, 10th day
-      category: Category.activities,
-    ),
-  ];
+  final List<Expense> _registeredExpenses = [];
+  final String userID = 'yq2Z9NaQdPz0djpnLynN'; // Hardcoded userID
 
-  void _openAddExpenseOverlay() {
-    showModalBottomSheet(
-      isScrollControlled: true,
-      context: context,
-      builder: (ctx) => NewExpense(onAddExpense: _addExpense),
-    );
+  @override
+  void initState() {
+    super.initState();
+    _fetchExpenses();
+  }
+
+  Future<void> _fetchExpenses() async {
+    try {
+      List<Expense> expenses = await getAllExpenses(userID);
+      setState(() {
+        _registeredExpenses.addAll(expenses);
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to load expenses: $e')),
+      );
+    }
   }
 
   void _addExpense(Expense expense) {
     setState(() {
       _registeredExpenses.add(expense);
     });
+
+    // Add the expense to Firestore
+    addExpense(expense, userID);
   }
 
-  void _removeExpense(Expense expense) {
+  void _removeExpense(Expense expense) async {
     final expenseIndex = _registeredExpenses.indexOf(expense);
     setState(() {
       _registeredExpenses.remove(expense);
     });
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        duration: const Duration(seconds: 3),
-        content: const Text('Expense deleted.'),
-        action: SnackBarAction(
-          label: 'Undo',
-          onPressed: () {
-            setState(() {
-              _registeredExpenses.insert(expenseIndex, expense);
-            });
-          },
+
+    // Try deleting the expense from Firestore
+    try {
+      await deleteExpense(expense.id!);
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: const Duration(seconds: 3),
+          content: const Text('Expense deleted.'),
+          action: SnackBarAction(
+            label: 'Undo',
+            onPressed: () {
+              _undoDeleteExpense(expense, expenseIndex);
+            },
+          ),
         ),
-      ),
+      );
+    } catch (e) {
+      _undoDeleteExpense(expense, expenseIndex);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete expense: $e')),
+      );
+    }
+  }
+
+  void _undoDeleteExpense(Expense expense, int expenseIndex) async {
+    setState(() {
+      _registeredExpenses.insert(expenseIndex, expense);
+    });
+
+    // Re-add the expense to Firestore with the authorID as a reference
+    try {
+      await addExpense(expense, userID);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to restore expense: $e')),
+      );
+    }
+  }
+
+  void _openAddExpenseOverlay() {
+    showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      builder: (ctx) => NewExpense(onAddExpense: _addExpense),
     );
   }
 
@@ -124,12 +121,11 @@ class _ExpensesState extends State<Expenses> {
             "Expense Tracker",
             style: GoogleFonts.poppins(
               color: const Color.fromARGB(255, 0, 0, 0),
-              fontSize: 22, // Adjusted font size
+              fontSize: 22,
               fontWeight: FontWeight.w600,
             ),
           ),
-          backgroundColor:
-              const Color.fromARGB(255, 237, 229, 250), // Background color
+          backgroundColor: const Color.fromARGB(255, 237, 229, 250),
           actions: [
             IconButton(
               onPressed: _openAddExpenseOverlay,
@@ -149,27 +145,3 @@ class _ExpensesState extends State<Expenses> {
     );
   }
 }
-
-
-// Suggested Categories:
-// Books & Supplies:
-// For tracking expenses on textbooks, stationery, and other academic materials.
-// Transportation:
-// For tracking costs related to commuting, carpooling, public transport, or bike rentals.
-// Food & Dining:
-// For tracking spending on meals, snacks, and coffee runs on campus.
-// Social Activities:
-// For expenses related to student events, parties, club fees, or social gatherings.
-// Housing & Utilities:
-// For students living off-campus who want to track rent, utilities, or dorm-related expenses.
-// Technology:
-// For tracking expenses on gadgets, software, or any tech-related purchases necessary for studies.
-// Miscellaneous:
-// For other expenses that don't fit into the main categories, such as clothing or personal care.
-// Potential Uses:
-// Budgeting: Students can use this feature to manage their monthly budget by tracking where their money goes.
-// Saving Goals: They could set saving goals for specific categories, like saving for a new laptop or a trip.
-// Financial Planning: Helps in understanding spending patterns, making it easier to plan finances for the semester.
-// Expense Sharing: Could be useful for sharing expenses in group projects or shared accommodations.
-// Tracking Reimbursements: For students who need to get reimbursed for club expenses or other activities, they can track these within the app.
-// These adjustments make the Expense Tracker a more integral part of a student’s life, helping them manage their finances in a campus-specific context.

@@ -1,5 +1,6 @@
-import 'package:campus_app/models/expense.dart';
+import 'package:campus_app/backend/Model/Expense.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class ExpenseItem extends StatelessWidget {
   const ExpenseItem(this.expense, {super.key});
@@ -7,7 +8,10 @@ class ExpenseItem extends StatelessWidget {
   final Expense expense;
 
   @override
-  Widget build(context) {
+  Widget build(BuildContext context) {
+    final dateFormat = DateFormat('dd/MM/yyyy'); // Change to 'dd-MM-yyyy' for hyphen
+    final formattedDate = dateFormat.format(expense.createdAt); // Directly format DateTime
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 11, vertical: 8),
       color: Color.fromARGB(255, 210, 237, 231),
@@ -28,7 +32,7 @@ class ExpenseItem extends StatelessWidget {
                   children: [
                     Icon(categoryIcons[expense.category]),
                     const SizedBox(width: 8),
-                    Text(expense.formattedDate),
+                    Text(formattedDate),
                   ],
                 ),
               ],

@@ -1,4 +1,4 @@
-import 'package:campus_app/models/expense.dart';
+import 'package:campus_app/backend/Model/Expense.dart';
 import 'package:campus_app/widgets/chart/chart_bar.dart';
 import 'package:flutter/material.dart';
 
