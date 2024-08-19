@@ -1,3 +1,5 @@
+import 'package:campus_app/backend/Controller/postController.dart';
+import 'package:campus_app/backend/Controller/userController.dart';
 import 'package:flutter/material.dart';
 
 class ArchivePage extends StatefulWidget {
@@ -9,39 +11,30 @@ class ArchivePage extends StatefulWidget {
 
 class _ArchivePageState extends State<ArchivePage> {
   String type = 'All Types';
+  String userID = 'upeubEqcmzSU9aThExaO'; // Initialize the common userID
 
-  final List<Map<String, String>> posts = [
-    {
-      'title': 'Post 1',
-      'content': 'This is the content of post 1.',
-      'type': 'normal Post'
-    },
-    {
-      'title': 'Post 2',
-      'content': 'This is the content of post 2.',
-      'type': 'Academic Post'
-    },
-    {
-      'title': 'Post 3',
-      'content': 'This is the content of post 3.',
-      'type': 'normal Post'
-    },
-    {
-      'title': 'Post 4',
-      'content': 'This is the content of post 4.',
-      'type': 'Academic Post'
-    },
-    {
-      'title': 'Post 5',
-      'content': 'This is the content of post 5.',
-      'type': 'normal Post'
-    },
-    {
-      'title': 'Post 6',
-      'content': 'This is the content of post 6.',
-      'type': 'Academic Post'
-    },
-  ];
+  List<Map<String, String>> posts = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchArchivedPosts();
+  }
+
+  Future<void> _fetchArchivedPosts() async {
+    List<String> archivedPostData = await getArchivedPostData(userID);
+
+    setState(() {
+      posts = archivedPostData.map((data) {
+        var splitData = data.split(',');
+        return {
+          'title': splitData[0],
+          'content': splitData[1],
+          'postID': splitData[2],
+        };
+      }).toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +47,7 @@ class _ArchivePageState extends State<ArchivePage> {
         centerTitle: true,
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: _fetchArchivedPosts, // Refresh the posts when pressed
             icon: const Icon(Icons.refresh),
           ),
         ],
@@ -67,10 +60,10 @@ class _ArchivePageState extends State<ArchivePage> {
           Expanded(
             child: GridView.builder(
               gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 150, // Maximum width for each item
-                childAspectRatio: 1, // Aspect ratio of each card (width/height)
-                mainAxisSpacing: 10, // Space between rows
-                crossAxisSpacing: 10, // Space between columns
+                maxCrossAxisExtent: 150,
+                childAspectRatio: 1,
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 10,
               ),
               padding: const EdgeInsets.all(10),
               itemCount: posts.length,
@@ -96,13 +89,13 @@ class _ArchivePageState extends State<ArchivePage> {
                             ),
                             PopupMenuButton<String>(
                               onSelected: (value) {
-                                // Handle the selected option here
                                 if (value == 'restore') {
-                                  // Handle restore action
+                                  removeFromArchived(post['postID']!, userID);
+                                  _fetchArchivedPosts(); // Refresh posts after removal
                                 } else if (value == 'edit') {
-                                _editPost(context, 'Current Title', 'Current Content','Postid');
+                                  _editPost(context, post['title']!, post['content']!, post['postID']!);
                                 } else if (value == 'delete') {
-                                  _deletePost(context);
+                                  _deletePost(context,post['postID'].toString());
                                 }
                               },
                               itemBuilder: (context) => [
@@ -110,8 +103,7 @@ class _ArchivePageState extends State<ArchivePage> {
                                   value: 'restore',
                                   child: Row(
                                     children: [
-                                      Icon(Icons.restore_rounded,
-                                          color: Colors.black),
+                                      Icon(Icons.restore_rounded, color: Colors.black),
                                       SizedBox(width: 10),
                                       Text("Show back to my profile"),
                                     ],
@@ -154,93 +146,87 @@ class _ArchivePageState extends State<ArchivePage> {
       ),
     );
   }
-}
 
-void _deletePost(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        content: const Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [Text('Are You sure you want to delete?')],
-        ),
-        actions: <Widget>[
-          TextButton(
-            child: const Text('Cancel'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
+  void _deletePost(BuildContext context, String postID) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: const Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [Text('Are you sure you want to delete?')],
           ),
-          TextButton(
-            child: const Text('DELETE'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('DELETE'),
+              onPressed: () {
+                deletePost(postID);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
-void _editPost(BuildContext context, String initialTitle, String initialContent,String id) {
-  final TextEditingController _titleController = TextEditingController(text: initialTitle);
-  final TextEditingController _contentController = TextEditingController(text: initialContent);
+  void _editPost(BuildContext context, String initialTitle, String initialContent, String postID) {
+    final TextEditingController titleController = TextEditingController(text: initialTitle);
+    final TextEditingController contentController = TextEditingController(text: initialContent);
 
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Edit the Title of the post'),
-            const SizedBox(height: 16), // Add spacing between the fields
-
-            SizedBox(
-              child: TextField(
-                controller: _titleController,
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Edit the Title of the post'),
+              const SizedBox(height: 16),
+              TextField(
+                controller: titleController,
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.edit),
                   labelText: "Edit the Title",
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(35.0), // Rounded borders
+                    borderRadius: BorderRadius.circular(35.0),
                   ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 20.0), // Adjust padding to fit inside the SizedBox
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 20.0),
                 ),
               ),
-            ),
-            const SizedBox(height: 16), // Add spacing between the fields
-            SizedBox(
-              child: TextField(
-                controller: _contentController,
+              const SizedBox(height: 16),
+              TextField(
+                controller: contentController,
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.edit),
                   labelText: "Edit the content",
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(35.0), // Rounded borders
+                    borderRadius: BorderRadius.circular(35.0),
                   ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 20.0), // Adjust padding to fit inside the SizedBox
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 20.0),
                 ),
               ),
-            ),
-            const SizedBox(height: 16), // Add spacing between the fields
-            TextButton(
-              onPressed: () {
-                // Handle submit action here
-                // Example: Update the post with the new title and content
-                String updatedTitle = _titleController.text;
-                String updatedContent = _contentController.text;
-
-                // Perform the update operation here
-
-              },
-              child: const Text('Submit'),
-            )
-          ],
-        ),
-      );
-    },
-  );
+              const SizedBox(height: 16),
+              TextButton(
+                onPressed: () async {
+                  String updatedTitle = titleController.text;
+                  String updatedContent = contentController.text;
+                  editPost(postID, updatedContent, updatedTitle);
+                  Navigator.of(context).pop();
+                  _fetchArchivedPosts(); // Refresh the posts after editing
+                },
+                child: const Text('Submit'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 }

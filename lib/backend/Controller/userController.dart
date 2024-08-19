@@ -50,7 +50,6 @@ await firebaseService.initialize();
 
 }
 
-
 void deleteAccount(String userID) async {
   // Ensure Firebase is initialized
   await firebaseService.initialize();
@@ -154,7 +153,7 @@ Future<List<DocumentReference<Map<String, dynamic>>>> getListFavorites(
     return [];
   }
 }
-Future<List<String>> getFavoritesPostData(String userID) async {
+Future<List> getFavoritesPostData(String userID) async {
   // Ensure Firebase is initialized
   await firebaseService.initialize();
 
@@ -162,7 +161,7 @@ Future<List<String>> getFavoritesPostData(String userID) async {
   var favoritesList = await getListFavorites(userID);
 
   // List to store the post ID, title, content, and timestamp
-  List<String> favoritesPostData = [];
+  var favoritesPostData = [];
   // Loop through the list of post references and fetch their data
   for (var postRef in favoritesList) {
     var postSnapshot = await postRef.get();
@@ -172,6 +171,7 @@ Future<List<String>> getFavoritesPostData(String userID) async {
       var postID = postRef.id;
       var title = postData['title'] ?? '';
       var content = postData['content'] ?? '';
+      var isConfession = postData['isConfession'] ?? '';
 
       // Retrieve the favorites array from the user document
       var userSnapshot = await firebaseService.firestore.collection('User').doc(userID).get();
@@ -184,7 +184,7 @@ Future<List<String>> getFavoritesPostData(String userID) async {
 
         if (postReference != null && timestamp != null && postReference==postRef) {
           favoritesPostData.add(
-            '${postID}, $title, $content, ${timestamp.toDate()}'
+            [postID, title, content,isConfession, timestamp.toDate()]
           );
         }
       }
@@ -234,7 +234,7 @@ Future<List<String>> getArchivedPostData(String userID) async {
     // Check if the post exists and add the title and content to the list
     if (postSnapshot.exists) {
       archivedPostData.add(
-        '${postSnapshot.data()?['title'] ?? ''}, ${postSnapshot.data()?['content'] ?? ''},${postSnapshot.id}'
+        '${postSnapshot.data()?['title'] ?? ''},${postSnapshot.data()?['content'] ?? ''},${postSnapshot.id}'
       );
     }
   }
