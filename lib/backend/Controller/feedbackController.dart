@@ -1,3 +1,4 @@
+import 'package:campus_app/backend/Model/FeedbackAndSuggestions.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
@@ -34,5 +35,18 @@ class FirebaseService {
 }
 
 final FirebaseService firebaseService = FirebaseService.instance;
+
+// Method to add a Feedback
+Future<void> addFeedback(FeedbackAndSuggestions feedback, String userID) async {
+  await firebaseService.initialize();
+
+  // Convert the authorID to a Firestore reference
+  Map<String, dynamic> feedbackData = feedback.toMap();
+  feedbackData['authorID'] = firebaseService.firestore.doc('User/$userID');
+
+  // Add the expense to Firestore with an auto-generated ID
+  await firebaseService.firestore.collection('Feedback').add(feedbackData);
+}
+
 
 

@@ -1,3 +1,5 @@
+import 'package:campus_app/backend/Controller/feedbackController.dart';
+import 'package:campus_app/backend/Model/FeedbackAndSuggestions.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -10,8 +12,9 @@ class FeedbackScreen extends StatefulWidget {
 
 class _FeedbackScreenState extends State<FeedbackScreen> {
   final TextEditingController _feedbackController = TextEditingController();
+  final String _userID = 'yq2Z9NaQdPz0djpnLynN';
 
-  void _submitFeedback() {
+  Future<void> _submitFeedback() async {
     if (_feedbackController.text.isEmpty) {
       showDialog(
         context: context,
@@ -49,6 +52,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
           );
         },
       );
+      FeedbackAndSuggestions feedback = FeedbackAndSuggestions(content: _feedbackController.text);
+      await addFeedback(feedback, _userID);
       _feedbackController.clear();
     }
   }
@@ -80,7 +85,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                 Text(
                   "We value your input! Share your thoughts to help us make the application even better",
                   style: GoogleFonts.montserrat(
-                    //color: const Color.fromARGB(255, 0, 0, 0),
+                    color: const Color.fromARGB(255, 0, 0, 0),
                     fontSize: 18,
                     fontWeight: FontWeight.w500,
                   ),
