@@ -1,3 +1,6 @@
+import 'package:campus_app/backend/Controller/commentController.dart';
+import 'package:campus_app/backend/Controller/userController.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -9,69 +12,128 @@ class MyActivityPage extends StatefulWidget {
 }
 
 class _MyActivityPageState extends State<MyActivityPage> {
-  final List<Map<String, String>> posts = [
-    {
-      'title': 'Post 1',
-      'content': 'This is the content of post 1.',
-      'type': 'normal Post',
-      'description': 'Travel'
-    },
-    {
-      'title': 'Post 2',
-      'content': 'This is the content of post 2.',
-      'type': 'Academic Post',
-      'description': 'Travel'
-    },
-    {
-      'title': 'Post 3',
-      'content': 'This is the content of post 3.',
-      'type': 'normal Post',
-      'description': 'Shopping'
-    },
-    {
-      'title': 'Post 4',
-      'content': 'This is the content of post 4.',
-      'type': 'Academic Post',
-      'description': 'Travel'
-    },
-    {
-      'title': 'Post 5',
-      'content': 'This is the content of post 5.',
-      'type': 'normal Post',
-      'description': 'Shopping'
-    },
-    {
-      'title': 'Post 6',
-      'content': 'This is the content of post 6.',
-      'type': 'Academic Post',
-      'description': 'Travel'
-    },
-  ];
+  List<Map<String, dynamic>> posts = [];
+  List<Map<String, dynamic>> comments = [];
+  bool isLoading = true;
+  var userID = 'upeubEqcmzSU9aThExaO';
 
-  final List<Map<String, String>> comments = [
-    {
-      'user': 'User 1',
-      'comment': 'This is the first comment. I really enjoyed the content!',
-    },
-    {
-      'user': 'User 2',
-      'comment': 'Great post! Thanks for sharing this information.',
-    },
-    {
-      'user': 'User 3',
-      'comment': 'I found this very helpful. Looking forward to more posts!',
-    },
-    {
-      'user': 'User 4',
-      'comment': 'Interesting perspective. I hadn\'t thought about it this way.',
-    },
-    {
-      'user': 'User 5',
-      'comment': 'Can you provide more details on this topic? Thanks!',
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _fetchFavoritePosts();
+    _fetchComments();
+  }
 
-  List<Widget> _buildPosts(List<Map<String, String>> posts, {bool showHeart = false}) {
+  Future<void> _fetchFavoritePosts() async {
+    try {
+      var favoritesPostData = await getFavoritesPostData(userID);
+      setState(() {
+        posts = favoritesPostData.map((postList) {
+          return {
+            'postID': postList[0],
+            'title': postList[1],
+            'content': postList[2],
+            'type': postList[3] == true ? 'Confession' : 'Post',
+            'timestamp': _convertToDateTime(postList[4]), // Convert to DateTime
+          };
+        }).toList();
+
+        // Sort posts in descending order by timestamp
+        posts.sort((a, b) => b['timestamp'].compareTo(a['timestamp']));
+
+        isLoading = false;
+      });
+    } catch (e) {
+      print("Error fetching favorite posts: $e");
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _fetchComments() async {
+    try {
+      var commentsData = await getListComments(userID);
+      setState(() {
+        comments = commentsData.map((comment) {
+          return {
+            'content': comment[1],
+            'timestamp': _convertToDateTime(comment[0]), // Convert to DateTime
+          };
+        }).toList();
+
+        // Sort comments in descending order by timestamp
+        comments.sort((a, b) => b['timestamp'].compareTo(a['timestamp']));
+
+        isLoading = false;
+      });
+    } catch (e) {
+      print("Error fetching comments: $e");
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  DateTime _convertToDateTime(dynamic value) {
+    if (value is Timestamp) {
+      return value.toDate();
+    } else if (value is DateTime) {
+      return value;
+    } else if (value is String) {
+      return DateTime.parse(value);
+    } else {
+      throw Exception('Unsupported timestamp format');
+    }
+  }
+
+  Map<String, List<Map<String, dynamic>>> _groupByDate(List<Map<String, dynamic>> data) {
+    final Map<String, List<Map<String, dynamic>>> groupedData = {};
+    for (var item in data) {
+      final timestamp = item['timestamp'] as DateTime;
+      final dateKey = _formatDateKey(timestamp);
+
+      if (!groupedData.containsKey(dateKey)) {
+        groupedData[dateKey] = [];
+      }
+      groupedData[dateKey]!.add(item);
+    }
+    return groupedData;
+  }
+
+  String _formatDateKey(DateTime date) {
+    final now = DateTime.now();
+    if (date.year == now.year && date.month == now.month && date.day == now.day) {
+      return "Today";
+    } else if (date.year == now.year && date.month == now.month && date.day == now.subtract(Duration(days: 1)).day) {
+      return "Yesterday";
+    } else {
+      return '${_getDayOfWeek(date.weekday)}, ${date.day}/${date.month}/${date.year}';
+    }
+  }
+
+  String _getDayOfWeek(int weekday) {
+    switch (weekday) {
+      case DateTime.monday:
+        return 'Monday';
+      case DateTime.tuesday:
+        return 'Tuesday';
+      case DateTime.wednesday:
+        return 'Wednesday';
+      case DateTime.thursday:
+        return 'Thursday';
+      case DateTime.friday:
+        return 'Friday';
+      case DateTime.saturday:
+        return 'Saturday';
+      case DateTime.sunday:
+        return 'Sunday';
+      default:
+        return '';
+    }
+  }
+
+  List<Widget> _buildPosts(List<Map<String, dynamic>> posts, {bool showHeart = false}) {
     return posts.map((post) {
       return Container(
         width: 300, // Fixed width for each post
@@ -107,7 +169,7 @@ class _MyActivityPageState extends State<MyActivityPage> {
     }).toList();
   }
 
-  List<Widget> _buildComments(List<Map<String, String>> comments) {
+  List<Widget> _buildComments(List<Map<String, dynamic>> comments) {
     return comments.map((comment) {
       return Container(
         width: 300, // Fixed width for each comment
@@ -115,8 +177,8 @@ class _MyActivityPageState extends State<MyActivityPage> {
         child: Card(
           elevation: 4,
           child: ListTile(
-            title: Text(comment['user'] ?? 'Anonymous'),
-            subtitle: Text(comment['comment'] ?? 'No Comment'),
+            title: Text('You Have Commented'),
+            subtitle: Text(comment['content'] ?? 'No Comment'),
           ),
         ),
       );
@@ -125,6 +187,9 @@ class _MyActivityPageState extends State<MyActivityPage> {
 
   @override
   Widget build(BuildContext context) {
+    final groupedPosts = _groupByDate(posts);
+    final groupedComments = _groupByDate(comments);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -133,7 +198,11 @@ class _MyActivityPageState extends State<MyActivityPage> {
         ),
         centerTitle: true,
         actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.refresh))
+          IconButton(onPressed: () {
+            // Refresh the page
+            _fetchFavoritePosts();
+            _fetchComments();
+          }, icon: const Icon(Icons.refresh))
         ],
       ),
       body: SingleChildScrollView(
@@ -141,160 +210,70 @@ class _MyActivityPageState extends State<MyActivityPage> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                "Today",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 35),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                "Liked",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-              ),
-              SizedBox(
-                height: 200, // Height for displaying posts
-                child: Scrollbar(
-                  child: PageView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: (posts.length / 4).ceil(), // Number of pages
-                    itemBuilder: (context, pageIndex) {
-                      final startIndex = pageIndex * 4;
-                      final endIndex = (startIndex + 4).clamp(0, posts.length);
-                      final pagePosts = posts.sublist(startIndex, endIndex);
-                      return ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: _buildPosts(pagePosts, showHeart: true),
-                      );
-                    },
+            children: groupedPosts.keys.map((dateKey) {
+              final postsForDate = groupedPosts[dateKey] ?? [];
+              final commentsForDate = groupedComments[dateKey] ?? [];
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    dateKey,
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 35),
                   ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                "Commented",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-              ),
-              SizedBox(
-                height: 200, // Height for displaying comments
-                child: Scrollbar(
-                  child: PageView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: (comments.length / 4).ceil(), // Number of pages
-                    itemBuilder: (context, pageIndex) {
-                      final startIndex = pageIndex * 4;
-                      final endIndex = (startIndex + 4).clamp(0, comments.length);
-                      final pageComments = comments.sublist(startIndex, endIndex);
-                      return ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: _buildComments(pageComments),
-                      );
-                    },
+                  const SizedBox(height: 20),
+                  const Text(
+                    "Liked",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                   ),
-                ),
-              ),
-              const SizedBox(height: 40),
-              const Text(
-                "Yesterday",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 35),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                "Liked",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-              ),
-              SizedBox(
-                height: 200, // Height for displaying posts
-                child: Scrollbar(
-                  child: PageView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: (posts.length / 4).ceil(), // Number of pages
-                    itemBuilder: (context, pageIndex) {
-                      final startIndex = pageIndex * 4;
-                      final endIndex = (startIndex + 4).clamp(0, posts.length);
-                      final pagePosts = posts.sublist(startIndex, endIndex);
-                      return ListView(
+                  SizedBox(
+                    height: 200, // Height for displaying posts
+                    child: Scrollbar(
+                      child: PageView.builder(
                         scrollDirection: Axis.horizontal,
-                        children: _buildPosts(pagePosts, showHeart: true),
-                      );
-                    },
+                        itemCount: (postsForDate.length / 4).ceil(), // Number of pages
+                        itemBuilder: (context, pageIndex) {
+                          final startIndex = pageIndex * 4;
+                          final endIndex = (startIndex + 4).clamp(0, postsForDate.length);
+                          final pagePosts = postsForDate.sublist(startIndex, endIndex);
+                          return ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: _buildPosts(pagePosts, showHeart: true),
+                          );
+                        },
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                "Commented",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-              ),
-              SizedBox(
-                height: 200, // Height for displaying comments
-                child: Scrollbar(
-                  child: PageView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: (comments.length / 4).ceil(), // Number of pages
-                    itemBuilder: (context, pageIndex) {
-                      final startIndex = pageIndex * 4;
-                      final endIndex = (startIndex + 4).clamp(0, comments.length);
-                      final pageComments = comments.sublist(startIndex, endIndex);
-                      return ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: _buildComments(pageComments),
-                      );
-                    },
+                  const SizedBox(height: 20),
+                  const Text(
+                    "Commented",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                   ),
-                ),
-              ),
-              const SizedBox(height: 40),
-              const Text(
-                "Monday",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 35),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                "Liked",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-              ),
-              SizedBox(
-                height: 200, // Height for displaying posts
-                child: Scrollbar(
-                  child: PageView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: (posts.length / 4).ceil(), // Number of pages
-                    itemBuilder: (context, pageIndex) {
-                      final startIndex = pageIndex * 4;
-                      final endIndex = (startIndex + 4).clamp(0, posts.length);
-                      final pagePosts = posts.sublist(startIndex, endIndex);
-                      return ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: _buildPosts(pagePosts, showHeart: true),
-                      );
-                    },
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                "Commented",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-              ),
-              SizedBox(
-                height: 200, // Height for displaying comments
-                child: Scrollbar(
-                  child: PageView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: (comments.length / 4).ceil(), // Number of pages
-                    itemBuilder: (context, pageIndex) {
-                      final startIndex = pageIndex * 4;
-                      final endIndex = (startIndex + 4).clamp(0, comments.length);
-                      final pageComments = comments.sublist(startIndex, endIndex);
-                      return ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: _buildComments(pageComments),
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ],
+                  const SizedBox(height: 20),
+                  commentsForDate.isEmpty
+                      ? const Text("No comments available", style: TextStyle(fontStyle: FontStyle.italic, fontWeight:FontWeight.bold, fontSize: 30,color: Colors.grey))
+                      : SizedBox(
+                          height: 200, // Height for displaying comments
+                          child: Scrollbar(
+                            child: PageView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: (commentsForDate.length / 4).ceil(), // Number of pages
+                              itemBuilder: (context, pageIndex) {
+                                final startIndex = pageIndex * 4;
+                                final endIndex = (startIndex + 4).clamp(0, commentsForDate.length);
+                                final pageComments = commentsForDate.sublist(startIndex, endIndex);
+                                return ListView(
+                                  scrollDirection: Axis.horizontal,
+                                  children: _buildComments(pageComments),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                                          const SizedBox(height: 20),
+                ],
+              );
+            }).toList(),
           ),
         ),
       ),

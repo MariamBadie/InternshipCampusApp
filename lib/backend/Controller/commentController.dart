@@ -49,7 +49,8 @@ Future<List> getListComments(
   for (var doc in userSnapshot.docs) {
   var timestamp = (doc.data()['createdAt'])as Timestamp?;
   var content = (doc.data()['content']);
-  listofComments.add([timestamp?.toDate(),content]);
+  if (timestamp != null){
+    listofComments.add([timestamp.toDate(),content]);}
  }
  print(listofComments);
  return listofComments;
