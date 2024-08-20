@@ -1,11 +1,11 @@
 import 'package:campus_app/widgets/friend_requests/friend_request_item.dart';
 import 'package:flutter/material.dart';
-import 'package:campus_app/models/friend_request.dart';
+import 'package:campus_app/models/FriendRequestObject.dart';
 
 class FriendRequestsList extends StatelessWidget {
   const FriendRequestsList({super.key, required this.requests, required this.onDelete});
 
-  final List<FriendRequest> requests;
+  final List<FriendRequestObject> requests;
   final void Function(int) onDelete;
 
   @override

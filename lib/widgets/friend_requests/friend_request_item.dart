@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:campus_app/models/friend_request.dart';
+import 'package:campus_app/models/FriendRequestObject.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class FriendRequestItem extends StatelessWidget {
   const FriendRequestItem(this.request, this.onDelete, {super.key});
 
-  final FriendRequest request;
+  final FriendRequestObject request;
   final VoidCallback onDelete;
 
   @override

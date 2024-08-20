@@ -1,7 +1,10 @@
+import 'package:campus_app/backend/Controller/friendrequestsController.dart';
+import 'package:campus_app/backend/Model/FriendRequests.dart';
 import 'package:campus_app/models/notification_object.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../models/friend_request.dart';
+import '../models/FriendRequestObject.dart';
 import '../widgets/friend_requests/friend_requests_list.dart';
 import '../widgets/notifications_files/notification_list.dart';
 
@@ -13,28 +16,56 @@ class Activities extends StatefulWidget {
 }
 
 class _ActivitiesState extends State<Activities> {
-  final List<FriendRequest> _friendRequests  = [
-    FriendRequest(
-      name: 'Aya Mahmoud',
-      requestDate: DateTime.now().subtract(const Duration(days: 1)),
-      profilepic: Image.asset('assets/images/profile-pic.png', width: 200),
-    ),
-    FriendRequest(
-      name: 'Mayar Ahmed',
-      requestDate: DateTime.now().subtract(const Duration(days: 5)),
-      profilepic: Image.asset('assets/images/profile-pic.png', width: 200),
-    ),
-    FriendRequest(
-      name: 'Yaseen Mostafa',
-      requestDate: DateTime.now().subtract(const Duration(days: 10)),
-      profilepic: Image.asset('assets/images/profile-pic.png', width: 200),
-    ),
-    FriendRequest(
-      name: 'Jomana Ayman',
-      requestDate: DateTime.now().subtract(const Duration(days: 20)),
-      profilepic: Image.asset('assets/images/profile-pic.png', width: 200),
-    ),
-  ];
+  List<FriendRequestObject> _availableFriendRequests  = [];
+  bool _isFriendRequestsLoading = true;
+  String userID = 'yq2Z9NaQdPz0djpnLynN'; // Replace with actual user ID
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchFriendRequests();
+  }
+
+Future<void> _fetchFriendRequests() async {
+  try {
+    List<FriendRequests> friendRequestsData = await getAllFriendRequests(userID);
+
+    // Fetch the sender's name for each friend request
+    List<FriendRequestObject> friendRequestObjects = [];
+    
+    for (var request in friendRequestsData) {
+      // Fetch the sender's user document
+      DocumentSnapshot senderSnapshot = await FirebaseFirestore.instance
+          .collection('User')
+          .doc(request.senderID)
+          .get();
+
+      if (senderSnapshot.exists) {
+        String senderName = senderSnapshot['name']; // 'name' is the field in the User collection
+
+        friendRequestObjects.add(FriendRequestObject(
+          friendRequestID: request.id!,
+          name: senderName,
+          requestDate: request.createdAt, 
+          profilepic: Image.asset('assets/images/profile-pic.png', width: 200), // Placeholder profile picture
+        ));
+      }
+    }
+
+    setState(() {
+      _availableFriendRequests = friendRequestObjects;
+      _isFriendRequestsLoading = false; // Stop loading once data is fetched
+    });
+  } catch (e) {
+    setState(() {
+      _isFriendRequestsLoading = false; // Stop loading even if there is an error
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Failed to load friend requests: $e')),
+    );
+  }
+}
+
 
   final List<NotificationObject> _notifications =  [
     NotificationObject(
@@ -87,15 +118,29 @@ class _ActivitiesState extends State<Activities> {
     ),
   ];
 
-  void _deleteFriendRequest(int index) {
+  void _deleteFriendRequest(int index) async{
+  String requestID =
+    _availableFriendRequests[index].friendRequestID; // Use the ID
+    
+    await deleteFriendRequestUsingID(requestID);
+
     setState(() {
-      _friendRequests.removeAt(index);
+      _availableFriendRequests.removeAt(index);
     });
   }
 
-  void _confirmFriendRequest(int index) {
+     void _clearAllFriendRequests() async{
+    
+    await clearAllFriendRequests(userID);
+
     setState(() {
-      _friendRequests.removeAt(index);
+      _availableFriendRequests.clear();
+    });
+  }
+
+  void _confirmFriendRequest(int index) async{
+    setState(() {
+      _availableFriendRequests.removeAt(index);
     });
   }
 
@@ -108,12 +153,6 @@ class _ActivitiesState extends State<Activities> {
   void _clearAllNotifications() {
     setState(() {
       _notifications.clear();
-    });
-  }
-
-   void _clearAllFriendRequests() {
-    setState(() {
-      _friendRequests.clear();
     });
   }
 
@@ -164,7 +203,7 @@ Widget FriendRequestsTab() {
               ),
               const SizedBox(width: 10),
               Text(
-                '${_friendRequests.length}',
+                '${_availableFriendRequests.length}',
                 style: GoogleFonts.roboto(
                   color: const Color.fromARGB(255, 213, 12, 12),
                   fontSize: 22,
@@ -191,7 +230,7 @@ Widget FriendRequestsTab() {
           children: [
             Expanded(
               child: FriendRequestsList(
-                requests: _friendRequests,
+                requests: _availableFriendRequests,
                 onDelete: _deleteFriendRequest,
               ),
             ),

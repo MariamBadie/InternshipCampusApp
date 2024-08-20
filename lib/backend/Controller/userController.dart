@@ -154,7 +154,6 @@ void clearMyFavorites(String userID) async {
 }
 
 
-
 Future<List<DocumentReference<Map<String, dynamic>>>> getListFavorites(
     String userID) async {
   // Ensure Firebase is initialized
