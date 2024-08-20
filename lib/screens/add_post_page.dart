@@ -1,6 +1,9 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import '../backend/Model/Rating.dart';
+import '../backend/Controller/ratingController.dart';
 
 class AddPostPage extends StatefulWidget {
   final String postType;
@@ -18,6 +21,23 @@ class _AddPostPageState extends State<AddPostPage> {
   final ImagePicker _picker = ImagePicker();
   String? _lostOrFound;
   String? _category;
+  String? _entityType;
+  String? _specificEntity;
+  int? _rating;
+  final String _userID = 'yq2Z9NaQdPz0djpnLynN';
+
+  // List to store the specific entities retrieved from Firestore
+  List<String> _specificEntitiesList = [];
+
+  void _fetchEntities(String collectionName) async {
+    List<String> entityNames = await ratingController.getAllEntityNamesFromCollection(collectionName);
+    //print(entityNames);
+    setState(() {
+      _specificEntitiesList = entityNames;  // Directly use the list of names
+    });
+  }
+
+  final RatingController ratingController = RatingController(FirebaseService());
 
   Future<void> _pickImage() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
@@ -26,28 +46,59 @@ class _AddPostPageState extends State<AddPostPage> {
     });
   }
 
-  void _submitPost() {
+  void _submitPost() async {
     final postContent = _textController.text;
-    // Handle submission logic here, e.g., save to database
-    if (postContent.isEmpty && _image == null) {
-      // Display error if both fields are empty
+
+    if (postContent.isEmpty && _image == null && widget.postType != 'Rating/Review') {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please enter text or select an image.')),
       );
       return;
     }
 
-    // Example of how to handle the submission
-    print('Type: ${widget.postType}');
-    print('Content: $postContent');
-    print('Anonymous: $_isAnonymous');
-    print('Image path: ${_image?.path}');
+    if (widget.postType == 'Rating/Review') {
+      if (_rating == null || _specificEntity == null || _textController.text.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please complete all fields.')),
+        );
+        return;
+      }
 
-    // Clear the fields after submission
+      Rating rating = Rating(
+        entityType: _entityType!,
+        authorID: _userID,
+        content: _textController.text,
+        upCount: 0,
+        downCount: 0,
+        isAnonymous: _isAnonymous,
+        entityID: _specificEntity!,
+        rating: _rating!,
+        createdAt: DateTime.now(),
+      );
+
+      await ratingController.addRating(rating);  // Call the addRating method from the RatingController
+    } else {
+      if (postContent.isEmpty && _image == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please enter text or select an image.')),
+        );
+        return;
+      }
+
+      print('Type: ${widget.postType}');
+      print('Content: $postContent');
+      print('Anonymous: $_isAnonymous');
+      print('Image path: ${_image?.path}');
+    }
+
     _textController.clear();
     setState(() {
       _image = null;
       _isAnonymous = false;
+      _rating = null;
+      _entityType = null;
+      _specificEntity = null;
+      _category = null;
     });
 
     Navigator.pop(context);
@@ -68,8 +119,7 @@ class _AddPostPageState extends State<AddPostPage> {
               TextField(
                 controller: _textController,
                 decoration: InputDecoration(
-                  hintText:
-                      'Enter your ${widget.postType.toLowerCase()} here...',
+                  hintText: 'Enter your ${widget.postType.toLowerCase()} here...',
                   border: const OutlineInputBorder(),
                 ),
                 maxLines: 5,
@@ -78,9 +128,7 @@ class _AddPostPageState extends State<AddPostPage> {
               if (widget.postType == 'Lost & Found')
                 Row(
                   children: [
-                    const SizedBox(
-                      width: 16,
-                    ),
+                    const SizedBox(width: 16),
                     DropdownButton<String>(
                       hint: const Text('Select Post type'),
                       value: _lostOrFound,
@@ -98,17 +146,9 @@ class _AddPostPageState extends State<AddPostPage> {
                         setState(() {
                           _lostOrFound = newValue;
                         });
-
-                        if (newValue == 'lost') {
-                          // Handle restore action
-                        } else if (newValue == 'found') {
-                          // Handle edit action
-                        }
                       },
                     ),
-                    const SizedBox(
-                      width: 80,
-                    ),
+                    const SizedBox(width: 80),
                     DropdownButton<String>(
                       hint: const Text('Select item category'),
                       value: _category,
@@ -138,46 +178,109 @@ class _AddPostPageState extends State<AddPostPage> {
                         setState(() {
                           _category = newValue;
                         });
-
-                        if (newValue == 'lost') {
-                          // Handle restore action
-                        } else if (newValue == 'found') {
-                          // Handle edit action
-                        }
                       },
+                    ),
+                  ],
+                ),
+              if (widget.postType == 'Rating/Review')
+                Column(
+                  children: [
+                    DropdownButton<String>(
+                      hint: const Text('Select Entity Type'),
+                      value: _entityType,
+                      items: const <DropdownMenuItem<String>>[
+                        DropdownMenuItem(
+                          value: 'professor',
+                          child: Text('Professor'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'course',
+                          child: Text('Course'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'outlet',
+                          child: Text('Outlet'),
+                        ),
+                      ],
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          _entityType = newValue;
+                          // Fetch specific entities from the selected entity type
+                          if (_entityType != null) {
+                            _fetchEntities(_entityType!);
+                          }
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    DropdownButton<String>(
+                      hint: const Text('Select Specific Entity'),
+                      value: _specificEntity,
+                      items: _specificEntitiesList.isEmpty
+                          ? [] // If the list is empty, no items are shown
+                          : _specificEntitiesList.map((entity) {
+                        return DropdownMenuItem<String>(
+                          value: entity,
+                          child: Text(entity),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          _specificEntity = newValue;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: List.generate(5, (index) {
+                        return IconButton(
+                          icon: Icon(
+                            _rating != null && _rating! > index
+                                ? Icons.star
+                                : Icons.star_border,
+                          ),
+                          color: Colors.amber,
+                          onPressed: () {
+                            setState(() {
+                              _rating = index + 1;
+                            });
+                          },
+                        );
+                      }),
                     ),
                   ],
                 ),
               const SizedBox(height: 16),
               Row(
                 children: [
-                  ElevatedButton(
-                    onPressed: _pickImage,
-                    child: const Text('Pick Image'),
+                  Checkbox(
+                    value: _isAnonymous,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        _isAnonymous = value ?? false;
+                      });
+                    },
                   ),
-                  const SizedBox(width: 16),
-                  if (_image != null)
-                    Image.file(
-                      File(_image!.path),
-                      height: 100,
-                      width: 100,
-                      fit: BoxFit.cover,
-                    ),
+                  const Text('Post Anonymously'),
                 ],
               ),
               const SizedBox(height: 16),
-              if (widget.postType != "Lost & Found")
+              if (widget.postType != 'Rating/Review')
                 Row(
                   children: [
-                    Checkbox(
-                      value: _isAnonymous,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          _isAnonymous = value ?? false;
-                        });
-                      },
+                    ElevatedButton(
+                      onPressed: _pickImage,
+                      child: const Text('Pick Image'),
                     ),
-                    const Text('Post Anonymously'),
+                    const SizedBox(width: 16),
+                    if (_image != null)
+                      Image.file(
+                        File(_image!.path),
+                        height: 100,
+                        width: 100,
+                        fit: BoxFit.cover,
+                      ),
                   ],
                 ),
               const SizedBox(height: 16),

@@ -70,6 +70,14 @@ class _MainScreenState extends State<MainScreen> {
                 _navigateToAddPostPage('Lost & Found');
               },
             ),
+            ListTile(
+              leading: const Icon(Icons.rate_review),
+              title: const Text('Post Review/Rating'),
+              onTap: () {
+                Navigator.pop(context);
+                _navigateToAddPostPage('Rating/Review');
+              },
+            ),
           ],
         );
       },
