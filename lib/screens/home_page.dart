@@ -214,6 +214,7 @@ class _MyHomePageState extends State<MyHomePage>
             ),
             _buildDrawerItem(Icons.home, 'Home'),
             _buildDrawerItem(Icons.forum, 'Confessions'),
+            _buildDrawerItem(Icons.rate_review, 'View Reviews & Ratings'),
             _buildDrawerItem(Icons.help, 'Help'),
             _buildStudyingContent(),
             _buildDrawerItem(Icons.event, 'Events'),
