@@ -22,40 +22,53 @@ class _FavoritesPageState extends State<FavoritesPage> {
     _fetchFavoritePosts();
   }
 
-  Future<void> _fetchFavoritePosts() async {
-    try {
-      var favoritesPostData = await getFavoritesPostData(userID);
-      setState(() {
-        posts = favoritesPostData.map((postList) {
-          return {
-            'postID': postList[0],
-            'title': postList[1],
-            'content': postList[2],
-            'type': postList[3] == 'true' ? 'Confession' : 'Post',
-            'hashtags': _extractHashtags(postList[2]),
-          };
-        }).toList();
+Future<void> _fetchFavoritePosts() async {
+  try {
+    var favoritesPostData = await getFavoritesPostData(userID);
+    setState(() {
+      posts = favoritesPostData.map((postList) {
+        return {
+          'postID': postList[0],
+          'title': postList[1],
+          'content': postList[2],
+          'type': postList[3] == true ? 'Confession' : 'Post',
+          'hashtags': _extractHashtags(postList[2]),
+        };
+      }).toList();
 
-        // Collect all unique hashtags
-       var hashtags = posts
-            .expand((post) => post['hashtags'])
-            .toSet()
-            .toList();
+      // Collect all unique hashtags
+      hashtags = posts
+          .expand((post) => post['hashtags'] as List<String>)
+          .toSet()
+          .toList();  // Update instance variable
+          
+      print(hashtags); // Log to verify tags are collected correctly
+      isLoading = false;
+    });
+  } catch (e) {
+    print("Error fetching favorite posts: $e");
+    setState(() {
+      isLoading = false;
+    });
+  }
+}
 
-        isLoading = false;
-      });
-    } catch (e) {
-      print("Error fetching favorite posts: $e");
-      setState(() {
-        isLoading = false;
-      });
-    }
+List<String> _extractHashtags(String content) {
+  print("Content: $content");  // Log the content
+
+  final hashtagRegExp = RegExp(r'#(\w+)', caseSensitive: false);
+
+  // Log the number of matches found
+  final matches = hashtagRegExp.allMatches(content);
+  print("Found ${matches.length} hashtag(s)");
+
+  for (var match in matches) {
+    print("Match: ${match.group(0)}");
   }
 
-  List<String> _extractHashtags(String content) {
-    final hashtagRegExp = RegExp(r'#(\w+)', caseSensitive: false);
-    return hashtagRegExp.allMatches(content).map((match) => match.group(1)!).toList();
-  }
+  // Return the actual hashtags (without the '#')
+  return matches.map((match) => match.group(1)!).toList();
+}
 
   List<Map<String, dynamic>> getFilteredPosts() {
     return posts.where((post) {
@@ -65,33 +78,37 @@ class _FavoritesPageState extends State<FavoritesPage> {
     }).toList();
   }
 
-  Map<String, double> calculateDescriptionPercentages() {
-    final filteredPosts = getFilteredPosts();
-    final Map<String, int> descriptionCount = {};
+Map<String, double> calculateCategoryPercentages() {
+  final filteredPosts = getFilteredPosts(); // Get the posts filtered by type and selected tag
+  final Map<String, int> categoryCount = {};
 
-    for (var post in filteredPosts) {
-      final desc = post['type']!;
-      if (descriptionCount.containsKey(desc)) {
-        descriptionCount[desc] = descriptionCount[desc]! + 1;
+  // Count the occurrences of each hashtag (category)
+  for (var post in filteredPosts) {
+    final List<String> postHashtags = post['hashtags'] as List<String>;
+    for (var hashtag in postHashtags) {
+      if (categoryCount.containsKey(hashtag)) {
+        categoryCount[hashtag] = categoryCount[hashtag]! + 1;
       } else {
-        descriptionCount[desc] = 1;
+        categoryCount[hashtag] = 1;
       }
     }
-
-    final totalPosts = filteredPosts.length;
-    final Map<String, double> descriptionPercentages = {};
-
-    descriptionCount.forEach((key, count) {
-      descriptionPercentages[key] = (count / totalPosts) * 100;
-    });
-
-    return descriptionPercentages;
   }
+
+  final totalCategories = filteredPosts.fold<int>(0, (sum, post) => sum + (post['hashtags'] as List<String>).length);
+  final Map<String, double> categoryPercentages = {};
+
+  // Calculate percentages for each category
+  categoryCount.forEach((key, count) {
+    categoryPercentages[key] = (count / totalCategories) * 100;
+  });
+
+  return categoryPercentages;
+}
 
   @override
   Widget build(BuildContext context) {
     final filteredPosts = getFilteredPosts();
-    final descriptionPercentages = calculateDescriptionPercentages();
+    final descriptionPercentages = calculateCategoryPercentages();
 
     return Scaffold(
       appBar: AppBar(
@@ -129,7 +146,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                             value: tag,
                             child: Text('#$tag'),
                           );
-                        }).toList(),
+                        }),
                       ],
                       onChanged: (String? newValue) {
                         setState(() {
