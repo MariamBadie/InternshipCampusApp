@@ -16,7 +16,7 @@ class Activities extends StatefulWidget {
 }
 
 class _ActivitiesState extends State<Activities> {
-  List<FriendRequestObject> _availableFriendRequests  = [];
+  List<FriendRequestObject> _availableFriendRequests = [];
   bool _isFriendRequestsLoading = true;
   String userID = 'yq2Z9NaQdPz0djpnLynN'; // Replace with actual user ID
 
@@ -26,48 +26,51 @@ class _ActivitiesState extends State<Activities> {
     _fetchFriendRequests();
   }
 
-Future<void> _fetchFriendRequests() async {
-  try {
-    List<FriendRequests> friendRequestsData = await getAllFriendRequests(userID);
+  Future<void> _fetchFriendRequests() async {
+    try {
+      List<FriendRequests> friendRequestsData =
+          await getAllFriendRequests(userID);
 
-    // Fetch the sender's name for each friend request
-    List<FriendRequestObject> friendRequestObjects = [];
-    
-    for (var request in friendRequestsData) {
-      // Fetch the sender's user document
-      DocumentSnapshot senderSnapshot = await FirebaseFirestore.instance
-          .collection('User')
-          .doc(request.senderID)
-          .get();
+      // Fetch the sender's name for each friend request
+      List<FriendRequestObject> friendRequestObjects = [];
 
-      if (senderSnapshot.exists) {
-        String senderName = senderSnapshot['name']; // 'name' is the field in the User collection
+      for (var request in friendRequestsData) {
+        // Fetch the sender's user document
+        DocumentSnapshot senderSnapshot = await FirebaseFirestore.instance
+            .collection('User')
+            .doc(request.senderID)
+            .get();
 
-        friendRequestObjects.add(FriendRequestObject(
-          friendRequestID: request.id!,
-          name: senderName,
-          requestDate: request.createdAt, 
-          profilepic: Image.asset('assets/images/profile-pic.png', width: 200), // Placeholder profile picture
-        ));
+        if (senderSnapshot.exists) {
+          String senderName = senderSnapshot[
+              'name']; // 'name' is the field in the User collection
+
+          friendRequestObjects.add(FriendRequestObject(
+            friendRequestID: request.id!,
+            name: senderName,
+            requestDate: request.createdAt,
+            profilepic: Image.asset('assets/images/profile-pic.png',
+                width: 200), // Placeholder profile picture
+          ));
+        }
       }
+
+      setState(() {
+        _availableFriendRequests = friendRequestObjects;
+        _isFriendRequestsLoading = false; // Stop loading once data is fetched
+      });
+    } catch (e) {
+      setState(() {
+        _isFriendRequestsLoading =
+            false; // Stop loading even if there is an error
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to load friend requests: $e')),
+      );
     }
-
-    setState(() {
-      _availableFriendRequests = friendRequestObjects;
-      _isFriendRequestsLoading = false; // Stop loading once data is fetched
-    });
-  } catch (e) {
-    setState(() {
-      _isFriendRequestsLoading = false; // Stop loading even if there is an error
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Failed to load friend requests: $e')),
-    );
   }
-}
 
-
-  final List<NotificationObject> _notifications =  [
+  final List<NotificationObject> _notifications = [
     NotificationObject(
       notficationText: 'New Comment! Mayar Ahmed commented on your post!',
       notficationDate: DateTime.now().subtract(const Duration(hours: 1)),
@@ -118,10 +121,10 @@ Future<void> _fetchFriendRequests() async {
     ),
   ];
 
-  void _deleteFriendRequest(int index) async{
-  String requestID =
-    _availableFriendRequests[index].friendRequestID; // Use the ID
-    
+  void _deleteFriendRequest(int index) async {
+    String requestID =
+        _availableFriendRequests[index].friendRequestID; // Use the ID
+
     await deleteFriendRequestUsingID(requestID);
 
     setState(() {
@@ -129,8 +132,7 @@ Future<void> _fetchFriendRequests() async {
     });
   }
 
-     void _clearAllFriendRequests() async{
-    
+  void _clearAllFriendRequests() async {
     await clearAllFriendRequests(userID);
 
     setState(() {
@@ -138,7 +140,7 @@ Future<void> _fetchFriendRequests() async {
     });
   }
 
-  void _confirmFriendRequest(int index) async{
+  void _confirmFriendRequest(int index) async {
     setState(() {
       _availableFriendRequests.removeAt(index);
     });
@@ -181,63 +183,79 @@ Future<void> _fetchFriendRequests() async {
     );
   }
 
-Widget FriendRequestsTab() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).brightness == Brightness.dark
-              ? Colors.black
-              : Colors.white,
-          title: Row(
-            children: [
-              Text(
-                "Friend Requests",
-                style: GoogleFonts.roboto(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white
-                      : Colors.black,
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
+  Widget FriendRequestsTab() {
+    return _isFriendRequestsLoading
+        ? const Center(
+            child: CircularProgressIndicator(),
+          )
+        : _availableFriendRequests.isEmpty
+            ? const Center(
+                child: Text(
+                  'No Friend Requests Found',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 10),
-              Text(
-                '${_availableFriendRequests.length}',
-                style: GoogleFonts.roboto(
-                  color: const Color.fromARGB(255, 213, 12, 12),
-                  fontSize: 22,
-                  fontWeight: FontWeight.w500,
+              )
+            : Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                child: Scaffold(
+                  appBar: AppBar(
+                    backgroundColor:
+                        Theme.of(context).brightness == Brightness.dark
+                            ? Colors.black
+                            : Colors.white,
+                    title: Row(
+                      children: [
+                        Text(
+                          "Friend Requests",
+                          style: GoogleFonts.roboto(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
+                            fontSize: 26,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          '${_availableFriendRequests.length}',
+                          style: GoogleFonts.roboto(
+                            color: const Color.fromARGB(255, 213, 12, 12),
+                            fontSize: 22,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: _clearAllFriendRequests,
+                        child: Text(
+                          'Clear All',
+                          style: GoogleFonts.roboto(
+                            color: const Color.fromARGB(255, 30, 53, 235),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  body: Column(
+                    children: [
+                      Expanded(
+                        child: FriendRequestsList(
+                          requests: _availableFriendRequests,
+                          onDelete: _deleteFriendRequest,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: _clearAllFriendRequests,
-              child: Text(
-                'Clear All',
-                style: GoogleFonts.roboto(
-                  color: const Color.fromARGB(255, 30, 53, 235),
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          ],
-        ),
-        body: Column(
-          children: [
-            Expanded(
-              child: FriendRequestsList(
-                requests: _availableFriendRequests,
-                onDelete: _deleteFriendRequest,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+              );
   }
 
   Widget NotificationItem() {
