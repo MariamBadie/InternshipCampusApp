@@ -4,6 +4,36 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart'; // For kIsWeb
 import 'dart:io'; // For Platform
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+
+class AuthService {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  Future<User?> signInWithEmailPassword(String email, String password) async {
+    try {
+      final UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      // Return the user
+      return userCredential.user;
+    } on FirebaseAuthException catch (e) {
+      print("Error signing in: ${e.message}");
+      // Handle errors (e.g., show an error message to the user)
+      return null;
+    }
+  }
+  Future<void> signOut() async {
+    try {
+      await _auth.signOut();
+      print("User signed out successfully.");
+    } catch (e) {
+      print("Error signing out: $e");
+      // Handle errors (e.g., show an error message to the user)
+    }
+  }
+}
 
 class FirebaseService {
   FirebaseService._privateConstructor();
@@ -36,17 +66,10 @@ class FirebaseService {
 
 final FirebaseService firebaseService = FirebaseService.instance;
 
-Future<bool> signIn(String email ,String password) async {
+Future<void> signIn(String email ,String password) async {
 
 await firebaseService.initialize();
-  var userSnapshot =
-      await firebaseService.firestore.collection('User').get();
-  for(var doc in userSnapshot.docs ){
-    if(doc['email']==email && doc['password']==password){
-      return true;
-    }
-  }
-  return false;
+
 
 }
 

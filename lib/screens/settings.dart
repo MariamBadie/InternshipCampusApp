@@ -1,3 +1,4 @@
+import 'package:campus_app/backend/Controller/userController.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +18,7 @@ class SettingsPage2 extends StatefulWidget {
   @override
   State<SettingsPage2> createState() => _SettingsPage2State();
 }
+  final AuthService _authService = AuthService();
 
 class _SettingsPage2State extends State<SettingsPage2> {
   @override
@@ -173,7 +175,7 @@ class _SettingsPage2State extends State<SettingsPage2> {
                   _CustomListTile(
                     title: "Sign Out",
                     icon: Icons.exit_to_app_rounded,
-                    onTap: () => _logOut(context),
+                    onTap: () =>{ _logOut(context)},
                   ),
                   TextButton.icon(
                     onPressed: () => _deleteDialog(context),
@@ -319,7 +321,8 @@ void _logOut(BuildContext context) {
           ),
           TextButton(
             child: const Text('Yes'),
-            onPressed: () {
+            onPressed: () async{
+              await _authService.signOut();
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (context) => const Signin()),
               );

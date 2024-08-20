@@ -1,3 +1,4 @@
+import 'package:campus_app/backend/Controller/userController.dart';
 import 'package:flutter/material.dart';
 import 'package:campus_app/screens/home_page.dart';
 
@@ -11,6 +12,7 @@ class Signin extends StatefulWidget {
 class _SigninState extends State<Signin> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final AuthService _authService = AuthService();
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +28,7 @@ class _SigninState extends State<Signin> {
                 child: TextField(
                   controller: _usernameController,
                   decoration: InputDecoration(
-                    labelText: "Username",
+                    labelText: "Email",
                     prefixIcon: const Icon(Icons.person),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(35.0), // Rounded borders
@@ -65,13 +67,7 @@ class _SigninState extends State<Signin> {
                 onPressed: () {
                   // Get the username from the controller
                   final username = _usernameController.text;
-
-                  // Navigate to MyHomePage with the username
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
-                      builder: (context) =>  MyHomePage(title: '',),
-                    ),
-                  );
+                 _authService.signInWithEmailPassword(username,_passwordController.text);
                 },
               ),
             ],
