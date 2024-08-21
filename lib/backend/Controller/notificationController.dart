@@ -5,6 +5,28 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart'; // For kIsWeb
 import 'dart:io'; // For Platform
 
+
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  retrieveNotifiData();
+}
+
+void retrieveNotifiData() async {
+  // List of collection names
+  String collections = 'Notification';
+
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    QuerySnapshot snapshot = await firestore.collection(collections).get();
+
+    // Print the data retrieved from each document in the collection
+    snapshot.docs.forEach((doc) {
+      print('Document ID: ${doc.id}, Data: ${doc.data()}');
+    });
+  }
+
 class FirebaseService {
   FirebaseService._privateConstructor();
 
@@ -62,7 +84,7 @@ Future<void> deleteNotification(String notificationID) async {
   await firebaseService.firestore.collection('Notification').doc(notificationID).delete();
 }
 
-// Method to get all Friend Requests for a user
+// Method to get all Friend Requests for a user ==> modifyy
 Future<List<NotificationCustom>> getAllNotifications(String userID) async {
   // Ensure Firebase is initialized    
   await firebaseService.initialize();
@@ -71,6 +93,7 @@ Future<List<NotificationCustom>> getAllNotifications(String userID) async {
   QuerySnapshot<Map<String, dynamic>> snapshot = await firebaseService.firestore
       .collection('Notification')
       .where('receiverID', isEqualTo: firebaseService.firestore.doc('User/$userID'))
+      .where('isPublic', isEqualTo: 'true')
       .get();
 
   // Map each document to a notification object
