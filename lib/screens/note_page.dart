@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:campus_app/widgets/notes/note.dart';
 import 'package:campus_app/widgets/notes/note_dialog.dart';
+import 'package:campus_app/widgets/notes/EditNoteDialog.dart';
 
 class NotesPage extends StatefulWidget {
   final String? courseName;
@@ -12,23 +13,70 @@ class NotesPage extends StatefulWidget {
 }
 
 class _NotesPageState extends State<NotesPage> {
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _numberController = TextEditingController();
-  final TextEditingController _contentController = TextEditingController();
-  final List<String> _attachmentPaths = [];
   final TextEditingController _searchController = TextEditingController();
 
   List<Note> _filteredNotes = [];
 
   final List<Note> _notes = [
     Note(
-      title: "Lecture 1",
+      title: "CSEN 401 - Introduction to Software Engineering",
       number: "1",
-      content: "Introduction to Flutter",
-      attachmentPaths: [],
+      content: "Introduction to Software Engineering principles and practices.",
+      attachmentPaths: [
+        "assets/lectures/csen401_intro_software_eng.pdf",
+      ],
       comments: [
-        Comment(text: "Great introduction!", authorName: "John Doe"),
-        Comment(text: "Could use more examples.", authorName: "Jane Smith"),
+        Comment(text: "Very insightful lecture!", authorName: "Ahmed Salah"),
+        Comment(
+            text: "Looking forward to more details on Agile methodologies.",
+            authorName: "Mona Ali"),
+      ],
+    ),
+    Note(
+      title: "CSEN 402 - Fundamentals of Programming",
+      number: "2",
+      content: "Basics of programming languages and development practices.",
+      attachmentPaths: [
+        "assets/lectures/csen402_fundamentals_programming.pdf",
+      ],
+      comments: [
+        Comment(
+            text: "Good start, but could use more exercises.",
+            authorName: "Omar Khaled"),
+        Comment(
+            text: "The examples were very helpful.",
+            authorName: "Sara Mohamed"),
+      ],
+    ),
+    Note(
+      title: "CSEN 403 - Data Structures and Algorithms",
+      number: "3",
+      content: "Study of data structures, algorithms, and their applications.",
+      attachmentPaths: [
+        "assets/lectures/csen403_data_structures_algorithms.pdf",
+      ],
+      comments: [
+        Comment(
+            text: "The lecture was well-organized.",
+            authorName: "Youssef Mostafa"),
+        Comment(
+            text: "I had some trouble with the tree data structures.",
+            authorName: "Fatima Hossam"),
+      ],
+    ),
+    Note(
+      title: "CSEN 404 - Database Systems",
+      number: "4",
+      content: "Introduction to database systems, SQL, and data management.",
+      attachmentPaths: [
+        "assets/lectures/csen404_database_systems.pdf",
+      ],
+      comments: [
+        Comment(
+            text: "Interesting lecture, but the topic is quite complex.",
+            authorName: "Tamer El-Sayed"),
+        Comment(
+            text: "I enjoyed the practical examples.", authorName: "Hana Adel"),
       ],
     ),
   ];
@@ -41,19 +89,26 @@ class _NotesPageState extends State<NotesPage> {
   void _filterNotes(String query) {
     setState(() {
       _filteredNotes = _notes.where((note) {
-        return note.number.contains(query) || note.title.contains(query);
+        final lowerCaseNumber = note.number.toLowerCase();
+        final lowerCaseTitle = note.title.toLowerCase();
+        final lowerCaseQuery = query.toLowerCase();
+        return lowerCaseNumber.contains(lowerCaseQuery) ||
+            lowerCaseTitle.contains(lowerCaseQuery);
       }).toList();
     });
   }
 
-  void _showAddNoteDialog() {
+  void _showEditNoteDialog(Note note) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return NoteDialog(
-          onAddNote: (note) {
+        return EditNoteDialog(
+          note: note,
+          onUpdateNote: (updatedNote) {
             setState(() {
-              _notes.add(note);
+              final index = _notes.indexOf(note);
+              _notes[index] = updatedNote;
+              _filteredNotes = List.from(_notes);
             });
           },
         );
@@ -88,6 +143,12 @@ class _NotesPageState extends State<NotesPage> {
                 return ExpansionTile(
                   title: Text(note.title),
                   subtitle: Text("Number: ${note.number}\n${note.content}"),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.edit),
+                    onPressed: () {
+                      _showEditNoteDialog(note);
+                    },
+                  ),
                   children: [
                     ...note.comments.map((comment) => ListTile(
                           title: Text(comment.text),
@@ -120,6 +181,22 @@ class _NotesPageState extends State<NotesPage> {
           ),
         ],
       ),
+    );
+  }
+
+  void _showAddNoteDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return NoteDialog(
+          onAddNote: (note) {
+            setState(() {
+              _notes.add(note);
+              _filteredNotes = List.from(_notes);
+            });
+          },
+        );
+      },
     );
   }
 }
