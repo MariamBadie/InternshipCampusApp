@@ -23,6 +23,7 @@ class Post {
 }
 
 class Comment {
+ 
   final String username;
   final String content;
   final Map<String, int> reactions;
@@ -30,6 +31,7 @@ class Comment {
   List<Reply>? replies; // Add this field to store replies
 
   Comment({
+    
     required this.username,
     required this.content,
     required this.reactions,

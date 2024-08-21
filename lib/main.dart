@@ -16,21 +16,25 @@ import 'dart:io' show Platform; // Import for Platform
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (kIsWeb || Platform.isWindows) {
-    await Firebase.initializeApp(
-      options: const FirebaseOptions(
-        apiKey: "AIzaSyDdwt6XiHvlk46DtZXwrl6c4NPXfnw708o",
-        authDomain: "campus-app-d0e52.firebaseapp.com",
-        databaseURL: "https://campus-app-d0e52-default-rtdb.firebaseio.com",
-        projectId: "campus-app-d0e52",
-        storageBucket: "campus-app-d0e52.appspot.com",
-        messagingSenderId: "709052786972",
-        appId: "1:709052786972:web:af8ddea0272df4e0ef32d9",
-        measurementId: "G-SDR2E8LC22",
-      ),
-    );
-  } else {
-    await Firebase.initializeApp();
+  try {
+    if (kIsWeb || Platform.isWindows) {
+      await Firebase.initializeApp(
+        options: const FirebaseOptions(
+          apiKey: "AIzaSyDdwt6XiHvlk46DtZXwrl6c4NPXfnw708o",
+          authDomain: "campus-app-d0e52.firebaseapp.com",
+          databaseURL: "https://campus-app-d0e52-default-rtdb.firebaseio.com",
+          projectId: "campus-app-d0e52",
+          storageBucket: "campus-app-d0e52.appspot.com",
+          messagingSenderId: "709052786972",
+          appId: "1:709052786972:web:af8ddea0272df4e0ef32d9",
+          measurementId: "G-SDR2E8LC22",
+        ),
+      );
+    } else {
+      await Firebase.initializeApp();
+    }
+  } catch (e) {
+    print('Firebase initialization error: $e');
   }
 
   runApp(
@@ -40,6 +44,7 @@ void main() async {
     ),
   );
 }
+
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 

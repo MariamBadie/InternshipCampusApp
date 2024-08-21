@@ -166,6 +166,112 @@ class _MyHomePageState extends State<MyHomePage>
       const SnackBar(content: Text('Link copied to clipboard!')),
     );
   }
+//   void _editPost(String postId) {
+//   showDialog(
+//     context: context,
+//     builder: (BuildContext context) {
+//       String updatedContent = post.content; // Pre-populate with current content
+//       return AlertDialog(
+//         title: const Text('Edit Post'),
+//         content: TextField(
+//           controller: TextEditingController(text: updatedContent),
+//           onChanged: (value) {
+//             updatedContent = value;
+//           },
+//           decoration: const InputDecoration(hintText: "Edit your post"),
+//         ),
+//         actions: <Widget>[
+//           TextButton(
+//             child: const Text('Cancel'),
+//             onPressed: () {
+//               Navigator.of(context).pop();
+//             },
+//           ),
+//           TextButton(
+//             child: const Text('Save'),
+//             onPressed: () {
+//               if (updatedContent.isNotEmpty) {
+//                 // Call your method to save the updated post content
+//                 // For example: _savePost(postId, updatedContent);
+//                 Navigator.of(context).pop();
+//               }
+//             },
+//           ),
+//         ],
+//       );
+//     },
+//   );
+// }
+void _reportPost(String postId) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      String reportReason = '';
+      return AlertDialog(
+        title: const Text('Report Post'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Please select a reason for reporting this post:'),
+            TextField(
+              onChanged: (value) {
+                reportReason = value;
+              },
+              decoration: const InputDecoration(hintText: "Enter reason"),
+            ),
+          ],
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Cancel'),
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+            },
+          ),
+          TextButton(
+            child: const Text('Report'),
+            onPressed: () {
+              if (reportReason.isNotEmpty) {
+                // Implement your report logic here
+                // For example: _performReport(postId, reportReason);
+                Navigator.of(context).pop(); // Close the dialog
+              }
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+void _deletePost(String postId) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Delete Post'),
+        content: const Text('Are you sure you want to delete this post?'),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Cancel'),
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+            },
+          ),
+          TextButton(
+            child: const Text('Delete'),
+            onPressed: () {
+              // Implement your deletion logic here
+              // For example: _performDelete(postId);
+              Navigator.of(context).pop(); // Close the dialog
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -297,6 +403,9 @@ class _MyHomePageState extends State<MyHomePage>
               onReplyToComment: _replyToComment,
               onShare: () => _sharePost(post.id),
               onCopyLink: () => _copyPostLink(post.id),
+              // onEdit:() => _editPost(post.id),
+              onDelete: () => _deletePost(post.id),
+              onReport: () => _reportPost(post.id),
             ),
           );
         },

@@ -14,6 +14,10 @@ class PostCard extends StatelessWidget {
   final VoidCallback onShare;
   final VoidCallback onCopyLink;
 
+  // final VoidCallback onEdit;
+  final VoidCallback onDelete;
+  final VoidCallback onReport;
+
   PostCard({
     required this.post,
     required this.onReact,
@@ -22,6 +26,10 @@ class PostCard extends StatelessWidget {
     required this.onReplyToComment,
     required this.onShare,
     required this.onCopyLink,
+    // required this.onEdit,
+  
+    required this.onDelete,
+    required this.onReport,
   });
 
   @override
@@ -48,8 +56,36 @@ class PostCard extends StatelessWidget {
               ),
               title: Text(post.isAnonymous ? 'Anonymous' : post.username),
               subtitle: Text(post.content),
-              trailing:
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
                   Text(DateFormat('MMM d, y h:mm a').format(post.timestamp)),
+                  PopupMenuButton<String>(
+                    icon: Icon(Icons.more_vert),
+                    onSelected: (value) {
+                      switch (value) {
+                        // case 'Edit':
+                        //   onEdit();
+                          // break;
+                        case 'Delete':
+                          onDelete();
+                          break;
+                        case 'Report':
+                          onReport();
+                          break;
+                      }
+                    },
+                    itemBuilder: (BuildContext context) {
+                      return {'Edit', 'Delete', 'Report'}.map((String choice) {
+                        return PopupMenuItem<String>(
+                          value: choice,
+                          child: Text(choice),
+                        );
+                      }).toList();
+                    },
+                  ),
+                ],
+              ),
             ),
             if (post.type != 'Help')
               Padding(
@@ -57,13 +93,10 @@ class PostCard extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _buildReactionButton(context, 0, 'like',
-                        Icons.thumb_up), // Use correct parameters
-                    _buildReactionButton(
-                        context, 0, 'dislike', Icons.thumb_down),
+                    _buildReactionButton(context, 0, 'like', Icons.thumb_up),
+                    _buildReactionButton(context, 0, 'dislike', Icons.thumb_down),
                     _buildReactionButton(context, 0, 'love', Icons.favorite),
-                    _buildReactionButton(
-                        context, 0, 'haha', Icons.emoji_emotions),
+                    _buildReactionButton(context, 0, 'haha', Icons.emoji_emotions),
                   ],
                 ),
               ),
@@ -112,8 +145,7 @@ class PostCard extends StatelessWidget {
     return TextButton.icon(
       onPressed: () => onReactToComment(post.id, commentIndex, type),
       icon: Icon(icon),
-      label: Text(post.comments[commentIndex].reactions[type]
-          .toString()), // Ensure label is a String
+      label: Text(post.comments[commentIndex].reactions[type].toString()),
     );
   }
 
@@ -139,14 +171,10 @@ class PostCard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _buildReactionButton(
-                        context, commentIndex, 'like', Icons.thumb_up),
-                    _buildReactionButton(
-                        context, commentIndex, 'dislike', Icons.thumb_down),
-                    _buildReactionButton(
-                        context, commentIndex, 'love', Icons.favorite),
-                    _buildReactionButton(
-                        context, commentIndex, 'haha', Icons.emoji_emotions),
+                    _buildReactionButton(context, commentIndex, 'like', Icons.thumb_up),
+                    _buildReactionButton(context, commentIndex, 'dislike', Icons.thumb_down),
+                    _buildReactionButton(context, commentIndex, 'love', Icons.favorite),
+                    _buildReactionButton(context, commentIndex, 'haha', Icons.emoji_emotions),
                     IconButton(
                       icon: const Icon(Icons.reply, size: 16),
                       onPressed: () => _showReplyDialog(context, commentIndex),
@@ -161,8 +189,7 @@ class PostCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           CircleAvatar(
-                            backgroundImage:
-                                AssetImage(reply.profilePictureUrl),
+                            backgroundImage: AssetImage(reply.profilePictureUrl),
                             radius: 18,
                           ),
                           const SizedBox(width: 8),
@@ -178,14 +205,10 @@ class PostCard extends StatelessWidget {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceAround,
                                   children: [
-                                    _buildReactionButton(
-                                        context, 0, 'like', Icons.thumb_up),
-                                    _buildReactionButton(context, 0, 'dislike',
-                                        Icons.thumb_down),
-                                    _buildReactionButton(
-                                        context, 0, 'love', Icons.favorite),
-                                    _buildReactionButton(context, 0, 'haha',
-                                        Icons.emoji_emotions),
+                                    _buildReactionButton(context, 0, 'like', Icons.thumb_up),
+                                    _buildReactionButton(context, 0, 'dislike', Icons.thumb_down),
+                                    _buildReactionButton(context, 0, 'love', Icons.favorite),
+                                    _buildReactionButton(context, 0, 'haha', Icons.emoji_emotions),
                                   ],
                                 ),
                               ],
