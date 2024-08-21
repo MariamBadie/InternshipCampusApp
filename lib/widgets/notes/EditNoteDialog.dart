@@ -51,7 +51,14 @@ class _EditNoteDialogState extends State<EditNoteDialog> {
               number: _numberController.text,
               content: _contentController.text,
               attachmentPaths: List.from(_attachmentPaths),
-              comments: widget.note.comments,
+              comments: widget.note.comments.map((comment) {
+                return comment.authorName == 'You'
+                    ? Comment(
+                        text: comment.text,
+                        authorName: comment.authorName,
+                        isOwnComment: true)
+                    : comment;
+              }).toList(),
             );
             widget.onUpdateNote(updatedNote);
             Navigator.of(context).pop();

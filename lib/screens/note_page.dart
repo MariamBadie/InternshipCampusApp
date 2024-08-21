@@ -48,37 +48,6 @@ class _NotesPageState extends State<NotesPage> {
             authorName: "Sara Mohamed"),
       ],
     ),
-    Note(
-      title: "CSEN 403 - Data Structures and Algorithms",
-      number: "3",
-      content: "Study of data structures, algorithms, and their applications.",
-      attachmentPaths: [
-        "assets/lectures/csen403_data_structures_algorithms.pdf",
-      ],
-      comments: [
-        Comment(
-            text: "The lecture was well-organized.",
-            authorName: "Youssef Mostafa"),
-        Comment(
-            text: "I had some trouble with the tree data structures.",
-            authorName: "Fatima Hossam"),
-      ],
-    ),
-    Note(
-      title: "CSEN 404 - Database Systems",
-      number: "4",
-      content: "Introduction to database systems, SQL, and data management.",
-      attachmentPaths: [
-        "assets/lectures/csen404_database_systems.pdf",
-      ],
-      comments: [
-        Comment(
-            text: "Interesting lecture, but the topic is quite complex.",
-            authorName: "Tamer El-Sayed"),
-        Comment(
-            text: "I enjoyed the practical examples.", authorName: "Hana Adel"),
-      ],
-    ),
   ];
 
   void initState() {
@@ -143,11 +112,22 @@ class _NotesPageState extends State<NotesPage> {
                 return ExpansionTile(
                   title: Text(note.title),
                   subtitle: Text("Number: ${note.number}\n${note.content}"),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.edit),
-                    onPressed: () {
-                      _showEditNoteDialog(note);
-                    },
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.download),
+                        onPressed: () {
+                          _downloadNote(note);
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.edit),
+                        onPressed: () {
+                          _showEditNoteDialog(note);
+                        },
+                      ),
+                    ],
                   ),
                   children: [
                     ...note.comments.map((comment) => ListTile(
@@ -198,5 +178,11 @@ class _NotesPageState extends State<NotesPage> {
         );
       },
     );
+  }
+
+  void _downloadNote(Note note) {
+    // Implement the logic to download the note
+    // This could involve creating a PDF or other file format and saving it to the device
+    print('Downloading note: ${note.title}');
   }
 }

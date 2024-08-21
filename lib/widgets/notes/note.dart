@@ -12,14 +12,20 @@ class Note {
     required this.attachmentPaths,
     required this.comments,
   });
+
+  void deleteComment(Comment comment) {
+    comments.remove(comment);
+  }
 }
 
 class Comment {
   final String text;
   final String authorName;
+  final bool isOwnComment;
 
   Comment({
     required this.text,
     required this.authorName,
+    this.isOwnComment = false,
   });
 }
