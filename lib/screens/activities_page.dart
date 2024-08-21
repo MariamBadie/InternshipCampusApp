@@ -1,6 +1,6 @@
 import 'package:campus_app/backend/Controller/friendrequestsController.dart';
 import 'package:campus_app/backend/Model/FriendRequests.dart';
-import 'package:campus_app/models/notification_object.dart';
+import 'package:campus_app/models/NotificationObject.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
