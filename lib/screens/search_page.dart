@@ -11,6 +11,8 @@ class _SearchPageState extends State<SearchPage> {
   List<String> _results = [];
   static List previousSearchs = [];
 
+  String _selectedCategory = "All";
+
   void _performSearch(String query) {
     setState(() {
       _results = List.generate(10, (index) => 'Result $index for "$query"');
@@ -44,152 +46,63 @@ class _SearchPageState extends State<SearchPage> {
             ),
           ),
           Container(height: 5),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Text(
-              'Categories',
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-              ),
+          Container(
+            height: 50,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: [
+                categoryItem("All"),
+                categoryItem("Users"),
+                categoryItem("Posts"),
+                categoryItem("Events"),
+              ],
             ),
           ),
-          Container(
-            height: 110,
-            child: ListView(
-                scrollDirection: Axis.horizontal,
-                padding: EdgeInsets.all(8),
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(right: 10),
-                    child: Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(100),
-                          ),
-                          child: Image.asset(
-                            'assets/images/friends.png',
-                            height: 45,
-                            width: 45,
-                          ),
-                          padding: EdgeInsets.all(10),
-                        ),
-                        Text("Friends"),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(right: 10),
-                    child: Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(100),
-                          ),
-                          child: Image.asset(
-                            'assets/images/posts.png',
-                            height: 45,
-                            width: 45,
-                          ),
-                          padding: EdgeInsets.all(10),
-                        ),
-                        Text("Posts"),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(right: 10),
-                    child: Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(100),
-                          ),
-                          child: Image.asset(
-                            'assets/images/outlets.png',
-                            height: 45,
-                            width: 45,
-                          ),
-                          padding: EdgeInsets.all(10),
-                        ),
-                        Text("Outlets"),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(right: 10),
-                    child: Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(100),
-                          ),
-                          child: Image.asset(
-                            'assets/images/officess.png',
-                            height: 45,
-                            width: 45,
-                          ),
-                          padding: EdgeInsets.all(10),
-                        ),
-                        Text("Offices"),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(right: 10),
-                    child: Column(children: [
-                      Container(
-                          decoration: BoxDecoration(
-                              color: Colors.grey[200],
-                              borderRadius: BorderRadius.circular(100)),
-                          child: Image.asset(
-                            'assets/images/events.jpg',
-                            height: 45,
-                            width: 45,
-                          ),
-                          padding: EdgeInsets.all(10)),
-                      Text("Events"),
-                    ]),
-                  ),
-                ]),
-          ),
+          Container(height: 5),
+
           // Previous Searches
-          Container(
-            color: Colors.white,
+          Expanded(
             child: ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 itemCount: previousSearchs.length,
                 itemBuilder: (context, index) => previousSearchsItem(index)),
-          ),
-
-          Align(
-            alignment: Alignment.center,
-            child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  previousSearchs.clear();
-                });
-              },
-              child: Text(
-                "Clear all",
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-              ),
-            ),
           ),
         ],
       ),
     );
   }
 
+  Widget categoryItem(String category) {
+    final isSelected = _selectedCategory == category;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedCategory = category;
+        });
+      },
+      child: Container(
+        margin: EdgeInsets.only(left: 8),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.grey[800] : Colors.white,
+          borderRadius: BorderRadius.circular(40),
+          border: Border.all(color: Colors.black),
+        ),
+        child: Text(
+          category,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.bold,
+            color: isSelected ? Colors.white : Colors.black,
+          ),
+        ),
+      ),
+    );
+  }
+
   previousSearchsItem(int index) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
       child: InkWell(
         onTap: () {},
         child: Dismissible(
@@ -202,15 +115,15 @@ class _SearchPageState extends State<SearchPage> {
             children: [
               const Icon(
                 Icons.access_alarm,
-                size: 25,
+                size: 20,
                 color: Colors.grey,
               ),
               const SizedBox(
-                width: 10,
+                width: 5,
               ),
               Text(
                 previousSearchs[index],
-                style: TextStyle(fontSize: 20),
+                style: TextStyle(fontSize: 16),
               ),
               const Spacer(),
               IconButton(
