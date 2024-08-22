@@ -55,6 +55,7 @@ class _SearchPageState extends State<SearchPage> {
                 categoryItem("Users"),
                 categoryItem("Posts"),
                 categoryItem("Events"),
+                categoryItem("Outlets"),
               ],
             ),
           ),

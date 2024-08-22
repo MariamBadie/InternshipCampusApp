@@ -38,9 +38,9 @@ void main() async {
   }
 
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => ThemeNotifier(),
-      child: const MyApp(),
+    DevicePreview(
+      enabled: true,
+      builder: (context) => const MyApp(),
     ),
   );
 }
@@ -50,7 +50,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeNotifier>(context);
+    //final themeProvider = Provider.of<ThemeNotifier>(context);
 
     return MaterialApp(
       useInheritedMediaQuery: true,
@@ -60,7 +60,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: _buildTheme(Brightness.light), // Light theme
       darkTheme: _buildTheme(Brightness.dark), // Dark theme
-      themeMode: themeProvider.themeMode, // Use the theme mode from the provider
+      //themeMode: themeProvider.themeMode, // Use the theme mode from the provider
       home: MainScreen(),
       routes: {
         '/search': (context) => SearchPage(),
