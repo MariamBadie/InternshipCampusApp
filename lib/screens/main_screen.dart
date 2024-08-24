@@ -78,6 +78,14 @@ class _MainScreenState extends State<MainScreen> {
                 _navigateToAddPostPage('Rating/Review');
               },
             ),
+            ListTile(
+              leading: const Icon(Icons.note),
+              title: const Text('Post Notes'),
+              onTap: () {
+                Navigator.pop(context);
+                _navigateToAddPostPage('Notes');
+              },
+            ),
           ],
         );
       },

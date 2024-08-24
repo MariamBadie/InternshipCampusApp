@@ -97,18 +97,39 @@ class _EditNoteDialogState extends State<EditNoteDialog> {
               children: _attachmentPaths.map((path) {
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Image.file(
-                    File(path),
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.cover,
-                  ),
+                  child: _buildAttachmentThumbnail(path),
                 );
               }).toList(),
             ),
         ],
       ),
     );
+  }
+
+  Widget _buildAttachmentThumbnail(String path) {
+    try {
+      return Image.file(
+        File(path),
+        width: 100,
+        height: 100,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return Container(
+            width: 100,
+            height: 100,
+            color: Colors.grey[300],
+            child: Icon(Icons.broken_image, color: Colors.grey[600]),
+          );
+        },
+      );
+    } catch (e) {
+      return Container(
+        width: 100,
+        height: 100,
+        color: Colors.grey[300],
+        child: Icon(Icons.error, color: Colors.grey[600]),
+      );
+    }
   }
 
   void _showAttachmentSourceDialog() {
@@ -143,9 +164,19 @@ class _EditNoteDialogState extends State<EditNoteDialog> {
 
   void _pickFile() async {
     // Logic to pick files
+    // For now, just close the dialog
+    Navigator.of(context).pop();
   }
 
   void _pickImageFromGallery() async {
     // Logic to pick images
+    // For now, just close the dialog
+    Navigator.of(context).pop();
+  }
+
+  void _removeAttachment(String path) {
+    setState(() {
+      _attachmentPaths.remove(path);
+    });
   }
 }
