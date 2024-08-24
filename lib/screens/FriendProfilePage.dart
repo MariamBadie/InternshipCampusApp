@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
 
 class FriendProfilePage extends StatelessWidget {
   final String name;
@@ -16,9 +19,41 @@ class FriendProfilePage extends StatelessWidget {
       appBar: AppBar(
         title: Text(name),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () => Navigator.pushNamed(context, '/friendSettings'),
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert), // 3 dots icon
+            onSelected: (String result) {
+              switch (result) {
+                case 'Report User':
+                  _showReportDialog(context);
+                  break;
+                case 'Block User':
+                  _showBlockConfirmationDialog(context);
+                  break;
+                case 'Share User':
+                  Clipboard.setData(ClipboardData(text: 'https://yourapp.com/user/$name'));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Profile URL copied to clipboard')),
+                  );
+                  break;
+              }
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+              const PopupMenuItem<String>(
+                value: 'Report User',
+                child: Text('Report User'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'Block User',
+                child: Text(
+                  'Block User',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+              const PopupMenuItem<String>(
+                value: 'Share User',
+                child: Text('Share User'),
+              ),
+            ],
           ),
         ],
       ),
@@ -39,6 +74,100 @@ class FriendProfilePage extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+ void _showReportDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Report User'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Select a reason for reporting:'),
+            ListTile(
+              title: const Text('Spam'),
+              onTap: () {
+                Navigator.pop(context);
+                _showToast();
+              },
+            ),
+            ListTile(
+              title: const Text('Inappropriate Content'),
+              onTap: () {
+                Navigator.pop(context);
+                _showToast();
+              },
+            ),
+            ListTile(
+              title: const Text('Harassment'),
+              onTap: () {
+                Navigator.pop(context);
+                _showToast();
+              },
+            ),
+            ListTile(
+              title: const Text('Other'),
+              onTap: () {
+                Navigator.pop(context);
+                _showToast();
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            child: const Text('Cancel'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
+void _showToast() {
+  Fluttertoast.showToast(
+    msg: "User reported. We will check it and respond as soon as possible.",
+    toastLength: Toast.LENGTH_LONG,
+    gravity: ToastGravity.BOTTOM,
+    backgroundColor: Colors.black54,
+    textColor: Colors.white,
+    fontSize: 16.0,
+  );
+}
+
+   void _showBlockConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Block User'),
+          content: const Text('Are you sure you want to block this user?'),
+          actions: [
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text(
+                'Block',
+                style: TextStyle(color: Colors.red),
+              ),
+              onPressed: () {
+                // Handle block user action
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 

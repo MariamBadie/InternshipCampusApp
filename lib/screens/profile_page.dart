@@ -1,13 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart'; // Import for date formatting
 import 'friends_list_page.dart'; // Import the FriendsListPage
-import 'points_guide.dart'; // Import the PointsGuide
+import '../models/post.dart'; // Import the Post model
+import 'post_details_page.dart'; // Import the PostDetailsPage
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
+  @override
+  _ProfilePageState createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
   final String username = 'Anas Tamer';
   final String bio = 'MET Major | Student at GUC';
-  final int numberOfPosts = 4;
+  int numberOfPosts = 4;
   final int numberOfFriends = 120;
   final int karma = 350;
+
+  List<Post> userPosts = [
+    Post(
+      id: '1',
+      username: 'Anas Tamer',
+      type: 'Text',
+      content: 'Had a great day exploring Flutter!',
+      reactions: {'like': 10, 'love': 5, 'haha': 2},
+      comments: [],
+      isAnonymous: false,
+      timestamp: DateTime.now().subtract(Duration(hours: 2)),
+      profilePictureUrl: 'assets/images/anas.jpg',
+    ),
+    Post(
+      id: '2',
+      username: 'Anas Tamer',
+      type: 'Image',
+      content: 'Check out this cool picture I took!',
+      reactions: {'like': 15, 'love': 8, 'haha': 1},
+      comments: [],
+      isAnonymous: false,
+      timestamp: DateTime.now().subtract(Duration(days: 1)),
+      profilePictureUrl: 'assets/images/anas.jpg',
+    ),
+    // Add more posts here...
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -56,8 +89,7 @@ class ProfilePage extends StatelessWidget {
             children: [
               Text(
                 username,
-                style:
-                    const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               Text(
@@ -91,13 +123,6 @@ class ProfilePage extends StatelessWidget {
             MaterialPageRoute(
               builder: (context) => FriendsListPage(profileName: username),
             ),
-          );
-        }else if (label == 'Karma') {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return KarmaDialog();
-            },
           );
         }
       },
@@ -141,18 +166,49 @@ class ProfilePage extends StatelessWidget {
         ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          itemCount: 5, // Show only 5 most recent posts
+          itemCount: userPosts.length,
           itemBuilder: (context, index) {
+            final post = userPosts[index];
             return Card(
               margin: const EdgeInsets.only(bottom: 16),
               child: ListTile(
-                leading: const Icon(Icons.post_add),
-                title: Text('Post Title ${index + 1}'),
-                subtitle: const Text('Post content preview...'),
-                onTap: () => Navigator.pushNamed(
+                leading: CircleAvatar(
+                  backgroundImage: AssetImage(post.profilePictureUrl),
+                ),
+                title: Text(post.isAnonymous ? 'Anonymous' : post.username),
+                subtitle: Text(
+                  post.content.length > 50
+                      ? '${post.content.substring(0, 50)}...'
+                      : post.content,
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      DateFormat('MMM d, y h:mm a').format(post.timestamp),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.delete, color: Colors.red),
+                      onPressed: () => _showDeleteConfirmation(context, index),
+                    ),
+                  ],
+                ),
+                onTap: () => Navigator.push(
                   context,
-                  '/postDetails',
-                  arguments: {'postId': index},
+                  MaterialPageRoute(
+                    builder: (context) => PostDetailsPage(
+                      post: post,
+                      onReact: (postId, reactionType) {
+                        // Handle reaction
+                      },
+                      onComment: (postId, username, comment) {
+                        // Handle comment
+                      },
+                      onReactToComment: (postId, commentIndex, reactionType) {
+                        // Handle reaction to comment
+                      },
+                    ),
+                  ),
                 ),
               ),
             );
@@ -160,5 +216,39 @@ class ProfilePage extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  void _showDeleteConfirmation(BuildContext context, int index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Delete Post'),
+          content: Text('Are you sure you want to delete this post?'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Delete'),
+              onPressed: () {
+                _deletePost(index);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _deletePost(int index) {
+    setState(() {
+      userPosts.removeAt(index);
+      numberOfPosts--;
+    });
   }
 }
