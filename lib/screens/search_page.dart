@@ -253,7 +253,8 @@ class _SearchPageState extends State<SearchPage> {
                                   children: [
                                     Icon(
                                       Icons.article,
-                                      size: 24.0,
+                                      size: 20.0,
+                                      color: Colors.blue,
                                     ),
                                     SizedBox(width: 7),
                                     Expanded(
@@ -302,6 +303,7 @@ class _SearchPageState extends State<SearchPage> {
                                 Icon(
                                   Icons.store,
                                   size: 24.0,
+                                  color: Colors.orange,
                                 ),
                                 SizedBox(width: 7),
                                 Text(
@@ -348,6 +350,7 @@ class _SearchPageState extends State<SearchPage> {
 
   Widget categoryItem(String category) {
     final isSelected = selectedCategory == category;
+
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -355,20 +358,36 @@ class _SearchPageState extends State<SearchPage> {
           _fetchDataBasedOnCategory();
         });
       },
-      child: Container(
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
         margin: EdgeInsets.only(left: 8),
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.grey[800] : Colors.white,
-          borderRadius: BorderRadius.circular(60),
-          border: Border.all(color: Colors.black, width: 2),
+          gradient: isSelected
+              ? LinearGradient(
+                  colors: [Colors.teal[800]!, Colors.teal[600]!],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                )
+              : LinearGradient(
+                  colors: [Colors.white, Colors.grey[200]!],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+          borderRadius: BorderRadius.circular(50),
+          border: Border.all(
+            color: isSelected ? Colors.teal : Colors.grey[400]!,
+            width: 2,
+          ),
         ),
         child: Text(
           category,
           style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.bold,
-            color: isSelected ? Colors.white : Colors.black,
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 1.1,
+            color: isSelected ? Colors.white : Colors.black87,
           ),
         ),
       ),
