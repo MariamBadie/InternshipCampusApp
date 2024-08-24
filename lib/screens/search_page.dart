@@ -322,10 +322,23 @@ class _SearchPageState extends State<SearchPage> {
             Container(),
           if (query.isEmpty)
             Expanded(
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: previousSearches.length,
-                itemBuilder: (context, index) => previousSearchesItem(index),
+              child: Column(
+                children: [
+                  ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: previousSearches.length,
+                    itemBuilder: (context, index) =>
+                        previousSearchesItem(index),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        previousSearches.clear();
+                      });
+                    },
+                    child: Text("Clear All"),
+                  ),
+                ],
               ),
             ),
         ],
