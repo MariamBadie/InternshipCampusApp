@@ -1,5 +1,4 @@
 import 'package:campus_app/screens/note_page.dart';
-import 'package:campus_app/screens/content_page.dart';
 import 'package:campus_app/screens/event_details_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For Clipboard
@@ -166,6 +165,7 @@ class _MyHomePageState extends State<MyHomePage>
       const SnackBar(content: Text('Link copied to clipboard!')),
     );
   }
+
 //   void _editPost(String postId) {
 //   showDialog(
 //     context: context,
@@ -202,76 +202,75 @@ class _MyHomePageState extends State<MyHomePage>
 //     },
 //   );
 // }
-void _reportPost(String postId) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      String reportReason = '';
-      return AlertDialog(
-        title: const Text('Report Post'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Please select a reason for reporting this post:'),
-            TextField(
-              onChanged: (value) {
-                reportReason = value;
+  void _reportPost(String postId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        String reportReason = '';
+        return AlertDialog(
+          title: const Text('Report Post'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Please select a reason for reporting this post:'),
+              TextField(
+                onChanged: (value) {
+                  reportReason = value;
+                },
+                decoration: const InputDecoration(hintText: "Enter reason"),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
               },
-              decoration: const InputDecoration(hintText: "Enter reason"),
+            ),
+            TextButton(
+              child: const Text('Report'),
+              onPressed: () {
+                if (reportReason.isNotEmpty) {
+                  // Implement your report logic here
+                  // For example: _performReport(postId, reportReason);
+                  Navigator.of(context).pop(); // Close the dialog
+                }
+              },
             ),
           ],
-        ),
-        actions: <Widget>[
-          TextButton(
-            child: const Text('Cancel'),
-            onPressed: () {
-              Navigator.of(context).pop(); // Close the dialog
-            },
-          ),
-          TextButton(
-            child: const Text('Report'),
-            onPressed: () {
-              if (reportReason.isNotEmpty) {
-                // Implement your report logic here
-                // For example: _performReport(postId, reportReason);
+        );
+      },
+    );
+  }
+
+  void _deletePost(String postId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete Post'),
+          content: const Text('Are you sure you want to delete this post?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
-              }
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
-void _deletePost(String postId) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text('Delete Post'),
-        content: const Text('Are you sure you want to delete this post?'),
-        actions: <Widget>[
-          TextButton(
-            child: const Text('Cancel'),
-            onPressed: () {
-              Navigator.of(context).pop(); // Close the dialog
-            },
-          ),
-          TextButton(
-            child: const Text('Delete'),
-            onPressed: () {
-              // Implement your deletion logic here
-              // For example: _performDelete(postId);
-              Navigator.of(context).pop(); // Close the dialog
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
-
-
+              },
+            ),
+            TextButton(
+              child: const Text('Delete'),
+              onPressed: () {
+                // Implement your deletion logic here
+                // For example: _performDelete(postId);
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -322,7 +321,12 @@ void _deletePost(String postId) {
             _buildDrawerItem(Icons.forum, 'Confessions'),
             _buildDrawerItem(Icons.rate_review, 'View Reviews & Ratings'),
             _buildDrawerItem(Icons.help, 'Help'),
-            _buildStudyingContent(),
+            _buildDrawerItem(Icons.assignment, "Notes", onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const NotesPage()),
+              );
+            }),
             _buildDrawerItem(Icons.event, 'Events'),
             _buildDrawerItem(Icons.logout, 'Log Out', onTap: () {
               // Add functionality to log out
@@ -348,29 +352,6 @@ void _deletePost(String postId) {
           () {
             Navigator.pop(context);
           },
-    );
-  }
-
-  Widget _buildStudyingContent() {
-    return ExpansionTile(
-      leading: const Icon(Icons.assignment),
-      title: const Text("Studying content"),
-      children: [
-        ListTile(
-          title: const Text('Content Page'),
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const ContentPage()),
-          ),
-        ),
-        ListTile(
-          title: const Text('Notes Page'),
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const NotesPage()),
-          ),
-        ),
-      ],
     );
   }
 
