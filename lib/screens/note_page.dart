@@ -118,61 +118,52 @@ class _NotesPageState extends State<NotesPage> {
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       color: secondaryColor,
-      child: Theme(
-        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-        child: ExpansionTile(
-          title: Text(
-            note.title,
-            style: TextStyle(fontWeight: FontWeight.bold, color: primaryColor),
-          ),
-          subtitle: Text(note.number,
-              style: TextStyle(color: textColor.withOpacity(0.7))),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                icon: Icon(Icons.delete, color: Colors.red),
-                onPressed: () => _deleteNote(note.id!),
-              ),
-              Icon(Icons.expand_more, color: primaryColor),
-            ],
-          ),
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(note.content, style: TextStyle(color: textColor)),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _buildActionButton(Icons.edit, 'Edit', primaryColor,
-                          () => _showEditNoteDialog(note)),
-                      _buildActionButton(Icons.download, 'Download',
-                          accentColor, () => _downloadNote(note)),
-                      _buildActionButton(Icons.comment, 'Comment',
-                          Colors.blueGrey, () => _showAddCommentDialog(note)),
-                    ],
-                  ),
-                  if (note.comments.isNotEmpty) ...[
-                    const SizedBox(height: 16),
-                    Text('Comments:',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, color: primaryColor)),
-                    ...note.comments.map((comment) => ListTile(
-                          title: Text(comment.text,
-                              style: TextStyle(color: textColor)),
-                          subtitle: Text(comment.authorName,
-                              style: TextStyle(color: accentColor)),
-                        )),
-                  ],
-                ],
-              ),
-            ),
-          ],
+      child: CustomExpansionTile(
+        title: Text(
+          note.title,
+          style: TextStyle(fontWeight: FontWeight.bold, color: primaryColor),
         ),
+        subtitle: Text(note.number,
+            style: TextStyle(color: textColor.withOpacity(0.7))),
+        deleteButton: IconButton(
+          icon: Icon(Icons.delete, color: Colors.red),
+          onPressed: () => _deleteNote(note.id!),
+        ),
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(note.content, style: TextStyle(color: textColor)),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _buildActionButton(Icons.edit, 'Edit', primaryColor,
+                        () => _showEditNoteDialog(note)),
+                    _buildActionButton(Icons.download, 'Download', accentColor,
+                        () => _downloadNote(note)),
+                    _buildActionButton(Icons.comment, 'Comment',
+                        Colors.blueGrey, () => _showAddCommentDialog(note)),
+                  ],
+                ),
+                if (note.comments.isNotEmpty) ...[
+                  const SizedBox(height: 16),
+                  Text('Comments:',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: primaryColor)),
+                  ...note.comments.map((comment) => ListTile(
+                        title: Text(comment.text,
+                            style: TextStyle(color: textColor)),
+                        subtitle: Text(comment.authorName,
+                            style: TextStyle(color: accentColor)),
+                      )),
+                ],
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -344,6 +335,53 @@ class _NotesPageState extends State<NotesPage> {
           ],
         );
       },
+    );
+  }
+}
+
+class CustomExpansionTile extends StatefulWidget {
+  final Widget title;
+  final Widget? subtitle;
+  final List<Widget> children;
+  final Widget deleteButton;
+
+  const CustomExpansionTile({
+    Key? key,
+    required this.title,
+    this.subtitle,
+    required this.children,
+    required this.deleteButton,
+  }) : super(key: key);
+
+  @override
+  _CustomExpansionTileState createState() => _CustomExpansionTileState();
+}
+
+class _CustomExpansionTileState extends State<CustomExpansionTile> {
+  bool _isExpanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Theme(
+      data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+      child: ExpansionTile(
+        title: widget.title,
+        subtitle: widget.subtitle,
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (_isExpanded) widget.deleteButton,
+            Icon(_isExpanded ? Icons.expand_less : Icons.expand_more,
+                color: _NotesPageState().primaryColor),
+          ],
+        ),
+        children: widget.children,
+        onExpansionChanged: (expanded) {
+          setState(() {
+            _isExpanded = expanded;
+          });
+        },
+      ),
     );
   }
 }
