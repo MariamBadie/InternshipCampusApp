@@ -399,7 +399,7 @@ class _SearchPageState extends State<SearchPage> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 1),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 1),
           child: InkWell(
             onTap: () {},
             child: Dismissible(
