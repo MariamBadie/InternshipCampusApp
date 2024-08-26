@@ -1,3 +1,4 @@
+import 'package:campus_app/screens/lost_and_found_page.dart';
 import 'package:flutter/foundation.dart'; // Import for kIsWeb
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -67,6 +68,8 @@ class MyApp extends StatelessWidget {
         '/profile': (context) => ProfilePage(),
         '/editProfile': (context) => EditProfilePage(),
         '/settings': (context) => const SettingsPage2(),
+        '/lostandfoundpage': (context) => LostAndFound(),
+        '/homepage': (context) => MainScreen()
       },
     );
   }
