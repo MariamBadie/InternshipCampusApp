@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
-import 'note.dart';
+import 'package:campus_app/backend/Model/notesbackend.dart';
+import 'package:campus_app/backend/Controller/notescontroller.dart';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class EditNoteDialog extends StatefulWidget {
   final Note note;
-  final void Function(Note) onUpdateNote;
+  final NotesController notesController;
 
   const EditNoteDialog({
-    super.key,
+    Key? key,
     required this.note,
-    required this.onUpdateNote,
-  });
+    required this.notesController,
+  }) : super(key: key);
 
   @override
   _EditNoteDialogState createState() => _EditNoteDialogState();
@@ -20,7 +23,7 @@ class _EditNoteDialogState extends State<EditNoteDialog> {
   late final TextEditingController _titleController;
   late final TextEditingController _numberController;
   late final TextEditingController _contentController;
-  final List<String> _attachmentPaths = [];
+  late List<String> _attachmentPaths;
 
   @override
   void initState() {
@@ -28,7 +31,15 @@ class _EditNoteDialogState extends State<EditNoteDialog> {
     _titleController = TextEditingController(text: widget.note.title);
     _numberController = TextEditingController(text: widget.note.number);
     _contentController = TextEditingController(text: widget.note.content);
-    _attachmentPaths.addAll(widget.note.attachmentPaths);
+    _attachmentPaths = List.from(widget.note.attachmentPaths);
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _numberController.dispose();
+    _contentController.dispose();
+    super.dispose();
   }
 
   @override
@@ -45,22 +56,16 @@ class _EditNoteDialogState extends State<EditNoteDialog> {
         ),
         TextButton(
           child: const Text('Save'),
-          onPressed: () {
+          onPressed: () async {
             final updatedNote = Note(
+              id: widget.note.id,
               title: _titleController.text,
               number: _numberController.text,
               content: _contentController.text,
-              attachmentPaths: List.from(_attachmentPaths),
-              comments: widget.note.comments.map((comment) {
-                return comment.authorName == 'You'
-                    ? Comment(
-                        text: comment.text,
-                        authorName: comment.authorName,
-                        isOwnComment: true)
-                    : comment;
-              }).toList(),
+              attachmentPaths: _attachmentPaths,
+              comments: widget.note.comments,
             );
-            widget.onUpdateNote(updatedNote);
+            await widget.notesController.updateNote(updatedNote);
             Navigator.of(context).pop();
           },
         ),
@@ -95,9 +100,21 @@ class _EditNoteDialogState extends State<EditNoteDialog> {
           if (_attachmentPaths.isNotEmpty)
             Wrap(
               children: _attachmentPaths.map((path) {
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: _buildAttachmentThumbnail(path),
+                return Stack(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: _buildAttachmentThumbnail(path),
+                    ),
+                    Positioned(
+                      right: 0,
+                      top: 0,
+                      child: IconButton(
+                        icon: Icon(Icons.close, color: Colors.red),
+                        onPressed: () => _removeAttachment(path),
+                      ),
+                    ),
+                  ],
                 );
               }).toList(),
             ),

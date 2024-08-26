@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:campus_app/widgets/notes/note.dart';
+import 'package:campus_app/backend/Model/notesbackend.dart';
 import 'package:campus_app/widgets/notes/note_dialog.dart';
+import 'package:campus_app/backend/Controller/notescontroller.dart';
+
 import 'dart:io';
 
 class NoteDialog extends StatefulWidget {
-  final void Function(Note) onAddNote;
+  final NotesController notesController;
 
-  const NoteDialog({super.key, required this.onAddNote});
+  const NoteDialog({Key? key, required this.notesController}) : super(key: key);
 
   @override
   _NoteDialogState createState() => _NoteDialogState();
@@ -17,6 +19,14 @@ class _NoteDialogState extends State<NoteDialog> {
   final TextEditingController _numberController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
   final List<String> _attachmentPaths = [];
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _numberController.dispose();
+    _contentController.dispose();
+    super.dispose();
+  }
 
   void _showAttachmentSourceDialog() {
     showDialog(
@@ -50,10 +60,12 @@ class _NoteDialogState extends State<NoteDialog> {
 
   void _pickFile() async {
     // Logic to pick files
+    Navigator.of(context).pop(); // Close the attachment source dialog
   }
 
   void _pickImageFromGallery() async {
     // Logic to pick images
+    Navigator.of(context).pop(); // Close the attachment source dialog
   }
 
   void _clearFields() {
@@ -93,14 +105,26 @@ class _NoteDialogState extends State<NoteDialog> {
             if (_attachmentPaths.isNotEmpty)
               Wrap(
                 children: _attachmentPaths.map((path) {
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Image.file(
-                      File(path),
-                      width: 100,
-                      height: 100,
-                      fit: BoxFit.cover,
-                    ),
+                  return Stack(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Image.file(
+                          File(path),
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      Positioned(
+                        right: 0,
+                        top: 0,
+                        child: IconButton(
+                          icon: Icon(Icons.close, color: Colors.red),
+                          onPressed: () => _removeAttachment(path),
+                        ),
+                      ),
+                    ],
                   );
                 }).toList(),
               ),
@@ -117,7 +141,15 @@ class _NoteDialogState extends State<NoteDialog> {
         ),
         TextButton(
           child: const Text('Add'),
-          onPressed: () {
+          onPressed: () async {
+            if (_titleController.text.isEmpty ||
+                _numberController.text.isEmpty ||
+                _contentController.text.isEmpty) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Please fill in all fields')),
+              );
+              return;
+            }
             final note = Note(
               title: _titleController.text,
               number: _numberController.text,
@@ -125,12 +157,24 @@ class _NoteDialogState extends State<NoteDialog> {
               attachmentPaths: List.from(_attachmentPaths),
               comments: [],
             );
-            widget.onAddNote(note);
-            Navigator.of(context).pop();
-            _clearFields();
+            try {
+              await widget.notesController.addNote(note);
+              Navigator.of(context).pop();
+              _clearFields();
+            } catch (e) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Error adding note: $e')),
+              );
+            }
           },
         ),
       ],
     );
+  }
+
+  void _removeAttachment(String path) {
+    setState(() {
+      _attachmentPaths.remove(path);
+    });
   }
 }

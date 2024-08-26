@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:campus_app/widgets/notes/note.dart';
+import 'package:campus_app/backend/Model/notesbackend.dart';
 import 'package:campus_app/widgets/notes/note_dialog.dart';
 import 'package:campus_app/widgets/notes/EditNoteDialog.dart';
-import 'package:campus_app/widgets/notes/note_service.dart';
+import 'package:campus_app/backend/Controller/notescontroller.dart';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NotesPage extends StatefulWidget {
   const NotesPage({Key? key}) : super(key: key);
@@ -12,10 +14,10 @@ class NotesPage extends StatefulWidget {
 }
 
 class _NotesPageState extends State<NotesPage> {
-  final NoteService _noteService = NoteService();
-  List<Note> _filteredNotes = [];
+  final NotesController _notesController = NotesController();
+  final TextEditingController _searchController = TextEditingController();
 
-  // Define our Deep Teal color scheme
+  // Define your color scheme
   final Color primaryColor = const Color(0xFF006C60); // Deep Teal
   final Color secondaryColor = const Color(0xFFF0F4F4); // Light Gray
   final Color accentColor = const Color(0xFFFF9B50); // Soft Orange
@@ -23,44 +25,10 @@ class _NotesPageState extends State<NotesPage> {
   final Color backgroundColor = const Color(0xFFE6EDED); // Pale Teal
 
   @override
-  void initState() {
-    super.initState();
-    _filteredNotes = _noteService.notes;
-  }
-
-  void _filterNotes(String query) {
-    setState(() {
-      _filteredNotes = _noteService.filterNotes(query);
-    });
-  }
-
-  void _showEditNoteDialog(Note note) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => EditNoteDialog(
-        note: note,
-        onUpdateNote: (updatedNote) {
-          setState(() {
-            _noteService.updateNote(updatedNote);
-            _filteredNotes = _noteService.notes;
-          });
-        },
-      ),
-    );
-  }
-
-  void _showAddNoteDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => NoteDialog(
-        onAddNote: (note) {
-          setState(() {
-            _noteService.addNote(note);
-            _filteredNotes = _noteService.notes;
-          });
-        },
-      ),
-    );
+  void dispose() {
+    _notesController.dispose();
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -81,7 +49,15 @@ class _NotesPageState extends State<NotesPage> {
               _buildSearchBar(),
               const SizedBox(height: 16),
               Expanded(
-                child: _buildNotesList(),
+                child: ValueListenableBuilder<List<Note>>(
+                  valueListenable: _notesController.filteredNotes,
+                  builder: (context, notes, child) {
+                    if (notes.isEmpty) {
+                      return Center(child: Text('No notes found'));
+                    }
+                    return _buildNotesList(notes);
+                  },
+                ),
               ),
             ],
           ),
@@ -109,25 +85,28 @@ class _NotesPageState extends State<NotesPage> {
         ],
       ),
       child: TextField(
+        controller: _searchController,
         style: TextStyle(color: textColor),
         decoration: InputDecoration(
-          hintText: 'Search by lecture/tutorial number',
+          hintText: 'Search by lecture/tutorial number or title',
           hintStyle: TextStyle(color: textColor.withOpacity(0.5)),
           prefixIcon: Icon(Icons.search, color: primaryColor),
           border: InputBorder.none,
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
         ),
-        onChanged: _filterNotes,
+        onChanged: (value) {
+          _notesController.filterNotes(value);
+        },
       ),
     );
   }
 
-  Widget _buildNotesList() {
+  Widget _buildNotesList(List<Note> notes) {
     return ListView.builder(
-      itemCount: _filteredNotes.length,
+      itemCount: notes.length,
       itemBuilder: (context, index) {
-        final note = _filteredNotes[index];
+        final note = notes[index];
         return _buildNoteCard(note);
       },
     );
@@ -146,7 +125,7 @@ class _NotesPageState extends State<NotesPage> {
             note.title,
             style: TextStyle(fontWeight: FontWeight.bold, color: primaryColor),
           ),
-          subtitle: Text(' ${note.number}',
+          subtitle: Text(note.number,
               style: TextStyle(color: textColor.withOpacity(0.7))),
           children: [
             Padding(
@@ -161,8 +140,10 @@ class _NotesPageState extends State<NotesPage> {
                     children: [
                       _buildActionButton(Icons.edit, 'Edit', primaryColor,
                           () => _showEditNoteDialog(note)),
+                      _buildActionButton(Icons.delete, 'Delete', Colors.red,
+                          () => _deleteNote(note.id!)),
                       _buildActionButton(Icons.download, 'Download',
-                          accentColor, () => _noteService.downloadNote(note)),
+                          accentColor, () => _downloadNote(note)),
                       _buildActionButton(Icons.comment, 'Comment',
                           Colors.blueGrey, () => _showAddCommentDialog(note)),
                     ],
@@ -191,14 +172,131 @@ class _NotesPageState extends State<NotesPage> {
   Widget _buildActionButton(
       IconData icon, String label, Color color, VoidCallback onPressed) {
     return ElevatedButton.icon(
-      icon: Icon(icon, size: 16), // Reduced icon size
-      label: Text(label, style: TextStyle(fontSize: 12)), // Reduced text size
+      icon: Icon(icon, size: 16),
+      label: Text(label, style: TextStyle(fontSize: 12)),
       style: ElevatedButton.styleFrom(
         backgroundColor: color,
         foregroundColor: secondaryColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
       ),
       onPressed: onPressed,
+    );
+  }
+
+  void _showAddNoteDialog() {
+    final titleController = TextEditingController();
+    final numberController = TextEditingController();
+    final contentController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: Text('Add New Note'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: titleController,
+                decoration: InputDecoration(hintText: 'Title'),
+              ),
+              TextField(
+                controller: numberController,
+                decoration: InputDecoration(hintText: 'Number'),
+              ),
+              TextField(
+                controller: contentController,
+                decoration: InputDecoration(hintText: 'Content'),
+                maxLines: 3,
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            child: Text('Cancel'),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          TextButton(
+            child: Text('Add'),
+            onPressed: () async {
+              await _notesController.addNote(Note(
+                title: titleController.text,
+                number: numberController.text,
+                content: contentController.text,
+                attachmentPaths: [],
+                comments: [],
+              ));
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showEditNoteDialog(Note note) {
+    final titleController = TextEditingController(text: note.title);
+    final numberController = TextEditingController(text: note.number);
+    final contentController = TextEditingController(text: note.content);
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: Text('Edit Note'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: titleController,
+                decoration: InputDecoration(hintText: 'Title'),
+              ),
+              TextField(
+                controller: numberController,
+                decoration: InputDecoration(hintText: 'Number'),
+              ),
+              TextField(
+                controller: contentController,
+                decoration: InputDecoration(hintText: 'Content'),
+                maxLines: 3,
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            child: Text('Cancel'),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          TextButton(
+            child: Text('Update'),
+            onPressed: () async {
+              await _notesController.updateNote(Note(
+                id: note.id,
+                title: titleController.text,
+                number: numberController.text,
+                content: contentController.text,
+                attachmentPaths: note.attachmentPaths,
+                comments: note.comments,
+              ));
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _deleteNote(String noteId) async {
+    // Consider adding a confirmation dialog before deleting
+    await _notesController.deleteNote(noteId);
+  }
+
+  void _downloadNote(Note note) async {
+    String result = await _notesController.downloadNote(note);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(result)),
     );
   }
 
@@ -223,16 +321,15 @@ class _NotesPageState extends State<NotesPage> {
             ),
             TextButton(
               child: Text('Add', style: TextStyle(color: accentColor)),
-              onPressed: () {
-                setState(() {
-                  _noteService.addComment(
-                      note,
-                      Comment(
-                        text: controller.text,
-                        authorName: 'You',
-                        isOwnComment: true,
-                      ));
-                });
+              onPressed: () async {
+                await _notesController.addComment(
+                  note.id!,
+                  Comment(
+                    text: controller.text,
+                    authorName: 'You',
+                    isOwnComment: true,
+                  ),
+                );
                 Navigator.of(context).pop();
               },
             ),
