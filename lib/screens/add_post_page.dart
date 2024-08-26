@@ -30,10 +30,11 @@ class _AddPostPageState extends State<AddPostPage> {
   List<String> _specificEntitiesList = [];
 
   void _fetchEntities(String collectionName) async {
-    List<String> entityNames = await ratingController.getAllEntityNamesFromCollection(collectionName);
+    List<String> entityNames =
+        await ratingController.getAllEntityNamesFromCollection(collectionName);
     //print(entityNames);
     setState(() {
-      _specificEntitiesList = entityNames;  // Directly use the list of names
+      _specificEntitiesList = entityNames; // Directly use the list of names
     });
   }
 
@@ -49,7 +50,9 @@ class _AddPostPageState extends State<AddPostPage> {
   void _submitPost() async {
     final postContent = _textController.text;
 
-    if (postContent.isEmpty && _image == null && widget.postType != 'Rating/Review') {
+    if (postContent.isEmpty &&
+        _image == null &&
+        widget.postType != 'Rating/Review') {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please enter text or select an image.')),
       );
@@ -57,7 +60,9 @@ class _AddPostPageState extends State<AddPostPage> {
     }
 
     if (widget.postType == 'Rating/Review') {
-      if (_rating == null || _specificEntity == null || _textController.text.isEmpty) {
+      if (_rating == null ||
+          _specificEntity == null ||
+          _textController.text.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Please complete all fields.')),
         );
@@ -76,11 +81,13 @@ class _AddPostPageState extends State<AddPostPage> {
         createdAt: DateTime.now(),
       );
 
-      await ratingController.addRating(rating);  // Call the addRating method from the RatingController
+      await ratingController.addRating(
+          rating); // Call the addRating method from the RatingController
     } else {
       if (postContent.isEmpty && _image == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please enter text or select an image.')),
+          const SnackBar(
+              content: Text('Please enter text or select an image.')),
         );
         return;
       }
@@ -119,7 +126,8 @@ class _AddPostPageState extends State<AddPostPage> {
               TextField(
                 controller: _textController,
                 decoration: InputDecoration(
-                  hintText: 'Enter your ${widget.postType.toLowerCase()} here...',
+                  hintText:
+                      'Enter your ${widget.postType.toLowerCase()} here...',
                   border: const OutlineInputBorder(),
                 ),
                 maxLines: 5,
@@ -219,11 +227,11 @@ class _AddPostPageState extends State<AddPostPage> {
                       items: _specificEntitiesList.isEmpty
                           ? [] // If the list is empty, no items are shown
                           : _specificEntitiesList.map((entity) {
-                        return DropdownMenuItem<String>(
-                          value: entity,
-                          child: Text(entity),
-                        );
-                      }).toList(),
+                              return DropdownMenuItem<String>(
+                                value: entity,
+                                child: Text(entity),
+                              );
+                            }).toList(),
                       onChanged: (String? newValue) {
                         setState(() {
                           _specificEntity = newValue;
@@ -252,19 +260,20 @@ class _AddPostPageState extends State<AddPostPage> {
                   ],
                 ),
               const SizedBox(height: 16),
-              Row(
-                children: [
-                  Checkbox(
-                    value: _isAnonymous,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        _isAnonymous = value ?? false;
-                      });
-                    },
-                  ),
-                  const Text('Post Anonymously'),
-                ],
-              ),
+              if (widget.postType != 'Lost & Found')
+                Row(
+                  children: [
+                    Checkbox(
+                      value: _isAnonymous,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          _isAnonymous = value ?? false;
+                        });
+                      },
+                    ),
+                    const Text('Post Anonymously'),
+                  ],
+                ),
               const SizedBox(height: 16),
               if (widget.postType != 'Rating/Review')
                 Row(

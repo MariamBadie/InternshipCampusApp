@@ -1,4 +1,5 @@
 import 'package:campus_app/screens/lost_and_found_page.dart';
+import 'package:campus_app/screens/main_screen.dart';
 import 'package:campus_app/screens/note_page.dart';
 import 'package:campus_app/screens/content_page.dart';
 import 'package:campus_app/screens/event_details_page.dart';
@@ -12,37 +13,29 @@ import '../models/event.dart';
 import '../widgets/post_card.dart';
 import '../widgets/event_card.dart';
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({super.key, required this.title});
-
-  final String title;
+class LostAndFound extends StatefulWidget {
+  LostAndFound({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<LostAndFound> createState() => _LostAndFoundState();
 }
 
-class _MyHomePageState extends State<MyHomePage>
+class _LostAndFoundState extends State<LostAndFound>
     with SingleTickerProviderStateMixin {
   final List<Post> _posts = [
     Post(
       id: '1',
       username: 'Hussien Haitham',
-      type: 'Confession',
-      content: "I really admire Professor Mervat's teaching style!",
+      type: 'Lost & Found',
+      content: "Found Key",
       reactions: {'like': 5, 'dislike': 1, 'love': 2},
       comments: [
         Comment(
           username: 'Anas',
-          content: 'I agree! Her lectures are great.',
+          content: 'I know its owner @omar.',
           reactions: {'like': 2, 'dislike': 0, 'love': 1},
           profilePictureUrl: 'assets/images/anas.jpg',
         ),
-        Comment(
-          username: 'Mohanad',
-          content: 'What subjects does she teach?',
-          reactions: {'like': 2, 'dislike': 0, 'love': 1},
-          profilePictureUrl: 'assets/images/mohanad.jpg',
-        )
       ],
       isAnonymous: false,
       timestamp: DateTime.now().subtract(const Duration(hours: 2)),
@@ -51,38 +44,20 @@ class _MyHomePageState extends State<MyHomePage>
     Post(
       id: '2',
       username: 'Ahmed Hany',
-      type: 'Help',
-      content: 'Can someone help me with Math203 problems?',
+      type: 'Lost & Found',
+      content: 'Can someone help me I lost my ID',
       reactions: {'like': 3, 'dislike': 0, 'love': 1},
       comments: [
         Comment(
-          username: 'Ibrahim',
-          content: 'Sure, tell me how can I help?',
+          username: 'Anas',
+          content: 'I know its owner @omar.',
           reactions: {'like': 2, 'dislike': 0, 'love': 1},
-          profilePictureUrl: 'assets/images/ibrahim.jpg',
-        )
+          profilePictureUrl: 'assets/images/anas.jpg',
+        ),
       ],
       isAnonymous: false,
       timestamp: DateTime.now().subtract(const Duration(minutes: 30)),
       profilePictureUrl: 'assets/images/ahmed.jpg',
-    ),
-  ];
-
-  final List<Event> _events = [
-    Event(
-      id: '1',
-      title: "Mother's Day Bazaar",
-      description:
-          "Join us for a special Mother's Day Bazaar at the basketball court!",
-      date: DateTime(2024, 5, 12, 10, 0),
-      location: "Basketball Court",
-    ),
-    Event(
-      id: '2',
-      title: "Computer Science Club Meetup",
-      description: "Learn about the latest trends in AI and Machine Learning",
-      date: DateTime(2024, 5, 15, 14, 0),
-      location: "Room 301, Computer Science Building",
     ),
   ];
 
@@ -103,7 +78,6 @@ class _MyHomePageState extends State<MyHomePage>
   void _refreshPosts() {
     setState(() {
       _posts.shuffle();
-      _events.shuffle();
     });
   }
 
@@ -168,42 +142,6 @@ class _MyHomePageState extends State<MyHomePage>
     );
   }
 
-//   void _editPost(String postId) {
-//   showDialog(
-//     context: context,
-//     builder: (BuildContext context) {
-//       String updatedContent = post.content; // Pre-populate with current content
-//       return AlertDialog(
-//         title: const Text('Edit Post'),
-//         content: TextField(
-//           controller: TextEditingController(text: updatedContent),
-//           onChanged: (value) {
-//             updatedContent = value;
-//           },
-//           decoration: const InputDecoration(hintText: "Edit your post"),
-//         ),
-//         actions: <Widget>[
-//           TextButton(
-//             child: const Text('Cancel'),
-//             onPressed: () {
-//               Navigator.of(context).pop();
-//             },
-//           ),
-//           TextButton(
-//             child: const Text('Save'),
-//             onPressed: () {
-//               if (updatedContent.isNotEmpty) {
-//                 // Call your method to save the updated post content
-//                 // For example: _savePost(postId, updatedContent);
-//                 Navigator.of(context).pop();
-//               }
-//             },
-//           ),
-//         ],
-//       );
-//     },
-//   );
-// }
   void _reportPost(String postId) {
     showDialog(
       context: context,
@@ -279,32 +217,7 @@ class _MyHomePageState extends State<MyHomePage>
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: 'Feed'),
-            Tab(text: 'Events'),
-          ],
-          labelColor: Theme.of(context)
-              .colorScheme
-              .onPrimary, // Selected tab text color
-          unselectedLabelColor: Theme.of(context)
-              .colorScheme
-              .onSurface
-              .withOpacity(0.6), // Unselected tab text color
-          indicator: BoxDecoration(
-            color: Theme.of(context)
-                .colorScheme
-                .primary, // Selected tab background color
-            borderRadius:
-                BorderRadius.circular(8), // Rounded corners for the indicator
-          ),
-          indicatorSize:
-              TabBarIndicatorSize.tab, // Indicator covers the whole tab
-          indicatorPadding: const EdgeInsets.symmetric(
-              horizontal: 8.0), // Padding around the indicator
-        ),
+        title: const Text('Lost & Found'),
       ),
       drawer: Drawer(
         child: ListView(
@@ -319,11 +232,11 @@ class _MyHomePageState extends State<MyHomePage>
                 style: TextStyle(color: Colors.white, fontSize: 24),
               ),
             ),
-            _buildDrawerItem(Icons.home, 'Home'),
-            _buildDrawerItem(Icons.watch, 'Lost & Found', onTap: () {
+            _buildDrawerItem(Icons.home, 'Home', onTap: () {
               Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => LostAndFound()));
+                  MaterialPageRoute(builder: (context) => MainScreen()));
             }),
+            _buildDrawerItem(Icons.watch, 'Lost & Found'),
             _buildDrawerItem(Icons.forum, 'Confessions'),
             _buildDrawerItem(Icons.rate_review, 'View Reviews & Ratings'),
             _buildDrawerItem(Icons.help, 'Help'),
@@ -339,7 +252,6 @@ class _MyHomePageState extends State<MyHomePage>
         controller: _tabController,
         children: [
           _buildFeedSection(),
-          _buildEventsSection(),
         ],
       ),
     );
@@ -380,9 +292,7 @@ class _MyHomePageState extends State<MyHomePage>
   }
 
   Widget _buildFeedSection() {
-    final filteredPosts = _posts
-        .where((post) => post.type == 'Confession' || post.type == 'Help')
-        .toList();
+    final filteredPosts = _posts;
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -412,31 +322,6 @@ class _MyHomePageState extends State<MyHomePage>
               onDelete: () => _deletePost(post.id),
               onReport: () => _reportPost(post.id),
             ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildEventsSection() {
-    return RefreshIndicator(
-      onRefresh: () async {
-        _refreshPosts();
-      },
-      child: ListView.builder(
-        itemCount: _events.length,
-        itemBuilder: (context, index) {
-          final event = _events[index];
-          return EventCard(
-            event: event,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => EventDetailsPage(event: event),
-                ),
-              );
-            },
           );
         },
       ),
