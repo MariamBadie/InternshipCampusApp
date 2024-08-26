@@ -162,7 +162,7 @@ class _SearchPageState extends State<SearchPage> {
           ),
           Container(height: 5),
           Container(
-            height: 52,
+            height: 54,
             child: ListView(
               scrollDirection: Axis.horizontal,
               children: [
@@ -170,6 +170,7 @@ class _SearchPageState extends State<SearchPage> {
                 categoryItem("Users"),
                 categoryItem("Posts"),
                 categoryItem("Outlets"),
+                categoryItem("Events"),
               ],
             ),
           ),
@@ -361,8 +362,8 @@ class _SearchPageState extends State<SearchPage> {
       child: AnimatedContainer(
         duration: Duration(milliseconds: 300),
         curve: Curves.easeInOut,
-        margin: EdgeInsets.only(left: 8),
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+        margin: EdgeInsets.all(2),
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 18),
         decoration: BoxDecoration(
           gradient: isSelected
               ? LinearGradient(
@@ -371,13 +372,13 @@ class _SearchPageState extends State<SearchPage> {
                   end: Alignment.bottomRight,
                 )
               : LinearGradient(
-                  colors: [Colors.white, Colors.grey[200]!],
+                  colors: [Colors.grey[300]!, Colors.grey[300]!],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-          borderRadius: BorderRadius.circular(50),
+          borderRadius: BorderRadius.circular(25),
           border: Border.all(
-            color: isSelected ? Colors.teal : Colors.grey[400]!,
+            color: isSelected ? Colors.white : Colors.white,
             width: 2,
           ),
         ),
@@ -395,45 +396,55 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Widget previousSearchesItem(int index) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-      child: InkWell(
-        onTap: () {},
-        child: Dismissible(
-          key: GlobalKey(),
-          onDismissed: (DismissDirection dir) {
-            setState(() {
-              previousSearches.removeAt(index);
-            });
-          },
-          child: Row(
-            children: [
-              const Icon(
-                Icons.access_alarm,
-                size: 22,
-                color: Colors.grey,
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 1),
+          child: InkWell(
+            onTap: () {},
+            child: Dismissible(
+              key: GlobalKey(),
+              onDismissed: (DismissDirection dir) {
+                setState(() {
+                  previousSearches.removeAt(index);
+                });
+              },
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.access_alarm,
+                    size: 22,
+                    color: Colors.grey,
+                  ),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  Text(
+                    previousSearches[index],
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    icon: const Icon(Icons.arrow_forward,
+                        size: 22, color: Colors.grey),
+                    onPressed: () {
+                      setState(() {
+                        _searchController.text = previousSearches[index];
+                      });
+                    },
+                  ),
+                ],
               ),
-              const SizedBox(
-                width: 5,
-              ),
-              Text(
-                previousSearches[index],
-                style: TextStyle(fontSize: 18),
-              ),
-              const Spacer(),
-              IconButton(
-                icon: const Icon(Icons.arrow_forward,
-                    size: 22, color: Colors.grey),
-                onPressed: () {
-                  setState(() {
-                    _searchController.text = previousSearches[index];
-                  });
-                },
-              ),
-            ],
+            ),
           ),
         ),
-      ),
+        const Divider(
+          thickness: 0.5,
+          color: Colors.grey,
+          indent: 10,
+          endIndent: 10,
+        ),
+      ],
     );
   }
 }
