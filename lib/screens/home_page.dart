@@ -10,6 +10,7 @@ import '../models/post.dart';
 import '../models/event.dart';
 import '../widgets/post_card.dart';
 import '../widgets/event_card.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({super.key, required this.title});
@@ -336,6 +337,20 @@ class _MyHomePageState extends State<MyHomePage>
             _buildDrawerItem(Icons.logout, 'Log Out', onTap: () {
               // Add functionality to log out
             }),
+            SizedBox(height: 40), // Spacer before the last three items
+            Text("Emergency Contacts"),
+            _buildDrawerItem(Icons.medical_services, 'Call Ambulance',
+                textStyle: const TextStyle(fontSize: 12), onTap: () {
+              _makePhoneCall('911');
+            }),
+            _buildDrawerItem(Icons.local_police, 'Call Police',
+                textStyle: const TextStyle(fontSize: 12), onTap: () {
+              _makePhoneCall('911');
+            }),
+            _buildDrawerItem(Icons.fire_truck, 'Call Fire Rescue',
+                textStyle: const TextStyle(fontSize: 12), onTap: () {
+              _makePhoneCall('911');
+            }),
           ],
         ),
       ),
@@ -349,10 +364,11 @@ class _MyHomePageState extends State<MyHomePage>
     );
   }
 
-  Widget _buildDrawerItem(IconData icon, String title, {VoidCallback? onTap}) {
+  Widget _buildDrawerItem(IconData icon, String title,
+      {VoidCallback? onTap, TextStyle? textStyle}) {
     return ListTile(
       leading: Icon(icon),
-      title: Text(title),
+      title: Text(title, style: textStyle),
       onTap: onTap ??
           () {
             Navigator.pop(context);
@@ -442,4 +458,12 @@ class _MyHomePageState extends State<MyHomePage>
       ),
     );
   }
+}
+
+void _makePhoneCall(String phoneNumber) async {
+  final Uri launchUri = Uri(
+    scheme: 'tel',
+    path: phoneNumber,
+  );
+  await launchUrl(launchUri);
 }

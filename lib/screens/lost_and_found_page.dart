@@ -240,7 +240,7 @@ class _LostAndFoundState extends State<LostAndFound>
             _buildDrawerItem(Icons.forum, 'Confessions'),
             _buildDrawerItem(Icons.rate_review, 'View Reviews & Ratings'),
             _buildDrawerItem(Icons.help, 'Help'),
-            _buildStudyingContent(),
+            // _buildStudyingContent(),
             _buildDrawerItem(Icons.event, 'Events'),
             _buildDrawerItem(Icons.logout, 'Log Out', onTap: () {
               // Add functionality to log out
@@ -265,29 +265,6 @@ class _LostAndFoundState extends State<LostAndFound>
           () {
             Navigator.pop(context);
           },
-    );
-  }
-
-  Widget _buildStudyingContent() {
-    return ExpansionTile(
-      leading: const Icon(Icons.assignment),
-      title: const Text("Studying content"),
-      children: [
-        ListTile(
-          title: const Text('Content Page'),
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const ContentPage()),
-          ),
-        ),
-        ListTile(
-          title: const Text('Notes Page'),
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const NotesPage()),
-          ),
-        ),
-      ],
     );
   }
 
