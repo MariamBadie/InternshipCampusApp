@@ -1,7 +1,7 @@
 import 'package:campus_app/screens/lost_and_found_page.dart';
 import 'package:campus_app/screens/main_screen.dart';
 import 'package:campus_app/screens/note_page.dart';
-import 'package:campus_app/screens/content_page.dart';
+// import 'package:campus_app/screens/content_page.dart';
 import 'package:campus_app/screens/event_details_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For Clipboard

@@ -127,6 +127,16 @@ class _NotesPageState extends State<NotesPage> {
           ),
           subtitle: Text(note.number,
               style: TextStyle(color: textColor.withOpacity(0.7))),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: Icon(Icons.delete, color: Colors.red),
+                onPressed: () => _deleteNote(note.id!),
+              ),
+              Icon(Icons.expand_more, color: primaryColor),
+            ],
+          ),
           children: [
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -140,8 +150,6 @@ class _NotesPageState extends State<NotesPage> {
                     children: [
                       _buildActionButton(Icons.edit, 'Edit', primaryColor,
                           () => _showEditNoteDialog(note)),
-                      _buildActionButton(Icons.delete, 'Delete', Colors.red,
-                          () => _deleteNote(note.id!)),
                       _buildActionButton(Icons.download, 'Download',
                           accentColor, () => _downloadNote(note)),
                       _buildActionButton(Icons.comment, 'Comment',
