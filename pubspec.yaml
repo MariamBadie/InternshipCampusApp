@@ -30,7 +30,7 @@ environment:
 dependencies:
   cupertino_icons: ^1.0.6
   device_preview: ^1.2.0
-  file_picker: ^5.0.0
+  file_picker: ^5.2.10
   cloud_firestore: ^4.8.0
   firebase_core: ^2.24.2
   firebase_messaging: ^14.7.10
@@ -51,6 +51,7 @@ dependencies:
   uuid: ^4.4.2
   firebase_auth: ^4.16.0
   url_launcher: ^6.1.7
+  firebase_storage: ^11.2.1
 
 
 dev_dependencies:

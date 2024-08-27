@@ -5,7 +5,7 @@ class Note {
   String title;
   String number;
   String content;
-  List<String> attachmentPaths;
+  String? attachmentUrl;
   List<Comment> comments;
 
   Note({
@@ -13,7 +13,7 @@ class Note {
     required this.title,
     required this.number,
     required this.content,
-    this.attachmentPaths = const [],
+    this.attachmentUrl,
     this.comments = const [],
   });
 
@@ -24,7 +24,7 @@ class Note {
       title: data['title'] ?? '',
       number: data['number'] ?? '',
       content: data['content'] ?? '',
-      attachmentPaths: List<String>.from(data['attachmentPaths'] ?? []),
+      attachmentUrl: data['attachmentUrl'],
       comments: (data['comments'] as List<dynamic>? ?? [])
           .map((c) => Comment.fromMap(c))
           .toList(),
@@ -36,7 +36,7 @@ class Note {
       'title': title,
       'number': number,
       'content': content,
-      'attachmentPaths': attachmentPaths,
+      'attachmentUrl': attachmentUrl,
       'comments': comments.map((c) => c.toMap()).toList(),
     };
   }
