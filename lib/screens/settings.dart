@@ -11,6 +11,7 @@ import 'package:campus_app/screens/archive_page.dart';
 import 'package:campus_app/screens/favorites_page.dart';
 import 'package:campus_app/screens/my_activity_page.dart';
 import 'package:campus_app/screens/signin.dart';
+import '../screens/community_general_page.dart';
 
 class SettingsPage2 extends StatefulWidget {
   const SettingsPage2({Key? key}) : super(key: key);
@@ -93,6 +94,19 @@ class _SettingsPage2State extends State<SettingsPage2> {
                   const _CustomListTile(
                     title: "Calendar",
                     icon: Icons.calendar_today_rounded,
+                  ),
+                  _CustomListTile(
+                    title: "Communities",
+                    icon: Icons.people,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>CommunityGeneralPage()
+//     ); ,
+                        ),
+                      );
+                    },
                   ),
                   _CustomListTile(
                     title: "Expense Tracker",
