@@ -5,11 +5,16 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:campus_app/backend/Model/notesbackend.dart';
 import 'package:campus_app/backend/Controller/FirebaseService.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NotesController {
   final FirebaseService _firebaseService = FirebaseService.instance;
   final ValueNotifier<List<Note>> notes = ValueNotifier<List<Note>>([]);
   final ValueNotifier<List<Note>> filteredNotes = ValueNotifier<List<Note>>([]);
+  final FirebaseStorage _storage = FirebaseStorage.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   NotesController() {
     _loadNotes();
@@ -58,16 +63,58 @@ class NotesController {
     });
   }
 
+  Future<String?> pickPDF() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf'],
+    );
+
+    if (result != null) {
+      return result.files.single.path;
+    }
+    return null;
+  }
+
+  Future<String?> uploadPDF(String filePath) async {
+    try {
+      File file = File(filePath);
+      String fileName = 'note_${DateTime.now().millisecondsSinceEpoch}.pdf';
+
+      TaskSnapshot snapshot = await FirebaseStorage.instance
+          .ref('notes_attachments/$fileName')
+          .putFile(file);
+
+      String downloadURL = await snapshot.ref.getDownloadURL();
+      return downloadURL;
+    } catch (e) {
+      print('Error uploading PDF: $e');
+      return null;
+    }
+  }
+
+  Future<File?> downloadPDF(String downloadURL) async {
+    try {
+      // Create a temporary file
+      final Directory tempDir = Directory.systemTemp;
+      final File tempFile = File(
+          '${tempDir.path}/temp_${DateTime.now().millisecondsSinceEpoch}.pdf');
+
+      // Download the file from Firebase Storage
+      await _storage.refFromURL(downloadURL).writeToFile(tempFile);
+
+      return tempFile;
+    } catch (e) {
+      print('Error downloading PDF: $e');
+      return null;
+    }
+  }
+
+  void dispose() {
+    notes.dispose();
+    filteredNotes.dispose();
+  }
+
   Future<String> downloadNote(Note note) async {
-    if (kIsWeb) {
-      return 'Download not supported on web platform';
-    }
-    if (Platform.isAndroid) {
-      var status = await Permission.storage.status;
-      if (!status.isGranted) {
-        await Permission.storage.request();
-      }
-    }
     try {
       Directory? directory;
       if (Platform.isIOS) {
@@ -75,21 +122,24 @@ class NotesController {
       } else {
         directory = await getExternalStorageDirectory();
       }
+
       String fileName = '${note.title.replaceAll(' ', '_')}_${note.number}.txt';
       String filePath = '${directory!.path}/$fileName';
       File file = File(filePath);
-      await file.writeAsString('Title: ${note.title}\n'
+
+      String content = 'Title: ${note.title}\n'
           'Number: ${note.number}\n\n'
           'Content:\n${note.content}\n\n'
-          'Comments:\n${note.comments.map((c) => '- ${c.authorName}: ${c.text}').join('\n')}');
+          'Comments:\n${note.comments.map((c) => '- ${c.authorName}: ${c.text}').join('\n')}';
+
+      if (note.attachmentUrl != null) {
+        content += '\n\nAttachment: ${note.attachmentUrl}';
+      }
+
+      await file.writeAsString(content);
       return 'Note downloaded successfully: $filePath';
     } catch (e) {
       return 'Error downloading note: $e';
     }
-  }
-
-  void dispose() {
-    notes.dispose();
-    filteredNotes.dispose();
   }
 }

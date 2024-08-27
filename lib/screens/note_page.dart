@@ -4,6 +4,7 @@ import 'package:campus_app/widgets/notes/note_dialog.dart';
 import 'package:campus_app/widgets/notes/EditNoteDialog.dart';
 import 'package:campus_app/backend/Controller/notescontroller.dart';
 
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NotesPage extends StatefulWidget {
@@ -186,51 +187,75 @@ class _NotesPageState extends State<NotesPage> {
     final titleController = TextEditingController();
     final numberController = TextEditingController();
     final contentController = TextEditingController();
+    String? attachmentPath;
 
     showDialog(
       context: context,
-      builder: (BuildContext context) => AlertDialog(
-        title: Text('Add New Note'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: titleController,
-                decoration: InputDecoration(hintText: 'Title'),
-              ),
-              TextField(
-                controller: numberController,
-                decoration: InputDecoration(hintText: 'Number'),
-              ),
-              TextField(
-                controller: contentController,
-                decoration: InputDecoration(hintText: 'Content'),
-                maxLines: 3,
-              ),
-            ],
+      builder: (BuildContext context) =>
+          StatefulBuilder(builder: (context, setState) {
+        return AlertDialog(
+          title: Text('Add New Note'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TextField(
+                  controller: titleController,
+                  decoration: InputDecoration(hintText: 'Title'),
+                ),
+                TextField(
+                  controller: numberController,
+                  decoration: InputDecoration(hintText: 'Number'),
+                ),
+                TextField(
+                  controller: contentController,
+                  decoration: InputDecoration(hintText: 'Content'),
+                  maxLines: 3,
+                ),
+                SizedBox(height: 16),
+                ElevatedButton.icon(
+                  icon: Icon(Icons.attach_file),
+                  label: Text(
+                      attachmentPath != null ? 'PDF Attached' : 'Attach PDF'),
+                  onPressed: () async {
+                    String? path = await _notesController.pickPDF();
+                    if (path != null) {
+                      setState(() {
+                        attachmentPath = path;
+                      });
+                    }
+                  },
+                ),
+              ],
+            ),
           ),
-        ),
-        actions: [
-          TextButton(
-            child: Text('Cancel'),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          TextButton(
-            child: Text('Add'),
-            onPressed: () async {
-              await _notesController.addNote(Note(
-                title: titleController.text,
-                number: numberController.text,
-                content: contentController.text,
-                attachmentPaths: [],
-                comments: [],
-              ));
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      ),
+          actions: [
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            TextButton(
+              child: Text('Add'),
+              onPressed: () async {
+                Note newNote = Note(
+                  title: titleController.text,
+                  number: numberController.text,
+                  content: contentController.text,
+                );
+                String? attachmentUrl;
+                if (attachmentPath != null) {
+                  attachmentUrl =
+                      await _notesController.uploadPDF(attachmentPath!);
+                }
+                newNote.attachmentUrl = attachmentUrl;
+                await _notesController.addNote(newNote);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      }),
     );
   }
 
@@ -276,7 +301,8 @@ class _NotesPageState extends State<NotesPage> {
                 title: titleController.text,
                 number: numberController.text,
                 content: contentController.text,
-                attachmentPaths: note.attachmentPaths,
+                attachmentUrl:
+                    note.attachmentUrl, // Preserve existing attachment
                 comments: note.comments,
               ));
               Navigator.of(context).pop();
@@ -293,10 +319,23 @@ class _NotesPageState extends State<NotesPage> {
   }
 
   void _downloadNote(Note note) async {
-    String result = await _notesController.downloadNote(note);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(result)),
-    );
+    if (note.attachmentUrl != null) {
+      File? file = await _notesController.downloadPDF(note.attachmentUrl!);
+      if (file != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('PDF downloaded: ${file.path}')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to download PDF')),
+        );
+      }
+    } else {
+      String result = await _notesController.downloadNote(note);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result)),
+      );
+    }
   }
 
   void _showAddCommentDialog(Note note) {
