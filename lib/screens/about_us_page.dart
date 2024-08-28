@@ -11,7 +11,7 @@ class AboutUsPage extends StatelessWidget {
         title: Text(
           "About Us",
           style: GoogleFonts.poppins(
-            color: Color.fromARGB(255, 255, 255, 255),
+            color: const Color.fromARGB(255, 255, 255, 255),
             fontSize: 24, // Adjusted font size
             fontWeight: FontWeight.bold,
           ),

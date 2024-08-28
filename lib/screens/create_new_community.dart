@@ -1,11 +1,7 @@
 import 'dart:io';
 
 import 'package:campus_app/models/User.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import '../models/Community.dart';
 import '../screens/community_page.dart';
@@ -41,9 +37,9 @@ class NewCommunityState extends State<NewCommunity> {
             _discardChanges(context);
           
           },
-          icon:Icon(Icons.cancel_rounded),
+          icon:const Icon(Icons.cancel_rounded),
         ),
-        title:Text('Create new community'),
+        title:const Text('Create new community'),
         ),
         body:Column(
               children: [ 
@@ -65,11 +61,11 @@ class NewCommunityState extends State<NewCommunity> {
                       onPressed: (){
                         chooseCoverPhoto();
                       },
-                       label:Text('Tap here to choose a cover photo',
+                       label:const Text('Tap here to choose a cover photo',
                        style:TextStyle(
                         color: Colors.black,
                        )),
-                       icon:Icon(
+                       icon:const Icon(
                         Icons.add_a_photo,
                         color: Colors.black,
                        )
@@ -78,7 +74,7 @@ class NewCommunityState extends State<NewCommunity> {
                 )
                     ,
                   Padding(
-                    padding: EdgeInsets.all(50.0),
+                    padding: const EdgeInsets.all(50.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children:[
@@ -86,7 +82,7 @@ class NewCommunityState extends State<NewCommunity> {
                       TextFormField(
                         controller: _name,
                         
-                         decoration: InputDecoration(
+                         decoration: const InputDecoration(
                           label:Text('Community Name',
                            style:TextStyle(
                             fontWeight: FontWeight.bold
@@ -106,20 +102,20 @@ class NewCommunityState extends State<NewCommunity> {
                             
                           )
                         ),
-                      style:TextStyle(
+                      style:const TextStyle(
                            letterSpacing: 1.0,
                            fontSize: 17.0,
                            fontWeight: FontWeight.w400,
                       ),           
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height:40.0
                       ),
                       
                        TextFormField(
                         maxLines: 2,
                         controller: _goal,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           hintText: 'Community goal',
                           label:Text('Community goal',
                           style:TextStyle(
@@ -141,24 +137,24 @@ class NewCommunityState extends State<NewCommunity> {
                             
                           )
                         ),
-                      style:TextStyle(
+                      style:const TextStyle(
                            letterSpacing: 1.0,
                            fontSize: 17.0,
                            fontWeight: FontWeight.w500,
                       ),           
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height:40.0
                       ),
                       Center(
                         child: ElevatedButton(
-                         style:ButtonStyle(
+                         style:const ButtonStyle(
                            
                          ),
                           onPressed: (){
                             _submit(context);
                           },
-                          child :Text(
+                          child :const Text(
                             'Create',
                            style: TextStyle(
                             fontWeight:FontWeight.w600 
@@ -181,18 +177,18 @@ class NewCommunityState extends State<NewCommunity> {
     context: context,
     builder:(context){
       return AlertDialog(
-        title:Center(child: Text('Discard changes')),
-        titleTextStyle: TextStyle(
+        title:const Center(child: Text('Discard changes')),
+        titleTextStyle: const TextStyle(
           fontSize:20.0,
           fontWeight: FontWeight.bold,
           letterSpacing: 1.0,
         ),
-        insetPadding: EdgeInsets.all(20.0),
-        titlePadding: EdgeInsets.all(15.0),
+        insetPadding: const EdgeInsets.all(20.0),
+        titlePadding: const EdgeInsets.all(15.0),
         content: 
-            Text('Do you want to discard this changes?'),
-        contentPadding: EdgeInsets.all(30.0),
-        contentTextStyle: TextStyle(
+            const Text('Do you want to discard this changes?'),
+        contentPadding: const EdgeInsets.all(30.0),
+        contentTextStyle: const TextStyle(
           fontSize: 15.0,
           fontWeight: FontWeight.w500,
         ),
@@ -201,7 +197,7 @@ class NewCommunityState extends State<NewCommunity> {
             onPressed:(){
                Navigator.pop(context);
             },
-             child:Text('Cancel',
+             child:const Text('Cancel',
              style:TextStyle(
           fontSize: 15.0,
           fontWeight: FontWeight.w500,
@@ -218,7 +214,7 @@ class NewCommunityState extends State<NewCommunity> {
                _profileImage = null;
 
             },
-             child:Text('Confirm',
+             child:const Text('Confirm',
              style:TextStyle(
           fontSize: 15.0,
           fontWeight: FontWeight.w500,

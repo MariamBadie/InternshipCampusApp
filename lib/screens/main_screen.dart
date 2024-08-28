@@ -7,6 +7,8 @@ import 'package:campus_app/screens/profile_page.dart';
 import 'package:campus_app/screens/add_post_page.dart';
 
 class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
+
   @override
   _MainScreenState createState() => _MainScreenState();
 }
@@ -15,11 +17,11 @@ class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
   final List<Widget> _screens = [
-    MyHomePage(title: 'Campus Connect'),
-    SearchPage(),
+    const MyHomePage(title: 'Campus Connect'),
+    const SearchPage(),
     Container(), // Placeholder for AddPostPage, we'll handle this with the bottom navigation bar
     const Activities(),
-    ProfilePage(),
+    const ProfilePage(),
   ];
 
   void _onItemSelected(int index) {

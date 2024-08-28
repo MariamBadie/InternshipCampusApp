@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
 class KarmaDialog extends StatefulWidget {
+  const KarmaDialog({super.key});
+
   @override
   _KarmaDialogState createState() => _KarmaDialogState();
 }
 
 class _KarmaDialogState extends State<KarmaDialog> {
-  PageController _pageController = PageController();
+  final PageController _pageController = PageController();
   int _currentPage = 0;
 
   @override
@@ -15,7 +17,7 @@ class _KarmaDialogState extends State<KarmaDialog> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.0),
       ),
-      child: Container(
+      child: SizedBox(
         height: 500, // Adjust height as needed
         width: 300, // Adjust width as needed
         child: Column(
@@ -43,7 +45,7 @@ class _KarmaDialogState extends State<KarmaDialog> {
                   onTap: () {
                     _pageController.animateToPage(
                       index,
-                      duration: Duration(milliseconds: 300),
+                      duration: const Duration(milliseconds: 300),
                       curve: Curves.easeInOut,
                     );
                   },
@@ -280,7 +282,7 @@ class _KarmaDialogState extends State<KarmaDialog> {
           ],
         );
       default:
-        return SizedBox.shrink();
+        return const SizedBox.shrink();
     }
   }
 }

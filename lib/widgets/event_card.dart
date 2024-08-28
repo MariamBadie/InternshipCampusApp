@@ -6,7 +6,7 @@ class EventCard extends StatelessWidget {
   final Event event;
   final VoidCallback onTap;
 
-  EventCard({required this.event, required this.onTap});
+  const EventCard({super.key, required this.event, required this.onTap});
 
   @override
   Widget build(BuildContext context) {

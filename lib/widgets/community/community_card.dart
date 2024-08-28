@@ -1,14 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import '../../models/Community.dart';
 import '../../screens/community_page.dart';
 
 class CommunityCard extends StatelessWidget {
    final Community communityInfo;
-   CommunityCard({required this.communityInfo});
+   const CommunityCard({super.key, required this.communityInfo});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +22,7 @@ class CommunityCard extends StatelessWidget {
                   },
                 
                    child: Card(
-                    margin: EdgeInsets.all(10),
+                    margin: const EdgeInsets.all(10),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     clipBehavior: Clip.antiAliasWithSaveLayer,
                     elevation: 5,
@@ -60,8 +57,8 @@ class CommunityCard extends StatelessWidget {
                       left: 32.0,
                       bottom:15.0 ,
                       child:Text(
-                        '${communityInfo.name}',
-                      style:TextStyle(
+                        communityInfo.name,
+                      style:const TextStyle(
                    
                         fontSize: 20.0,
                         color: Colors.white,

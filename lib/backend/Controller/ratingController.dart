@@ -21,9 +21,9 @@ class RatingController {
     await firebaseService.initialize();
 
     // Retrieve all documents from the collection and extract the "name" field
-    if(collectionName == 'course')
-        collectionName = 'Course';
-    else if (collectionName == 'outlet')
+    if(collectionName == 'course') {
+      collectionName = 'Course';
+    } else if (collectionName == 'outlet')
         collectionName = 'Outlet';
     else {
       collectionName = 'User';

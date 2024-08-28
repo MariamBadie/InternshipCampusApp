@@ -5,6 +5,8 @@ import '../models/post.dart'; // Import the Post model
 import 'post_details_page.dart'; // Import the PostDetailsPage
 
 class ProfilePage extends StatefulWidget {
+  const ProfilePage({super.key});
+
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
@@ -25,7 +27,7 @@ class _ProfilePageState extends State<ProfilePage> {
       reactions: {'like': 10, 'love': 5, 'haha': 2},
       comments: [],
       isAnonymous: false,
-      timestamp: DateTime.now().subtract(Duration(hours: 2)),
+      timestamp: DateTime.now().subtract(const Duration(hours: 2)),
       profilePictureUrl: 'assets/images/anas.jpg',
     ),
     Post(
@@ -36,7 +38,7 @@ class _ProfilePageState extends State<ProfilePage> {
       reactions: {'like': 15, 'love': 8, 'haha': 1},
       comments: [],
       isAnonymous: false,
-      timestamp: DateTime.now().subtract(Duration(days: 1)),
+      timestamp: DateTime.now().subtract(const Duration(days: 1)),
       profilePictureUrl: 'assets/images/anas.jpg',
     ),
     // Add more posts here...
@@ -188,7 +190,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       DateFormat('MMM d, y h:mm a').format(post.timestamp),
                     ),
                     IconButton(
-                      icon: Icon(Icons.delete, color: Colors.red),
+                      icon: const Icon(Icons.delete, color: Colors.red),
                       onPressed: () => _showDeleteConfirmation(context, index),
                     ),
                   ],
@@ -223,17 +225,17 @@ class _ProfilePageState extends State<ProfilePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Delete Post'),
-          content: Text('Are you sure you want to delete this post?'),
+          title: const Text('Delete Post'),
+          content: const Text('Are you sure you want to delete this post?'),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Delete'),
+              child: const Text('Delete'),
               onPressed: () {
                 _deletePost(index);
                 Navigator.of(context).pop();

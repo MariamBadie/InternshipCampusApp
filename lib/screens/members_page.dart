@@ -1,23 +1,15 @@
-import 'dart:ui';
-import 'package:campus_app/screens/about_us_page.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
-import '../models/Community.dart';
-import 'main_screen.dart' as utils;
 import 'invite_new_members.dart';
 
 void main() {
-  runApp(Base());
+  runApp(const Base());
 }
 class Base extends StatelessWidget {
   const Base({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home:CommunityMemberPage()
     );
   }
@@ -35,16 +27,16 @@ class CommunityMemberPageState extends State<CommunityMemberPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Members'),
+        title: const Text('Members'),
 
         actions: [
           IconButton(
           
           onPressed: (){
-            Navigator.push(context, MaterialPageRoute(builder: (context)=>InvitationPage()));
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>const InvitationPage()));
 
         },
-         icon:Icon(Icons.group_add)
+         icon:const Icon(Icons.group_add)
         )
           
         ],

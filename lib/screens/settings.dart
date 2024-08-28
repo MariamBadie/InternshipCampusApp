@@ -14,7 +14,7 @@ import 'package:campus_app/screens/signin.dart';
 import '../screens/community_general_page.dart';
 
 class SettingsPage2 extends StatefulWidget {
-  const SettingsPage2({Key? key}) : super(key: key);
+  const SettingsPage2({super.key});
 
   @override
   State<SettingsPage2> createState() => _SettingsPage2State();
@@ -25,7 +25,7 @@ class _SettingsPage2State extends State<SettingsPage2> {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeNotifier>(context);
-    bool _isDark = themeProvider.themeMode == ThemeMode.dark;
+    bool isDark = themeProvider.themeMode == ThemeMode.dark;
 
     return Scaffold(
       appBar: AppBar(
@@ -43,7 +43,7 @@ class _SettingsPage2State extends State<SettingsPage2> {
                     title: "Dark Mode",
                     icon: Icons.dark_mode_outlined,
                     trailing: Switch(
-                      value: _isDark,
+                      value: isDark,
                       onChanged: (value) {
                         themeProvider.toggleTheme(value);
                       },
@@ -216,12 +216,11 @@ class _CustomListTile extends StatelessWidget {
   final VoidCallback? onTap;
 
   const _CustomListTile({
-    Key? key,
     required this.title,
     required this.icon,
     this.trailing,
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -239,10 +238,9 @@ class _SingleSection extends StatelessWidget {
   final List<Widget> children;
 
   const _SingleSection({
-    Key? key,
     this.title,
     required this.children,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

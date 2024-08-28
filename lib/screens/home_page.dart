@@ -1,11 +1,11 @@
 import 'package:campus_app/screens/lost_and_found_page.dart';
 import 'package:campus_app/screens/note_page.dart';
 import 'package:campus_app/screens/event_details_page.dart';
+import 'package:campus_app/screens/campus_map.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For Clipboard
 import 'package:share_plus/share_plus.dart'; // For sharing
 import 'package:campus_app/screens/post_details_page.dart';
-import '../screens/settings.dart';
 import '../models/post.dart';
 import '../models/event.dart';
 import '../widgets/post_card.dart';
@@ -13,7 +13,7 @@ import '../widgets/event_card.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({super.key, required this.title});
+  const MyHomePage({super.key, required this.title});
 
   final String title;
 
@@ -322,9 +322,16 @@ class _MyHomePageState extends State<MyHomePage>
             _buildDrawerItem(Icons.home, 'Home'),
             _buildDrawerItem(Icons.watch, 'Lost & Found', onTap: () {
               Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => LostAndFound()));
+                  MaterialPageRoute(builder: (context) => const LostAndFound()));
             }),
+             _buildDrawerItem(Icons.map, 'Campus Map', onTap:() {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const MapScreen()),
+          );
+        },),
             _buildDrawerItem(Icons.forum, 'Confessions'),
+          
             _buildDrawerItem(Icons.rate_review, 'View Reviews & Ratings'),
             _buildDrawerItem(Icons.help, 'Help'),
             _buildDrawerItem(Icons.assignment, "Notes", onTap: () {
@@ -337,8 +344,8 @@ class _MyHomePageState extends State<MyHomePage>
             _buildDrawerItem(Icons.logout, 'Log Out', onTap: () {
               // Add functionality to log out
             }),
-            SizedBox(height: 40), // Spacer before the last three items
-            Text("Emergency Contacts"),
+            const SizedBox(height: 40), // Spacer before the last three items
+            const Text("Emergency Contacts"),
             _buildDrawerItem(Icons.medical_services, 'Call Ambulance',
                 textStyle: const TextStyle(fontSize: 12), onTap: () {
               _makePhoneCall('911');

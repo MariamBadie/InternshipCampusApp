@@ -4,11 +4,11 @@ import '../../models/notification.dart';
 
 class GeneralNotificationItem extends StatelessWidget {
   const GeneralNotificationItem({
-    Key? key,
+    super.key,
     required this.notification,
     required this.profilePic,
     required this.onDelete,
-  }) : super(key: key);
+  });
 
   final NotificationModel notification;
   final AssetImage profilePic;

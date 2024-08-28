@@ -14,7 +14,7 @@ class ExpenseItem extends StatelessWidget {
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 11, vertical: 8),
-      color: Color.fromARGB(255, 210, 237, 231),
+      color: const Color.fromARGB(255, 210, 237, 231),
       child: Padding(
         padding: const EdgeInsets.symmetric(
           vertical: 16,

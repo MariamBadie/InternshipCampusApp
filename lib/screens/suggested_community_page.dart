@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../models/Community.dart';
-import '../screens/community_general_page.dart';
 import '../widgets/community/search_bar.dart' as searchComp;
 import  '../widgets/community/suggested_community_list.dart';
 
