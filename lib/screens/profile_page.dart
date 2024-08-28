@@ -3,6 +3,7 @@ import 'package:intl/intl.dart'; // Import for date formatting
 import 'friends_list_page.dart'; // Import the FriendsListPage
 import '../models/post.dart'; // Import the Post model
 import 'post_details_page.dart'; // Import the PostDetailsPage
+import './points_guide.dart'; // Import the KarmaDialog
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -125,6 +126,12 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           );
         }
+           showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return KarmaDialog();
+            },
+          );
       },
       child: Column(
         children: [
