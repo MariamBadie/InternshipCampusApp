@@ -1,20 +1,14 @@
-import 'package:campus_app/screens/lost_and_found_page.dart';
 import 'package:campus_app/screens/main_screen.dart';
-import 'package:campus_app/screens/note_page.dart';
 // import 'package:campus_app/screens/content_page.dart';
-import 'package:campus_app/screens/event_details_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For Clipboard
 import 'package:share_plus/share_plus.dart'; // For sharing
 import 'package:campus_app/screens/post_details_page.dart';
-import '../screens/settings.dart';
 import '../models/post.dart';
-import '../models/event.dart';
 import '../widgets/post_card.dart';
-import '../widgets/event_card.dart';
 
 class LostAndFound extends StatefulWidget {
-  LostAndFound({super.key});
+  const LostAndFound({super.key});
 
   @override
   State<LostAndFound> createState() => _LostAndFoundState();
@@ -234,7 +228,7 @@ class _LostAndFoundState extends State<LostAndFound>
             ),
             _buildDrawerItem(Icons.home, 'Home', onTap: () {
               Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => MainScreen()));
+                  MaterialPageRoute(builder: (context) => const MainScreen()));
             }),
             _buildDrawerItem(Icons.watch, 'Lost & Found'),
             _buildDrawerItem(Icons.forum, 'Confessions'),

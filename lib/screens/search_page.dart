@@ -1,9 +1,9 @@
-import 'package:campus_app/screens/main_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 class SearchPage extends StatefulWidget {
+  const SearchPage({super.key});
+
   @override
   _SearchPageState createState() => _SearchPageState();
 }
@@ -142,7 +142,7 @@ class _SearchPageState extends State<SearchPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Search'),
+        title: const Text('Search'),
       ),
       body: Column(
         children: <Widget>[
@@ -153,7 +153,7 @@ class _SearchPageState extends State<SearchPage> {
               decoration: InputDecoration(
                 hintText: 'Search...',
                 suffixIcon: IconButton(
-                  icon: Icon(Icons.search),
+                  icon: const Icon(Icons.search),
                   onPressed: () => _performSearch(query),
                 ),
               ),
@@ -161,7 +161,7 @@ class _SearchPageState extends State<SearchPage> {
             ),
           ),
           Container(height: 5),
-          Container(
+          SizedBox(
             height: 54,
             child: ListView(
               scrollDirection: Axis.horizontal,
@@ -208,14 +208,14 @@ class _SearchPageState extends State<SearchPage> {
                             padding: const EdgeInsets.all(20.0),
                             child: Row(
                               children: [
-                                Icon(
+                                const Icon(
                                   Icons.person,
                                   size: 24.0,
                                 ),
-                                SizedBox(width: 7),
+                                const SizedBox(width: 7),
                                 Text(
                                   name,
-                                  style: TextStyle(fontSize: 18),
+                                  style: const TextStyle(fontSize: 18),
                                 ),
                               ],
                             ),
@@ -252,16 +252,16 @@ class _SearchPageState extends State<SearchPage> {
                               children: [
                                 Row(
                                   children: [
-                                    Icon(
+                                    const Icon(
                                       Icons.article,
                                       size: 20.0,
                                       color: Colors.blue,
                                     ),
-                                    SizedBox(width: 7),
+                                    const SizedBox(width: 7),
                                     Expanded(
                                       child: Text(
                                         title,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold),
                                       ),
@@ -270,7 +270,7 @@ class _SearchPageState extends State<SearchPage> {
                                 ),
                                 Text(
                                   content,
-                                  style: TextStyle(fontSize: 16),
+                                  style: const TextStyle(fontSize: 16),
                                 ),
                               ],
                             ),
@@ -301,15 +301,15 @@ class _SearchPageState extends State<SearchPage> {
                             padding: const EdgeInsets.all(20.0),
                             child: Row(
                               children: [
-                                Icon(
+                                const Icon(
                                   Icons.store,
                                   size: 24.0,
                                   color: Colors.orange,
                                 ),
-                                SizedBox(width: 7),
+                                const SizedBox(width: 7),
                                 Text(
                                   name,
-                                  style: TextStyle(fontSize: 18),
+                                  style: const TextStyle(fontSize: 18),
                                 ),
                               ],
                             ),
@@ -339,7 +339,7 @@ class _SearchPageState extends State<SearchPage> {
                         previousSearches.clear();
                       });
                     },
-                    child: Text("Clear All"),
+                    child: const Text("Clear All"),
                   ),
                 ],
               ),
@@ -360,9 +360,9 @@ class _SearchPageState extends State<SearchPage> {
         });
       },
       child: AnimatedContainer(
-        duration: Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
-        margin: EdgeInsets.all(2),
+        margin: const EdgeInsets.all(2),
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 18),
         decoration: BoxDecoration(
           gradient: isSelected
@@ -421,7 +421,7 @@ class _SearchPageState extends State<SearchPage> {
                   ),
                   Text(
                     previousSearches[index],
-                    style: TextStyle(fontSize: 18),
+                    style: const TextStyle(fontSize: 18),
                   ),
                   const Spacer(),
                   IconButton(

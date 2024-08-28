@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/post.dart' as post_model;
 import '../utils/home_page_utils.dart';
-import '../models/post.dart' show Post, Comment, Reply;
-import '../widgets/comment_card.dart';
 
 class PostCard extends StatelessWidget {
   final post_model.Post post;
@@ -18,7 +16,7 @@ class PostCard extends StatelessWidget {
   final VoidCallback onDelete;
   final VoidCallback onReport;
 
-  PostCard({
+  const PostCard({super.key, 
     required this.post,
     required this.onReact,
     required this.onComment,
@@ -61,7 +59,7 @@ class PostCard extends StatelessWidget {
                 children: [
                   Text(DateFormat('MMM d, y h:mm a').format(post.timestamp)),
                   PopupMenuButton<String>(
-                    icon: Icon(Icons.more_vert),
+                    icon: const Icon(Icons.more_vert),
                     onSelected: (value) {
                       switch (value) {
                         // case 'Edit':

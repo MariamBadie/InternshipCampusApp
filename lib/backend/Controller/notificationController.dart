@@ -22,9 +22,9 @@ void retrieveNotifiData() async {
     QuerySnapshot snapshot = await firestore.collection(collections).get();
 
     // Print the data retrieved from each document in the collection
-    snapshot.docs.forEach((doc) {
+    for (var doc in snapshot.docs) {
       print('Document ID: ${doc.id}, Data: ${doc.data()}');
-    });
+    }
   }
 
 class FirebaseService {

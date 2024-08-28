@@ -6,7 +6,7 @@ class CommentCard extends StatelessWidget {
   final Function(String) onReact;
   final bool isReply;
 
-  CommentCard({
+  const CommentCard({super.key, 
     required this.comment,
     required this.onReact,
     this.isReply = false,

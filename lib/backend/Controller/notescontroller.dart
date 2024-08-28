@@ -2,12 +2,10 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:campus_app/backend/Model/notesbackend.dart';
 import 'package:campus_app/backend/Controller/FirebaseService.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NotesController {
   final FirebaseService _firebaseService = FirebaseService.instance;

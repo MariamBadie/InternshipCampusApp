@@ -9,7 +9,7 @@ import '../widgets/friend_requests/friend_requests_list.dart';
 import '../widgets/notifications_files/notification_list.dart';
 
 class Activities extends StatefulWidget {
-  const Activities({Key? key}) : super(key: key);
+  const Activities({super.key});
 
   @override
   _ActivitiesState createState() => _ActivitiesState();

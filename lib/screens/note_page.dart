@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:campus_app/backend/Model/notesbackend.dart';
-import 'package:campus_app/widgets/notes/note_dialog.dart';
-import 'package:campus_app/widgets/notes/EditNoteDialog.dart';
 import 'package:campus_app/backend/Controller/notescontroller.dart';
 
 import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NotesPage extends StatefulWidget {
-  const NotesPage({Key? key}) : super(key: key);
+  const NotesPage({super.key});
 
   @override
   _NotesPageState createState() => _NotesPageState();
@@ -54,7 +51,7 @@ class _NotesPageState extends State<NotesPage> {
                   valueListenable: _notesController.filteredNotes,
                   builder: (context, notes, child) {
                     if (notes.isEmpty) {
-                      return Center(child: Text('No notes found'));
+                      return const Center(child: Text('No notes found'));
                     }
                     return _buildNotesList(notes);
                   },
@@ -66,8 +63,8 @@ class _NotesPageState extends State<NotesPage> {
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: accentColor,
-        child: Icon(Icons.add, color: secondaryColor),
         onPressed: _showAddNoteDialog,
+        child: Icon(Icons.add, color: secondaryColor),
       ),
     );
   }
@@ -127,7 +124,7 @@ class _NotesPageState extends State<NotesPage> {
         subtitle: Text(note.number,
             style: TextStyle(color: textColor.withOpacity(0.7))),
         deleteButton: IconButton(
-          icon: Icon(Icons.delete, color: Colors.red),
+          icon: const Icon(Icons.delete, color: Colors.red),
           onPressed: () => _deleteNote(note.id!),
         ),
         children: [
@@ -173,7 +170,7 @@ class _NotesPageState extends State<NotesPage> {
       IconData icon, String label, Color color, VoidCallback onPressed) {
     return ElevatedButton.icon(
       icon: Icon(icon, size: 16),
-      label: Text(label, style: TextStyle(fontSize: 12)),
+      label: Text(label, style: const TextStyle(fontSize: 12)),
       style: ElevatedButton.styleFrom(
         backgroundColor: color,
         foregroundColor: secondaryColor,
@@ -194,7 +191,7 @@ class _NotesPageState extends State<NotesPage> {
       builder: (BuildContext context) =>
           StatefulBuilder(builder: (context, setState) {
         return AlertDialog(
-          title: Text('Add New Note'),
+          title: const Text('Add New Note'),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -202,20 +199,20 @@ class _NotesPageState extends State<NotesPage> {
               children: [
                 TextField(
                   controller: titleController,
-                  decoration: InputDecoration(hintText: 'Title'),
+                  decoration: const InputDecoration(hintText: 'Title'),
                 ),
                 TextField(
                   controller: numberController,
-                  decoration: InputDecoration(hintText: 'Number'),
+                  decoration: const InputDecoration(hintText: 'Number'),
                 ),
                 TextField(
                   controller: contentController,
-                  decoration: InputDecoration(hintText: 'Content'),
+                  decoration: const InputDecoration(hintText: 'Content'),
                   maxLines: 3,
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 ElevatedButton.icon(
-                  icon: Icon(Icons.attach_file),
+                  icon: const Icon(Icons.attach_file),
                   label: Text(
                       attachmentPath != null ? 'PDF Attached' : 'Attach PDF'),
                   onPressed: () async {
@@ -232,11 +229,11 @@ class _NotesPageState extends State<NotesPage> {
           ),
           actions: [
             TextButton(
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () => Navigator.of(context).pop(),
             ),
             TextButton(
-              child: Text('Add'),
+              child: const Text('Add'),
               onPressed: () async {
                 Note newNote = Note(
                   title: titleController.text,
@@ -267,22 +264,22 @@ class _NotesPageState extends State<NotesPage> {
     showDialog(
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        title: Text('Edit Note'),
+        title: const Text('Edit Note'),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: titleController,
-                decoration: InputDecoration(hintText: 'Title'),
+                decoration: const InputDecoration(hintText: 'Title'),
               ),
               TextField(
                 controller: numberController,
-                decoration: InputDecoration(hintText: 'Number'),
+                decoration: const InputDecoration(hintText: 'Number'),
               ),
               TextField(
                 controller: contentController,
-                decoration: InputDecoration(hintText: 'Content'),
+                decoration: const InputDecoration(hintText: 'Content'),
                 maxLines: 3,
               ),
             ],
@@ -290,11 +287,11 @@ class _NotesPageState extends State<NotesPage> {
         ),
         actions: [
           TextButton(
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
             onPressed: () => Navigator.of(context).pop(),
           ),
           TextButton(
-            child: Text('Update'),
+            child: const Text('Update'),
             onPressed: () async {
               await _notesController.updateNote(Note(
                 id: note.id,
@@ -327,7 +324,7 @@ class _NotesPageState extends State<NotesPage> {
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to download PDF')),
+          const SnackBar(content: Text('Failed to download PDF')),
         );
       }
     } else {
@@ -354,7 +351,7 @@ class _NotesPageState extends State<NotesPage> {
           ),
           actions: [
             TextButton(
-              child: Text('Cancel', style: TextStyle(color: Colors.blueGrey)),
+              child: const Text('Cancel', style: TextStyle(color: Colors.blueGrey)),
               onPressed: () => Navigator.of(context).pop(),
             ),
             TextButton(
@@ -385,12 +382,12 @@ class CustomExpansionTile extends StatefulWidget {
   final Widget deleteButton;
 
   const CustomExpansionTile({
-    Key? key,
+    super.key,
     required this.title,
     this.subtitle,
     required this.children,
     required this.deleteButton,
-  }) : super(key: key);
+  });
 
   @override
   _CustomExpansionTileState createState() => _CustomExpansionTileState();

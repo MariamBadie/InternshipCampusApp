@@ -4,7 +4,7 @@ import 'Friendprofilepage.dart'; // Import the FriendProfilePage
 class FriendsListPage extends StatefulWidget {
   final String profileName;
 
-  FriendsListPage({required this.profileName});
+  const FriendsListPage({super.key, required this.profileName});
 
   @override
   _FriendsListPageState createState() => _FriendsListPageState();

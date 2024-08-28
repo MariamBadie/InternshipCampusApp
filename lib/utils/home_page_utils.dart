@@ -51,24 +51,24 @@ void showPostOptions(BuildContext context, Function(String) navigateToPostCreati
       return Wrap(
         children: [
           ListTile(
-            leading: Icon(Icons.note),
-            title: Text('Post Confession'),
+            leading: const Icon(Icons.note),
+            title: const Text('Post Confession'),
             onTap: () {
               Navigator.pop(context);
               navigateToPostCreation('Confession');
             },
           ),
           ListTile(
-            leading: Icon(Icons.question_answer),
-            title: Text('Post Academic Question'),
+            leading: const Icon(Icons.question_answer),
+            title: const Text('Post Academic Question'),
             onTap: () {
               Navigator.pop(context);
               navigateToPostCreation('Help');
             },
           ),
           ListTile(
-            leading: Icon(Icons.event),
-            title: Text('Post an Event/Activity'),
+            leading: const Icon(Icons.event),
+            title: const Text('Post an Event/Activity'),
             onTap: () {
               Navigator.pop(context);
               navigateToPostCreation('Event');

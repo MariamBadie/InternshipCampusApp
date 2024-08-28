@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../backend/Model/Rating.dart';
@@ -8,7 +7,7 @@ import '../backend/Controller/ratingController.dart';
 class AddPostPage extends StatefulWidget {
   final String postType;
 
-  AddPostPage({Key? key, required this.postType}) : super(key: key);
+  const AddPostPage({super.key, required this.postType});
 
   @override
   _AddPostPageState createState() => _AddPostPageState();
