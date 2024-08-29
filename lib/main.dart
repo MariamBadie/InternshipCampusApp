@@ -12,8 +12,8 @@ import 'package:campus_app/screens/edit_profile_page.dart';
 import 'package:device_preview/device_preview.dart';
 
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/cupertino.dart';
 import 'dart:io' show Platform; // Import for Platform
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,7 +37,8 @@ void main() async {
   } catch (e) {
     print('Firebase initialization error: $e');
   }
-
+  await dotenv.load(fileName: ".env");
+  
   runApp(ChangeNotifierProvider(
     create: (_) => ThemeNotifier(),
     child: const MyApp(),
@@ -45,7 +46,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -61,15 +62,15 @@ class MyApp extends StatelessWidget {
       darkTheme: _buildTheme(Brightness.dark), // Dark theme
       themeMode:
           themeProvider.themeMode, // Use the theme mode from the provider
-      home: MainScreen(),
+      home: const MainScreen(),
       routes: {
-        '/search': (context) => SearchPage(),
+        '/search': (context) => const SearchPage(),
         '/notifications': (context) => const Activities(),
-        '/profile': (context) => ProfilePage(),
-        '/editProfile': (context) => EditProfilePage(),
+        '/profile': (context) => const ProfilePage(),
+        '/editProfile': (context) => const EditProfilePage(),
         '/settings': (context) => const SettingsPage2(),
-        '/lostandfoundpage': (context) => LostAndFound(),
-        '/homepage': (context) => MainScreen()
+        '/lostandfoundpage': (context) => const LostAndFound(),
+        '/homepage': (context) => const MainScreen()
       },
     );
   }
