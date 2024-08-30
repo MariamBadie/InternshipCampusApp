@@ -11,12 +11,10 @@ class PostCard extends StatelessWidget {
   final Function(String, int, String) onReplyToComment;
   final VoidCallback onShare;
   final VoidCallback onCopyLink;
-
-  // final VoidCallback onEdit;
-  final VoidCallback onDelete;
   final VoidCallback onReport;
 
-  const PostCard({super.key, 
+  const PostCard({
+    super.key,
     required this.post,
     required this.onReact,
     required this.onComment,
@@ -24,9 +22,6 @@ class PostCard extends StatelessWidget {
     required this.onReplyToComment,
     required this.onShare,
     required this.onCopyLink,
-    // required this.onEdit,
-  
-    required this.onDelete,
     required this.onReport,
   });
 
@@ -62,11 +57,11 @@ class PostCard extends StatelessWidget {
                     icon: const Icon(Icons.more_vert),
                     onSelected: (value) {
                       switch (value) {
-                        // case 'Edit':
-                        //   onEdit();
-                          // break;
-                        case 'Delete':
-                          onDelete();
+                        case 'Share':
+                          onShare();
+                          break;
+                        case 'Copy Link':
+                          onCopyLink();
                           break;
                         case 'Report':
                           onReport();
@@ -74,7 +69,8 @@ class PostCard extends StatelessWidget {
                       }
                     },
                     itemBuilder: (BuildContext context) {
-                      return {'Edit', 'Delete', 'Report'}.map((String choice) {
+                      return ['Share', 'Copy Link', 'Report']
+                          .map((String choice) {
                         return PopupMenuItem<String>(
                           value: choice,
                           child: Text(choice),
@@ -109,26 +105,6 @@ class PostCard extends StatelessWidget {
                     post_model.Comment comment = entry.value;
                     return _buildCommentSection(context, comment, idx);
                   }),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.share),
-                        onPressed: onShare,
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.copy),
-                        onPressed: onCopyLink,
-                      ),
-                    ],
-                  ),
                 ],
               ),
             ),

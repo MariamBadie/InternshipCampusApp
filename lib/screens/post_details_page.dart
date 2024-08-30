@@ -11,7 +11,8 @@ class PostDetailsPage extends StatelessWidget {
   final Function(String, String, String) onComment;
   final Function(String, int, String) onReactToComment;
 
-  const PostDetailsPage({super.key, 
+  const PostDetailsPage({
+    super.key,
     required this.post,
     required this.onReact,
     required this.onComment,
@@ -58,10 +59,12 @@ class PostDetailsPage extends StatelessWidget {
           ...post.comments.asMap().entries.map((entry) {
             int idx = entry.key;
             Comment comment = entry.value;
+
             return CommentCard(
               comment: comment,
               onReact: (reactionType) =>
                   onReactToComment(post.id, idx, reactionType),
+              onDelete: () => _deleteComment(post.id, idx), // Pass deletion logic
             );
           }),
           Padding(
@@ -125,6 +128,11 @@ class PostDetailsPage extends StatelessWidget {
         );
       },
     );
+  }
+
+  void _deleteComment(String postId, int commentIndex) {
+    post.comments.removeAt(commentIndex); // Remove the comment from the list
+    // You might want to add additional logic here, e.g., updating the server
   }
 
   Widget _buildReactionButton(

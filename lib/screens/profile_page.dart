@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // Import for date formatting
-import 'friends_list_page.dart'; // Import the FriendsListPage
-import '../models/post.dart'; // Import the Post model
-import 'post_details_page.dart'; // Import the PostDetailsPage
-import './points_guide.dart'; // Import the KarmaDialog
+import 'package:intl/intl.dart';
+import 'friends_list_page.dart';
+import '../models/post.dart';
+import 'post_details_page.dart';
+import './points_guide.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -30,6 +30,7 @@ class _ProfilePageState extends State<ProfilePage> {
       isAnonymous: false,
       timestamp: DateTime.now().subtract(const Duration(hours: 2)),
       profilePictureUrl: 'assets/images/anas.jpg',
+      privacy: 'Public',
     ),
     Post(
       id: '2',
@@ -41,6 +42,7 @@ class _ProfilePageState extends State<ProfilePage> {
       isAnonymous: false,
       timestamp: DateTime.now().subtract(const Duration(days: 1)),
       profilePictureUrl: 'assets/images/anas.jpg',
+      privacy: 'Friends',
     ),
     // Add more posts here...
   ];
@@ -128,12 +130,14 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           );
         }
-           showDialog(
+        if (label == 'Karma') {
+          showDialog(
             context: context,
             builder: (BuildContext context) {
               return KarmaDialog();
             },
           );
+        }
       },
       child: Column(
         children: [
@@ -190,18 +194,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ? '${post.content.substring(0, 50)}...'
                       : post.content,
                 ),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      DateFormat('MMM d, y h:mm a').format(post.timestamp),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: () => _showDeleteConfirmation(context, index),
-                    ),
-                  ],
-                ),
+                trailing: _buildMiniSettingsTab(context, index),
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -224,6 +217,137 @@ class _ProfilePageState extends State<ProfilePage> {
           },
         ),
       ],
+    );
+  }
+
+  Widget _buildMiniSettingsTab(BuildContext context, int index) {
+    return PopupMenuButton<String>(
+      icon: const Icon(Icons.more_vert),
+      onSelected: (value) {
+        switch (value) {
+          case 'Edit':
+            _showEditDialog(context, index);
+            break;
+          case 'Delete':
+            _showDeleteConfirmation(context, index);
+            break;
+          case 'Share':
+            // Implement your share logic here
+            break;
+          case 'Copy Link':
+            // Implement your copy link logic here
+            break;
+        }
+      },
+      itemBuilder: (BuildContext context) {
+        return {'Edit', 'Delete', 'Share', 'Copy Link'}.map((String choice) {
+          return PopupMenuItem<String>(
+            value: choice,
+            child: Text(choice),
+          );
+        }).toList();
+      },
+    );
+  }
+
+  void _showEditDialog(BuildContext context, int index) {
+    final post = userPosts[index];
+    TextEditingController textController = TextEditingController(text: post.content);
+    String selectedPrivacy = post.privacy;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setDialogState) {
+            return AlertDialog(
+              title: const Text('Edit Post', style: TextStyle(fontWeight: FontWeight.bold)),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextField(
+                      controller: textController,
+                      maxLines: null,
+                      decoration: InputDecoration(
+                        hintText: 'Edit your post',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 2),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    const Text('Privacy:', style: TextStyle(fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 8),
+                    _buildPrivacyOption(setDialogState, selectedPrivacy, 'Public', Icons.public, 'Everyone can see', (option) {
+                      setDialogState(() => selectedPrivacy = option);
+                    }),
+                    _buildPrivacyOption(setDialogState, selectedPrivacy, 'Friends', Icons.people, 'Only friends can see', (option) {
+                      setDialogState(() => selectedPrivacy = option);
+                    }),
+                    _buildPrivacyOption(setDialogState, selectedPrivacy, 'Only Me', Icons.lock, 'Only you can see', (option) {
+                      setDialogState(() => selectedPrivacy = option);
+                    }),
+                  ],
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('Cancel'),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+                ElevatedButton(
+                  child: const Text('Save'),
+                  onPressed: () {
+                    setState(() {
+                      post.content = textController.text;
+                      post.privacy = selectedPrivacy;
+                    });
+                    Navigator.of(context).pop();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).primaryColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildPrivacyOption(StateSetter setState, String selectedPrivacy, String option, IconData icon, String description, Function(String) onTap) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: InkWell(
+        onTap: () => onTap(option),
+        child: Row(
+          children: [
+            Icon(icon, color: selectedPrivacy == option ? Theme.of(context).primaryColor : Colors.grey),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(option, style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text(description, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+                ],
+              ),
+            ),
+            if (selectedPrivacy == option)
+              Icon(Icons.check, color: Theme.of(context).primaryColor),
+          ],
+        ),
+      ),
     );
   }
 

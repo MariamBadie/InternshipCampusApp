@@ -413,7 +413,7 @@ class _MyHomePageState extends State<MyHomePage>
               onShare: () => _sharePost(post.id),
               onCopyLink: () => _copyPostLink(post.id),
               // onEdit:() => _editPost(post.id),
-              onDelete: () => _deletePost(post.id),
+              // onDelete: () => _deletePost(post.id),
               onReport: () => _reportPost(post.id),
             ),
           );
