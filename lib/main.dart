@@ -13,6 +13,7 @@ import 'package:device_preview/device_preview.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'dart:io' show Platform; // Import for Platform
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,7 +37,8 @@ void main() async {
   } catch (e) {
     print('Firebase initialization error: $e');
   }
-
+  await dotenv.load(fileName: ".env");
+  
   runApp(ChangeNotifierProvider(
     create: (_) => ThemeNotifier(),
     child: const MyApp(),
@@ -60,15 +62,15 @@ class MyApp extends StatelessWidget {
       darkTheme: _buildTheme(Brightness.dark), // Dark theme
       themeMode:
           themeProvider.themeMode, // Use the theme mode from the provider
-      home: const MainScreen(),
+      home:  MainScreen(),
       routes: {
-        '/search': (context) => const SearchPage(),
-        '/notifications': (context) => const Activities(),
-        '/profile': (context) => const ProfilePage(),
-        '/editProfile': (context) => const EditProfilePage(),
+        '/search': (context) =>  SearchPage(),
+        '/notifications': (context) =>  Activities(),
+        '/profile': (context) =>  ProfilePage(),
+        '/editProfile': (context) =>EditProfilePage(),
         '/settings': (context) => const SettingsPage2(),
-        '/lostandfoundpage': (context) => const LostAndFound(),
-        '/homepage': (context) => const MainScreen()
+        '/lostandfoundpage': (context) =>  LostAndFound(),
+        '/homepage': (context) => MainScreen()
       },
     );
   }

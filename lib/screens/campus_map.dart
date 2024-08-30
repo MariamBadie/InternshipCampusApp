@@ -1,6 +1,5 @@
 
 import 'dart:async';
-import 'package:campus_app/helpers/const.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart' as loc;
@@ -8,6 +7,7 @@ import 'package:geocoding/geocoding.dart' as geo;
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -67,7 +67,7 @@ class _MapScreenState extends State<MapScreen> {
   Future<void> getPolyPoints() async {
     PolylinePoints polylinePoints = PolylinePoints();
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-      googleApiKey: google_api_key,
+      googleApiKey: dotenv.env['googleApiKey'],
       request: PolylineRequest(
         origin: PointLatLng(sourceLocation.latitude, sourceLocation.longitude),
         destination: PointLatLng(destination.latitude, destination.longitude),
@@ -118,6 +118,7 @@ class _MapScreenState extends State<MapScreen> {
 
 
   bool flag = true;
+  
   void _handleMapTap(LatLng tappedPoint) {
     _setLocation(tappedPoint, flag);
     flag = !flag;
@@ -142,7 +143,7 @@ class _MapScreenState extends State<MapScreen> {
       final result = await _getETAAndInstructions(
         sourceLocation,
         destination,
-        google_api_key,
+        dotenv.env['googleApiKey']!,
         'walking',
       );
       setState(() {
