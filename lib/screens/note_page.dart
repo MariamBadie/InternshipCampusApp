@@ -24,6 +24,8 @@ class _NotesPageState extends State<NotesPage> {
   final Color textColor = const Color(0xFF333333); // Dark Gray
   final Color backgroundColor = const Color(0xFFE6EDED); // Pale Teal
 
+  final Map<String, bool> _expandedComments = {};
+
   @override
   void dispose() {
     _notesController.dispose();
@@ -113,105 +115,180 @@ class _NotesPageState extends State<NotesPage> {
   }
 
   Widget _buildNoteCard(Note note) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      color: secondaryColor,
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            note.title,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: primaryColor),
+    // Initialize the expanded state for this note if it doesn't exist
+    _expandedComments.putIfAbsent(note.id!, () => false);
+
+    return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+      return Card(
+        margin: const EdgeInsets.only(bottom: 16),
+        elevation: 4,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        color: secondaryColor,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              note.title,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                  color: primaryColor),
+                            ),
+                            Text(
+                              note.number,
+                              style:
+                                  TextStyle(color: textColor.withOpacity(0.7)),
+                            ),
+                          ],
+                        ),
+                      ),
+                      PopupMenuButton<String>(
+                        icon: Icon(Icons.more_vert, color: primaryColor),
+                        onSelected: (String result) {
+                          if (result == 'edit') {
+                            _showEditNoteDialog(note);
+                          } else if (result == 'delete') {
+                            _deleteNote(note.id!);
+                          }
+                        },
+                        itemBuilder: (BuildContext context) =>
+                            <PopupMenuEntry<String>>[
+                          const PopupMenuItem<String>(
+                            value: 'edit',
+                            child: Text('Edit'),
                           ),
-                          Text(
-                            note.number,
-                            style: TextStyle(color: textColor.withOpacity(0.7)),
+                          const PopupMenuItem<String>(
+                            value: 'delete',
+                            child: Text('Delete'),
                           ),
                         ],
                       ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: () => _deleteNote(note.id!),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(note.content, style: TextStyle(color: textColor)),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _buildActionButton(Icons.edit, 'Edit', primaryColor,
-                        () => _showEditNoteDialog(note)),
-                    _buildActionButton(Icons.download, 'Download', accentColor,
-                        () => _downloadNote(note)),
-                    _buildActionButton(Icons.comment, 'Comment',
-                        Colors.blueGrey, () => _showAddCommentDialog(note)),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    note.content,
+                    style: TextStyle(color: textColor, fontSize: 16),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      _buildIconButton(Icons.download, 'Download', accentColor,
+                          () => _downloadNote(note)),
+                      const SizedBox(width: 16),
+                      _buildIconButton(Icons.comment, 'Comment', primaryColor,
+                          () => _showAddCommentDialog(note)),
+                      if (note.comments.isNotEmpty) ...[
+                        const Spacer(),
+                        InkWell(
+                          onTap: () {
+                            setState(() {
+                              _expandedComments[note.id!] =
+                                  !_expandedComments[note.id!]!;
+                            });
+                          },
+                          child: Text(
+                            'View all Comments (${note.comments.length})',
+                            style: TextStyle(
+                              color: textColor.withOpacity(0.7),
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ],
+              ),
             ),
+            if (_expandedComments[note.id]! && note.comments.isNotEmpty)
+              _buildCommentsDropdown(note),
+          ],
+        ),
+      );
+    });
+  }
+
+  Widget _buildCommentsDropdown(Note note) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(12),
+          bottomRight: Radius.circular(12),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: note.comments
+            .map((comment) => Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            comment.authorName,
+                            style: TextStyle(
+                              color: accentColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                          Text(
+                            DateFormat('MMM d, yyyy h:mm a')
+                                .format(comment.createdAt.toDate()),
+                            style: TextStyle(
+                                color: textColor.withOpacity(0.7),
+                                fontSize: 10),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        comment.text,
+                        style: TextStyle(color: textColor),
+                      ),
+                    ],
+                  ),
+                ))
+            .toList(),
+      ),
+    );
+  }
+
+  Widget _buildIconButton(
+      IconData icon, String label, Color color, VoidCallback onPressed) {
+    return InkWell(
+      onTap: onPressed,
+      child: Row(
+        children: [
+          Icon(icon, size: 20, color: color),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: TextStyle(color: color, fontSize: 14),
           ),
-          if (note.comments.isNotEmpty) _buildCommentsExpansionTile(note),
         ],
       ),
-    );
-  }
-
-  Widget _buildActionButton(
-      IconData icon, String label, Color color, VoidCallback onPressed) {
-    return ElevatedButton.icon(
-      icon: Icon(icon, size: 16),
-      label: Text(label, style: const TextStyle(fontSize: 12)),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: color,
-        foregroundColor: secondaryColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-      ),
-      onPressed: onPressed,
-    );
-  }
-
-  Widget _buildCommentsExpansionTile(Note note) {
-    return ExpansionTile(
-      title: Text(
-        'Comments (${note.comments.length})',
-        style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),
-      ),
-      children: note.comments
-          .map((comment) => ListTile(
-                title: Text(comment.text, style: TextStyle(color: textColor)),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(comment.authorName,
-                        style: TextStyle(color: accentColor)),
-                    Text(
-                      DateFormat('MMM d, yyyy - h:mm a')
-                          .format(comment.createdAt.toDate()),
-                      style: TextStyle(
-                          color: textColor.withOpacity(0.7), fontSize: 12),
-                    ),
-                  ],
-                ),
-              ))
-          .toList(),
     );
   }
 
