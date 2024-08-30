@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:campus_app/backend/Model/notesbackend.dart';
 import 'package:campus_app/backend/Controller/notescontroller.dart';
+import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'dart:io';
 
@@ -195,8 +197,19 @@ class _NotesPageState extends State<NotesPage> {
       children: note.comments
           .map((comment) => ListTile(
                 title: Text(comment.text, style: TextStyle(color: textColor)),
-                subtitle: Text(comment.authorName,
-                    style: TextStyle(color: accentColor)),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(comment.authorName,
+                        style: TextStyle(color: accentColor)),
+                    Text(
+                      DateFormat('MMM d, yyyy - h:mm a')
+                          .format(comment.createdAt.toDate()),
+                      style: TextStyle(
+                          color: textColor.withOpacity(0.7), fontSize: 12),
+                    ),
+                  ],
+                ),
               ))
           .toList(),
     );
@@ -386,6 +399,7 @@ class _NotesPageState extends State<NotesPage> {
                     text: controller.text,
                     authorName: 'You',
                     isOwnComment: true,
+                    createdAt: Timestamp.now(),
                   ),
                 );
                 Navigator.of(context).pop();
