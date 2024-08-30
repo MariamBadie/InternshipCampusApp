@@ -116,23 +116,40 @@ class _NotesPageState extends State<NotesPage> {
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       color: secondaryColor,
-      child: CustomExpansionTile(
-        title: Text(
-          note.title,
-          style: TextStyle(fontWeight: FontWeight.bold, color: primaryColor),
-        ),
-        subtitle: Text(note.number,
-            style: TextStyle(color: textColor.withOpacity(0.7))),
-        deleteButton: IconButton(
-          icon: const Icon(Icons.delete, color: Colors.red),
-          onPressed: () => _deleteNote(note.id!),
-        ),
+      child: Column(
         children: [
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            note.title,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: primaryColor),
+                          ),
+                          Text(
+                            note.number,
+                            style: TextStyle(color: textColor.withOpacity(0.7)),
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete, color: Colors.red),
+                      onPressed: () => _deleteNote(note.id!),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
                 Text(note.content, style: TextStyle(color: textColor)),
                 const SizedBox(height: 16),
                 Row(
@@ -146,21 +163,10 @@ class _NotesPageState extends State<NotesPage> {
                         Colors.blueGrey, () => _showAddCommentDialog(note)),
                   ],
                 ),
-                if (note.comments.isNotEmpty) ...[
-                  const SizedBox(height: 16),
-                  Text('Comments:',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, color: primaryColor)),
-                  ...note.comments.map((comment) => ListTile(
-                        title: Text(comment.text,
-                            style: TextStyle(color: textColor)),
-                        subtitle: Text(comment.authorName,
-                            style: TextStyle(color: accentColor)),
-                      )),
-                ],
               ],
             ),
           ),
+          if (note.comments.isNotEmpty) _buildCommentsExpansionTile(note),
         ],
       ),
     );
@@ -177,6 +183,22 @@ class _NotesPageState extends State<NotesPage> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
       ),
       onPressed: onPressed,
+    );
+  }
+
+  Widget _buildCommentsExpansionTile(Note note) {
+    return ExpansionTile(
+      title: Text(
+        'Comments (${note.comments.length})',
+        style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),
+      ),
+      children: note.comments
+          .map((comment) => ListTile(
+                title: Text(comment.text, style: TextStyle(color: textColor)),
+                subtitle: Text(comment.authorName,
+                    style: TextStyle(color: accentColor)),
+              ))
+          .toList(),
     );
   }
 
@@ -351,7 +373,8 @@ class _NotesPageState extends State<NotesPage> {
           ),
           actions: [
             TextButton(
-              child: const Text('Cancel', style: TextStyle(color: Colors.blueGrey)),
+              child: const Text('Cancel',
+                  style: TextStyle(color: Colors.blueGrey)),
               onPressed: () => Navigator.of(context).pop(),
             ),
             TextButton(
@@ -371,53 +394,6 @@ class _NotesPageState extends State<NotesPage> {
           ],
         );
       },
-    );
-  }
-}
-
-class CustomExpansionTile extends StatefulWidget {
-  final Widget title;
-  final Widget? subtitle;
-  final List<Widget> children;
-  final Widget deleteButton;
-
-  const CustomExpansionTile({
-    super.key,
-    required this.title,
-    this.subtitle,
-    required this.children,
-    required this.deleteButton,
-  });
-
-  @override
-  _CustomExpansionTileState createState() => _CustomExpansionTileState();
-}
-
-class _CustomExpansionTileState extends State<CustomExpansionTile> {
-  bool _isExpanded = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Theme(
-      data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-      child: ExpansionTile(
-        title: widget.title,
-        subtitle: widget.subtitle,
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (_isExpanded) widget.deleteButton,
-            Icon(_isExpanded ? Icons.expand_less : Icons.expand_more,
-                color: _NotesPageState().primaryColor),
-          ],
-        ),
-        children: widget.children,
-        onExpansionChanged: (expanded) {
-          setState(() {
-            _isExpanded = expanded;
-          });
-        },
-      ),
     );
   }
 }
