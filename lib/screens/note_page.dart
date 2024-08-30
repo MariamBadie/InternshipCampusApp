@@ -297,10 +297,11 @@ class _NotesPageState extends State<NotesPage> {
     final numberController = TextEditingController();
     final contentController = TextEditingController();
     String? attachmentPath;
+    String? attachmentType;
 
     showDialog(
       context: context,
-      builder: (BuildContext context) =>
+      builder: (BuildContext dialogContext) =>
           StatefulBuilder(builder: (context, setState) {
         return AlertDialog(
           title: const Text('Add New Note'),
@@ -326,15 +327,18 @@ class _NotesPageState extends State<NotesPage> {
                 ElevatedButton.icon(
                   icon: const Icon(Icons.attach_file),
                   label: Text(
-                      attachmentPath != null ? 'PDF Attached' : 'Attach PDF'),
-                  onPressed: () async {
-                    String? path = await _notesController.pickPDF();
-                    if (path != null) {
+                    attachmentPath != null
+                        ? 'Attachment Added'
+                        : 'Add Attachment',
+                  ),
+                  onPressed: () => _showAttachmentSourceDialog(
+                    (path, type) {
                       setState(() {
                         attachmentPath = path;
+                        attachmentType = type;
                       });
-                    }
-                  },
+                    },
+                  ),
                 ),
               ],
             ),
@@ -342,30 +346,112 @@ class _NotesPageState extends State<NotesPage> {
           actions: [
             TextButton(
               child: const Text('Cancel'),
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => Navigator.of(dialogContext).pop(),
             ),
             TextButton(
               child: const Text('Add'),
-              onPressed: () async {
-                Note newNote = Note(
-                  title: titleController.text,
-                  number: numberController.text,
-                  content: contentController.text,
+              onPressed: () {
+                Navigator.of(dialogContext)
+                    .pop(); // Close the dialog immediately
+                _addNote(
+                  titleController.text,
+                  numberController.text,
+                  contentController.text,
+                  attachmentPath,
+                  attachmentType,
                 );
-                String? attachmentUrl;
-                if (attachmentPath != null) {
-                  attachmentUrl =
-                      await _notesController.uploadPDF(attachmentPath!);
-                }
-                newNote.attachmentUrl = attachmentUrl;
-                await _notesController.addNote(newNote);
-                Navigator.of(context).pop();
               },
             ),
           ],
         );
       }),
     );
+  }
+
+  void _addNote(String title, String number, String content,
+      String? attachmentPath, String? attachmentType) async {
+    Note newNote = Note(
+      title: title,
+      number: number,
+      content: content,
+    );
+    if (attachmentPath != null && attachmentType != null) {
+      final attachment = await _notesController.uploadAttachment(
+        attachmentPath,
+        attachmentType,
+      );
+      newNote.attachmentUrl = attachment['url'];
+      newNote.attachmentType = attachment['type'];
+    }
+    await _notesController.addNote(newNote);
+    // Show a snackbar for feedback
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Note added successfully')),
+    );
+  }
+
+  void _showAttachmentSourceDialog(
+      Function(String, String) onAttachmentSelected) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Select Attachment Source'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.insert_drive_file),
+                title: const Text('Pick from File System'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _pickFile(onAttachmentSelected);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Pick from Photos'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _pickImageFromGallery(onAttachmentSelected);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Take a Photo'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _captureImageFromCamera(onAttachmentSelected);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _pickFile(Function(String, String) onAttachmentSelected) async {
+    String? filePath = await _notesController.pickFile();
+    if (filePath != null) {
+      onAttachmentSelected(filePath, 'file');
+    }
+  }
+
+  void _pickImageFromGallery(
+      Function(String, String) onAttachmentSelected) async {
+    String? imagePath = await _notesController.pickImageFromGallery();
+    if (imagePath != null) {
+      onAttachmentSelected(imagePath, 'image');
+    }
+  }
+
+  void _captureImageFromCamera(
+      Function(String, String) onAttachmentSelected) async {
+    String? imagePath = await _notesController.captureImageFromCamera();
+    if (imagePath != null) {
+      onAttachmentSelected(imagePath, 'image');
+    }
   }
 
   void _showEditNoteDialog(Note note) {
@@ -429,18 +515,19 @@ class _NotesPageState extends State<NotesPage> {
 
   void _downloadNote(Note note) async {
     if (note.attachmentUrl != null) {
-      File? file = await _notesController.downloadPDF(note.attachmentUrl!);
+      File? file = await _notesController.downloadAttachment(
+          note.attachmentUrl!, note.attachmentType ?? 'file');
       if (file != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('PDF downloaded: ${file.path}')),
+          SnackBar(content: Text('Attachment downloaded: ${file.path}')),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to download PDF')),
+          const SnackBar(content: Text('Failed to download attachment')),
         );
       }
     } else {
-      String result = await _notesController.downloadNote(note);
+      String result = await _notesController.downloadNoteContent(note);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(result)),
       );
@@ -450,7 +537,7 @@ class _NotesPageState extends State<NotesPage> {
   void _showAddCommentDialog(Note note) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (BuildContext dialogContext) {
         final TextEditingController controller = TextEditingController();
         return AlertDialog(
           title: Text('Add Comment', style: TextStyle(color: primaryColor)),
@@ -465,26 +552,35 @@ class _NotesPageState extends State<NotesPage> {
             TextButton(
               child: const Text('Cancel',
                   style: TextStyle(color: Colors.blueGrey)),
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => Navigator.of(dialogContext).pop(),
             ),
             TextButton(
               child: Text('Add', style: TextStyle(color: accentColor)),
-              onPressed: () async {
-                await _notesController.addComment(
-                  note.id!,
-                  Comment(
-                    text: controller.text,
-                    authorName: 'You',
-                    isOwnComment: true,
-                    createdAt: Timestamp.now(),
-                  ),
-                );
-                Navigator.of(context).pop();
+              onPressed: () {
+                Navigator.of(dialogContext)
+                    .pop(); // Close the dialog immediately
+                _addComment(note, controller.text);
               },
             ),
           ],
         );
       },
+    );
+  }
+
+  void _addComment(Note note, String commentText) async {
+    await _notesController.addComment(
+      note.id!,
+      Comment(
+        text: commentText,
+        authorName: 'You',
+        isOwnComment: true,
+        createdAt: Timestamp.now(),
+      ),
+    );
+    // Show a snackbar for feedback
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Comment added successfully')),
     );
   }
 }
