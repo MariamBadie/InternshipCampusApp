@@ -62,15 +62,15 @@ class MyApp extends StatelessWidget {
       darkTheme: _buildTheme(Brightness.dark), // Dark theme
       themeMode:
           themeProvider.themeMode, // Use the theme mode from the provider
-      home: const MainScreen(),
+      home:  MainScreen(),
       routes: {
-        '/search': (context) => const SearchPage(),
-        '/notifications': (context) => const Activities(),
-        '/profile': (context) => const ProfilePage(),
-        '/editProfile': (context) => const EditProfilePage(),
+        '/search': (context) =>  SearchPage(),
+        '/notifications': (context) =>  Activities(),
+        '/profile': (context) =>  ProfilePage(),
+        '/editProfile': (context) =>EditProfilePage(),
         '/settings': (context) => const SettingsPage2(),
-        '/lostandfoundpage': (context) => const LostAndFound(),
-        '/homepage': (context) => const MainScreen()
+        '/lostandfoundpage': (context) =>  LostAndFound(),
+        '/homepage': (context) => MainScreen()
       },
     );
   }

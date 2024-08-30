@@ -11,7 +11,7 @@ import '../models/event.dart';
 import '../widgets/post_card.dart';
 import '../widgets/event_card.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+import 'package:campus_app/screens/reminder_page.dart';
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
@@ -322,7 +322,7 @@ class _MyHomePageState extends State<MyHomePage>
             _buildDrawerItem(Icons.home, 'Home'),
             _buildDrawerItem(Icons.watch, 'Lost & Found', onTap: () {
               Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const LostAndFound()));
+                  MaterialPageRoute(builder: (context) =>  LostAndFound()));
             }),
              _buildDrawerItem(Icons.map, 'Campus Map', onTap:() {
           Navigator.push(
@@ -340,6 +340,11 @@ class _MyHomePageState extends State<MyHomePage>
                 MaterialPageRoute(builder: (context) => const NotesPage()),
               );
             }),
+            _buildDrawerItem(Icons.access_time_rounded, 'Reminders',
+                onTap: () {
+                Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) =>const RemindersPage()),
+              );  }),
             _buildDrawerItem(Icons.event, 'Events'),
             _buildDrawerItem(Icons.logout, 'Log Out', onTap: () {
               // Add functionality to log out
