@@ -93,9 +93,9 @@ Future<List<Reminder>> viewRemindersByUser(String userID) async {
         .where('userID', isEqualTo: userID)
         .get();
 
-    List<Reminder> reminders = querySnapshot.docs
-        .map((doc) => Reminder.fromMap(doc.data() as Map<String, dynamic>))
-        .toList();
+    List<Reminder> reminders = querySnapshot.docs.map((doc) {
+      return Reminder.fromMap(doc.data() as Map<String, dynamic>, doc.id); // Pass the document ID
+    }).toList();
 
     return reminders;
   } catch (e) {
