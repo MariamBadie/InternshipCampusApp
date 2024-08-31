@@ -1,9 +1,15 @@
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:campus_app/backend/Controller/lostAndFoundController.dart';
+import 'package:campus_app/backend/Model/LostAndFound.dart';
+import 'package:campus_app/screens/favorites_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../backend/Model/Rating.dart';
 import '../backend/Controller/ratingController.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class AddPostPage extends StatefulWidget {
   final String postType;
@@ -16,7 +22,7 @@ class AddPostPage extends StatefulWidget {
 
 class _AddPostPageState extends State<AddPostPage> {
   final TextEditingController _textController = TextEditingController();
-  XFile? _image;
+  Uint8List? _image;
   bool _isAnonymous = false;
   final ImagePicker _picker = ImagePicker();
   String? _lostOrFound;
@@ -41,7 +47,8 @@ class _AddPostPageState extends State<AddPostPage> {
   final RatingController ratingController = RatingController(FirebaseService());
 
   Future<void> _pickImage() async {
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    final Uint8List? image =
+        await _picker.pickImage(source: ImageSource.gallery) as Uint8List;
     setState(() {
       _image = image;
     });
@@ -95,7 +102,26 @@ class _AddPostPageState extends State<AddPostPage> {
       print('Type: ${widget.postType}');
       print('Content: $postContent');
       print('Anonymous: $_isAnonymous');
-      print('Image path: ${_image?.path}');
+      // print('Image path: ${_image?.path}');
+      print('Lost or Found: ${_lostOrFound}');
+      print('Category: ${_category}');
+      String imageUrl =
+          await uploadImageToStorage("lostAndFoundImage", _image as Uint8List);
+
+      if (widget.postType == "Lost & Found") {
+        LostAndFound post = LostAndFound(
+            authorID: _userID,
+            isFound: false,
+            content: _textController.text,
+            category: _category.toString(),
+            createdAt: DateTime.now(),
+            comments: [],
+            imageUrl: imageUrl);
+
+        await saveLostAndFoundPost(post);
+        print("saved");
+        return;
+      }
     }
 
     _textController.clear();
@@ -283,13 +309,13 @@ class _AddPostPageState extends State<AddPostPage> {
                       child: const Text('Pick Image'),
                     ),
                     const SizedBox(width: 16),
-                    if (_image != null)
-                      Image.file(
-                        File(_image!.path),
-                        height: 100,
-                        width: 100,
-                        fit: BoxFit.cover,
-                      ),
+                    // if (_image != null)
+                    // Image.file(
+                    //   // File(_image!.path),
+                    //   height: 100,
+                    //   width: 100,
+                    //   fit: BoxFit.cover,
+                    // ),
                   ],
                 ),
               const SizedBox(height: 16),

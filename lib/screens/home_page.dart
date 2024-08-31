@@ -12,6 +12,7 @@ import '../widgets/post_card.dart';
 import '../widgets/event_card.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:campus_app/screens/reminder_page.dart';
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
@@ -321,17 +322,23 @@ class _MyHomePageState extends State<MyHomePage>
             ),
             _buildDrawerItem(Icons.home, 'Home'),
             _buildDrawerItem(Icons.watch, 'Lost & Found', onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) =>  LostAndFound()));
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => LostAndFoundPage()),
+              );
             }),
-             _buildDrawerItem(Icons.map, 'Campus Map', onTap:() {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const MapScreen()),
-          );
-        },),
+            _buildDrawerItem(
+              Icons.map,
+              'Campus Map',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const MapScreen()),
+                );
+              },
+            ),
             _buildDrawerItem(Icons.forum, 'Confessions'),
-          
+
             _buildDrawerItem(Icons.rate_review, 'View Reviews & Ratings'),
             _buildDrawerItem(Icons.help, 'Help'),
             _buildDrawerItem(Icons.assignment, "Notes", onTap: () {
@@ -340,11 +347,11 @@ class _MyHomePageState extends State<MyHomePage>
                 MaterialPageRoute(builder: (context) => const NotesPage()),
               );
             }),
-            _buildDrawerItem(Icons.access_time_rounded, 'Reminders',
-                onTap: () {
-                Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) =>const RemindersPage()),
-              );  }),
+            _buildDrawerItem(Icons.access_time_rounded, 'Reminders', onTap: () {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => const RemindersPage()),
+              );
+            }),
             _buildDrawerItem(Icons.event, 'Events'),
             _buildDrawerItem(Icons.logout, 'Log Out', onTap: () {
               // Add functionality to log out
@@ -355,11 +362,7 @@ class _MyHomePageState extends State<MyHomePage>
                 textStyle: const TextStyle(fontSize: 12), onTap: () {
               _makePhoneCall('911');
             }),
-            _buildDrawerItem(Icons.local_police, 'Call Police',
-                textStyle: const TextStyle(fontSize: 12), onTap: () {
-              _makePhoneCall('911');
-            }),
-            _buildDrawerItem(Icons.fire_truck, 'Call Fire Rescue',
+            _buildDrawerItem(Icons.security, 'Call Security',
                 textStyle: const TextStyle(fontSize: 12), onTap: () {
               _makePhoneCall('911');
             }),

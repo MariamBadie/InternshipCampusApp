@@ -38,7 +38,7 @@ void main() async {
     print('Firebase initialization error: $e');
   }
   await dotenv.load(fileName: ".env");
-  
+
   runApp(ChangeNotifierProvider(
     create: (_) => ThemeNotifier(),
     child: const MyApp(),
@@ -62,14 +62,14 @@ class MyApp extends StatelessWidget {
       darkTheme: _buildTheme(Brightness.dark), // Dark theme
       themeMode:
           themeProvider.themeMode, // Use the theme mode from the provider
-      home:  MainScreen(),
+      home: MainScreen(),
       routes: {
-        '/search': (context) =>  SearchPage(),
-        '/notifications': (context) =>  Activities(),
-        '/profile': (context) =>  ProfilePage(),
-        '/editProfile': (context) =>EditProfilePage(),
+        '/search': (context) => SearchPage(),
+        '/notifications': (context) => Activities(),
+        '/profile': (context) => ProfilePage(),
+        '/editProfile': (context) => EditProfilePage(),
         '/settings': (context) => const SettingsPage2(),
-        '/lostandfoundpage': (context) =>  LostAndFound(),
+        '/lostandfoundpage': (context) => LostAndFoundPage(),
         '/homepage': (context) => MainScreen()
       },
     );
