@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../models/Community.dart';
 import '../models/post.dart';
@@ -160,7 +159,7 @@ class CommunityGeneralPage extends StatelessWidget {
       appBar: AppBar(
     
       title:
-          Row(
+          const Row(
             children: [
               Icon(
             Icons.group
@@ -180,25 +179,25 @@ class CommunityGeneralPage extends StatelessWidget {
           ),
       actions: [
         PopupMenuButton(
-              icon: Icon(Icons.add_circle), 
+              icon: const Icon(Icons.add_circle), 
               onSelected: (String result) {
                 if(result=='newCommunity'){
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder:(context)=>
-                    NewCommunity()));
+                    const NewCommunity()));
                  
                 }
               },
               itemBuilder: (BuildContext context) => [
-                PopupMenuItem(
+                const PopupMenuItem(
                   value: 'newCommunity',
                   child: Text('Create new Community'),
                 ),
               ],
             ),
       ],
-        bottom: TabBar(
+        bottom: const TabBar(
             tabs: [
               Tab(
                 text: 'For you',

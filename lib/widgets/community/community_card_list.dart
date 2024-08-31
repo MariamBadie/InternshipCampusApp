@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../models/Community.dart';
 import 'community_card.dart';
@@ -14,6 +13,7 @@ class CommunityCardList extends StatefulWidget {
 class _CommunityCardListState extends State<CommunityCardList> {
   final int initialItemCount = 5;
   late bool showAll;
+  @override
   initState(){
    showAll =widget.communities.length <= initialItemCount?true: false;
   }
@@ -40,7 +40,7 @@ class _CommunityCardListState extends State<CommunityCardList> {
                             });
                           },
                             child: Card(
-                              margin: EdgeInsets.all(10),
+                              margin: const EdgeInsets.all(10),
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                               clipBehavior: Clip.antiAliasWithSaveLayer,
                               elevation: 5,
@@ -60,7 +60,7 @@ class _CommunityCardListState extends State<CommunityCardList> {
                                   ),
                                 ),
                               ),
-                              Positioned(
+                              const Positioned(
                                 left: 32.0,
                                 bottom:15.0 ,
                                 child:Text(

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../models/User.dart';
 import '../widgets/community/invitation_card.dart';
@@ -6,7 +5,7 @@ import '../widgets/community/search_bar.dart' as search_bar;
 
 class InvitationPage extends StatefulWidget {
 
-  InvitationPage({super.key});
+  const InvitationPage({super.key});
 
   @override
   State<InvitationPage> createState() => _InvitationPageState();
@@ -47,7 +46,7 @@ class _InvitationPageState extends State<InvitationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
        appBar: AppBar(
-        title:Row(
+        title:const Row(
           children: [
             Icon(Icons.group_add),
             SizedBox(

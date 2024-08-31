@@ -2,12 +2,13 @@ class Post {
   final String id;
   final String username;
   final String type;
-  final String content;
+   String content;
   final Map<String, int> reactions;
   final List<Comment> comments;
   final bool isAnonymous;
   final DateTime timestamp;
   final String profilePictureUrl; // New field for profile picture
+  String privacy;
 
   Post({
     required this.id,
@@ -19,6 +20,7 @@ class Post {
     required this.isAnonymous,
     required this.timestamp,
     required this.profilePictureUrl, // Initialize the profile picture
+    this.privacy = 'Public',
   });
 }
 

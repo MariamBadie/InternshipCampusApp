@@ -5,7 +5,7 @@ class PostCreationPage extends StatefulWidget {
   final String type;
   final Function(Post) onPostCreated;
 
-  PostCreationPage({required this.type, required this.onPostCreated});
+  const PostCreationPage({super.key, required this.type, required this.onPostCreated});
 
   @override
   _PostCreationPageState createState() => _PostCreationPageState();
@@ -28,7 +28,7 @@ class _PostCreationPageState extends State<PostCreationPage> {
         title: Text('Create ${widget.type}'),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -36,11 +36,11 @@ class _PostCreationPageState extends State<PostCreationPage> {
               controller: _contentController,
               decoration: InputDecoration(
                 hintText: 'Enter your ${widget.type.toLowerCase()} here',
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
               ),
               maxLines: 5,
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             if (widget.type == 'Confession')
               Row(
                 children: [
@@ -52,10 +52,10 @@ class _PostCreationPageState extends State<PostCreationPage> {
                       });
                     },
                   ),
-                  Text('Post anonymously'),
+                  const Text('Post anonymously'),
                 ],
               ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
                 if (_contentController.text.isNotEmpty) {
@@ -75,11 +75,11 @@ class _PostCreationPageState extends State<PostCreationPage> {
                 } else {
                   // Show error message if content is empty
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Please enter some content')),
+                    const SnackBar(content: Text('Please enter some content')),
                   );
                 }
               },
-              child: Text('Post'),
+              child: const Text('Post'),
             ),
           ],
         ),

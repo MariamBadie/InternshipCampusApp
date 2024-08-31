@@ -1,10 +1,11 @@
-import 'dart:developer';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:campus_app/backend/Controller/registerController.dart';
 
 
 class SignupPage extends StatefulWidget {
+  const SignupPage({super.key});
+
   @override
   _SignUpPageState createState() => _SignUpPageState();
 }
@@ -50,11 +51,11 @@ class _SignUpPageState extends State<SignupPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Check Your Email'),
-          content: Text('A verification link has been sent to your email. Please verify your email to complete the registration.'),
+          title: const Text('Check Your Email'),
+          content: const Text('A verification link has been sent to your email. Please verify your email to complete the registration.'),
           actions: <Widget>[
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -66,7 +67,7 @@ class _SignUpPageState extends State<SignupPage> {
   }
 
   void _startEmailVerificationPolling() {
-    Timer.periodic(Duration(seconds: 3), (timer) async {
+    Timer.periodic(const Duration(seconds: 3), (timer) async {
       bool isVerified = await RegisterController.instance.checkEmailVerified();
       if (isVerified) {
         timer.cancel();
@@ -80,11 +81,11 @@ class _SignUpPageState extends State<SignupPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Successfully Registered'),
-          content: Text('Your email has been verified. You can now log in.'),
+          title: const Text('Successfully Registered'),
+          content: const Text('Your email has been verified. You can now log in.'),
           actions: <Widget>[
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
                 // Navigate to another screen if needed
@@ -101,11 +102,11 @@ class _SignUpPageState extends State<SignupPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Registration Error'),
+          title: const Text('Registration Error'),
           content: Text(message),
           actions: <Widget>[
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -129,14 +130,14 @@ class _SignUpPageState extends State<SignupPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
+                  const Text(
                     'Create Your Account',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   TextFormField(
                     controller: _usernameController,
                     decoration: InputDecoration(
@@ -152,7 +153,7 @@ class _SignUpPageState extends State<SignupPage> {
                       return null;
                     },
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
@@ -169,11 +170,11 @@ class _SignUpPageState extends State<SignupPage> {
                     },
                   ),
                   if (!_isValidEmail)
-                    Text(
+                    const Text(
                       'Invalid email format',
                       style: TextStyle(color: Colors.red),
                     ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   TextFormField(
                     controller: _passwordController,
                     obscureText: true,
@@ -190,10 +191,10 @@ class _SignUpPageState extends State<SignupPage> {
                       return null;
                     },
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: _registerAndVerifyEmail,
-                    child: Text('Sign Up'),
+                    child: const Text('Sign Up'),
                   ),
                 ],
               ),

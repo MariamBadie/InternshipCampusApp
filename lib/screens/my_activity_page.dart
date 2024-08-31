@@ -1,7 +1,6 @@
 import 'package:campus_app/backend/Controller/commentController.dart';
 import 'package:campus_app/backend/Controller/userController.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class MyActivityPage extends StatefulWidget {
@@ -105,7 +104,7 @@ class _MyActivityPageState extends State<MyActivityPage> {
     final now = DateTime.now();
     if (date.year == now.year && date.month == now.month && date.day == now.day) {
       return "Today";
-    } else if (date.year == now.year && date.month == now.month && date.day == now.subtract(Duration(days: 1)).day) {
+    } else if (date.year == now.year && date.month == now.month && date.day == now.subtract(const Duration(days: 1)).day) {
       return "Yesterday";
     } else {
       return '${_getDayOfWeek(date.weekday)}, ${date.day}/${date.month}/${date.year}';
@@ -177,7 +176,7 @@ class _MyActivityPageState extends State<MyActivityPage> {
         child: Card(
           elevation: 4,
           child: ListTile(
-            title: Text('You Have Commented'),
+            title: const Text('You Have Commented'),
             subtitle: Text(comment['content'] ?? 'No Comment'),
           ),
         ),

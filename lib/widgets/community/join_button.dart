@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class JoinButton extends StatefulWidget {
@@ -37,18 +36,18 @@ class _JoinButtonState extends State<JoinButton> {
     context: context,
     builder:(context){
       return AlertDialog(
-        title:Center(child: Text('Leave Community')),
-        titleTextStyle: TextStyle(
+        title:const Center(child: Text('Leave Community')),
+        titleTextStyle: const TextStyle(
           fontSize:20.0,
           fontWeight: FontWeight.bold,
           letterSpacing: 1.0,
         ),
-        insetPadding: EdgeInsets.all(20.0),
-        titlePadding: EdgeInsets.all(15.0),
+        insetPadding: const EdgeInsets.all(20.0),
+        titlePadding: const EdgeInsets.all(15.0),
         content: 
-            Text('Are you sure that you want leave this community ?'),
-        contentPadding: EdgeInsets.all(30.0),
-        contentTextStyle: TextStyle(
+            const Text('Are you sure that you want leave this community ?'),
+        contentPadding: const EdgeInsets.all(30.0),
+        contentTextStyle: const TextStyle(
           fontSize: 15.0,
           fontWeight: FontWeight.w500,
         ),
@@ -57,7 +56,7 @@ class _JoinButtonState extends State<JoinButton> {
             onPressed:(){
               Navigator.pop(context);
             },
-             child:Text('Cancel',
+             child:const Text('Cancel',
              style:TextStyle(
           fontSize: 15.0,
           fontWeight: FontWeight.w500,
@@ -71,7 +70,7 @@ class _JoinButtonState extends State<JoinButton> {
               _leaveCommunity();
               
             },
-             child:Text('Confirm',
+             child:const Text('Confirm',
              style:TextStyle(
           fontSize: 15.0,
           fontWeight: FontWeight.w500,
@@ -99,9 +98,9 @@ void _leaveCommunity(){
         onPressedJoin();
       },
        label:Text(widget.isJoined?'Joined':'Join',) ,
-       icon:widget.isJoined?Icon(Icons.done):Icon(Icons.group_add),
+       icon:widget.isJoined?const Icon(Icons.done):const Icon(Icons.group_add),
        style:ElevatedButton.styleFrom(
-                      backgroundColor:widget.isJoined?Color.fromARGB(255, 208, 202, 202):Color.fromARGB(255, 190, 174, 219), 
+                      backgroundColor:widget.isJoined?const Color.fromARGB(255, 208, 202, 202):const Color.fromARGB(255, 190, 174, 219), 
                     ),
        );
   }

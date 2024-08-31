@@ -11,7 +11,7 @@ class FriendProfilePage extends StatelessWidget {
   final int numberOfFriends = 50; // Placeholder friends count
   final int karma = 100; // Placeholder karma
 
-  FriendProfilePage({required this.name, required this.profilePic});
+  const FriendProfilePage({super.key, required this.name, required this.profilePic});
 
   @override
   Widget build(BuildContext context) {

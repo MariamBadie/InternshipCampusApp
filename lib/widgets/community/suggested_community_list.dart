@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../models/Community.dart';
 import '../../widgets/community/join_button.dart';
@@ -16,7 +15,7 @@ class SuggestedCommunities extends StatelessWidget {
                   return Card(
                       elevation:2.0,
                       child: ListTile(
-                        contentPadding: EdgeInsets.all(15.0),
+                        contentPadding: const EdgeInsets.all(15.0),
                         onTap: (){
                           Navigator.push(context,MaterialPageRoute(
                             builder: (context) => CommunityPage(isMember:false,communityData:SuggestedCommunity[index]),
@@ -24,7 +23,7 @@ class SuggestedCommunities extends StatelessWidget {
                         },
                         title:Text(
                           SuggestedCommunity[index].name,
-                          style: TextStyle(
+                          style: const TextStyle(
                            fontWeight: FontWeight.w600,
                            letterSpacing: 0.5,
                           ),

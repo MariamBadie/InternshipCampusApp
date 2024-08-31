@@ -1,16 +1,7 @@
-import 'dart:ui';
 
-import 'package:campus_app/screens/about_us_page.dart';
-import 'package:device_preview/device_preview.dart';
 import '../screens/community_members.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import '../models/Community.dart';
-import'../models/User.dart';
-import 'main_screen.dart' as utils;
 import 'invite_new_members.dart';
 import '../screens/add_post_page.dart';
 
@@ -38,12 +29,12 @@ class CommunityPageState extends State<CommunityPage> {
                 CircleAvatar(
                 backgroundImage:AssetImage(widget.communityData.pictureUrl)
             ),
-            SizedBox(
+            const SizedBox(
               width: 13.0,
             ),
             
                 Text(widget.communityData.name,
-                style:TextStyle(
+                style:const TextStyle(
                         fontWeight: FontWeight.w500,
                         letterSpacing: 1.0,
                           
@@ -54,7 +45,7 @@ class CommunityPageState extends State<CommunityPage> {
         
         actions: widget.isMember?[
             PopupMenuButton(
-              icon: Icon(Icons.more_vert), 
+              icon: const Icon(Icons.more_vert), 
               onSelected: (String result) {
                 if(result=='InviteFriends'){
                   _navigateToInvitePage(context);
@@ -70,20 +61,20 @@ class CommunityPageState extends State<CommunityPage> {
                 }
               },
               itemBuilder: (BuildContext context) => [
-                PopupMenuItem(
+                const PopupMenuItem(
                  
                   value: 'InviteFriends',
                   child: Text('Invite friends'),
                 ),
-                PopupMenuItem(
+                const PopupMenuItem(
                   value: 'Report',
                   child: Text('Report'),
                 ),
-                PopupMenuItem(
+                const PopupMenuItem(
                   value: 'ManageNotification',
                   child: Text('Manage notification'),
                 ),
-                 PopupMenuItem(
+                 const PopupMenuItem(
                   value: 'Leave',
                   child: Text('Leave group'),
 
@@ -108,19 +99,19 @@ class CommunityPageState extends State<CommunityPage> {
                     ),
                   ),
                 )
-              ,SizedBox(
+              ,const SizedBox(
                 height: 20.0,
               ),
         
                     Text(
                     widget.communityData.name,
-                    style:TextStyle(
+                    style:const TextStyle(
                          letterSpacing: 1.0,
                          fontSize: 30.0,
                          fontWeight: FontWeight.bold,
                     ),           
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height:7.0
                     ),
 
@@ -134,7 +125,7 @@ class CommunityPageState extends State<CommunityPage> {
                        communityData: widget.communityData,
                        onDisjoin: showLeaveCommunityDialog,
                        ),
-                    SizedBox(
+                    const SizedBox(
                        height: 25.0,
                     ),
           ]
@@ -148,13 +139,13 @@ class CommunityPageState extends State<CommunityPage> {
                   children: [
                     Row(
                       children: [
-                         SizedBox(
+                         const SizedBox(
                          width: 5.0,
                         ),
-                        CircleAvatar(
+                        const CircleAvatar(
                           backgroundImage: AssetImage('assets/images/profile-pic.png'),
                         ),
-                        SizedBox(
+                        const SizedBox(
                          width: 10.0,
                         ),
                         Expanded(
@@ -162,7 +153,7 @@ class CommunityPageState extends State<CommunityPage> {
                             onPressed: (){
                               _showPostOptions();
                             },
-                            child:Text(
+                            child:const Text(
                               'Write something.. ',
                               style: TextStyle(
                               fontWeight: FontWeight.w100,
@@ -174,7 +165,7 @@ class CommunityPageState extends State<CommunityPage> {
                       ],
                     ),
                 
-                  Divider(
+                  const Divider(
                       height: 13.0,
                       indent: 10.0,
                       endIndent: 10.0,
@@ -202,18 +193,18 @@ void showLeaveCommunityDialog(BuildContext context){
     context: context,
     builder:(context){
       return AlertDialog(
-        title:Center(child: Text('Leave Community')),
-        titleTextStyle: TextStyle(
+        title:const Center(child: Text('Leave Community')),
+        titleTextStyle: const TextStyle(
           fontSize:20.0,
           fontWeight: FontWeight.bold,
           letterSpacing: 1.0,
         ),
-        insetPadding: EdgeInsets.all(20.0),
-        titlePadding: EdgeInsets.all(15.0),
+        insetPadding: const EdgeInsets.all(20.0),
+        titlePadding: const EdgeInsets.all(15.0),
         content: 
-            Text('Are you sure that you want leave this community ?'),
-        contentPadding: EdgeInsets.all(30.0),
-        contentTextStyle: TextStyle(
+            const Text('Are you sure that you want leave this community ?'),
+        contentPadding: const EdgeInsets.all(30.0),
+        contentTextStyle: const TextStyle(
           fontSize: 15.0,
           fontWeight: FontWeight.w500,
         ),
@@ -222,7 +213,7 @@ void showLeaveCommunityDialog(BuildContext context){
             onPressed:(){
               Navigator.pop(context);
             },
-             child:Text('Cancel',
+             child:const Text('Cancel',
              style:TextStyle(
           fontSize: 15.0,
           fontWeight: FontWeight.w500,
@@ -235,7 +226,7 @@ void showLeaveCommunityDialog(BuildContext context){
               Navigator.pop(context);
               _leaveCommunity();
             },
-             child:Text('Confirm',
+             child:const Text('Confirm',
              style:TextStyle(
           fontSize: 15.0,
           fontWeight: FontWeight.w500,
@@ -256,18 +247,18 @@ void _discardChanges(BuildContext context){
     context: context,
     builder:(context){
       return AlertDialog(
-        title:Center(child: Text('Discard changes')),
-        titleTextStyle: TextStyle(
+        title:const Center(child: Text('Discard changes')),
+        titleTextStyle: const TextStyle(
           fontSize:20.0,
           fontWeight: FontWeight.bold,
           letterSpacing: 1.0,
         ),
-        insetPadding: EdgeInsets.all(20.0),
-        titlePadding: EdgeInsets.all(15.0),
+        insetPadding: const EdgeInsets.all(20.0),
+        titlePadding: const EdgeInsets.all(15.0),
         content: 
-            Text('Do you want to discard this changes?'),
-        contentPadding: EdgeInsets.all(30.0),
-        contentTextStyle: TextStyle(
+            const Text('Do you want to discard this changes?'),
+        contentPadding: const EdgeInsets.all(30.0),
+        contentTextStyle: const TextStyle(
           fontSize: 15.0,
           fontWeight: FontWeight.w500,
         ),
@@ -276,7 +267,7 @@ void _discardChanges(BuildContext context){
             onPressed:(){
               Navigator.pop(context);
             },
-             child:Text('Cancel',
+             child:const Text('Cancel',
              style:TextStyle(
           fontSize: 15.0,
           fontWeight: FontWeight.w500,
@@ -293,7 +284,7 @@ void _discardChanges(BuildContext context){
                 const SnackBar(content: Text('Changes have been discarded')),
       );
             },
-             child:Text(
+             child:const Text(
               'Confirm',
              style:TextStyle(
           fontSize: 15.0,
@@ -318,7 +309,7 @@ void _showReportAlertDialog(BuildContext context){
                       builder:(context){
                         return AlertDialog(
                           //titlePadding: EdgeInsets.all(13.0),
-                          title:Text(
+                          title:const Text(
                             'Report',
                             style:TextStyle(
                            fontWeight: FontWeight.bold,
@@ -329,14 +320,14 @@ void _showReportAlertDialog(BuildContext context){
                           content:Padding(
                             padding: const EdgeInsets.all(13.0),
                             child: SingleChildScrollView(
-                              child: Container(
+                              child: SizedBox(
                                 //width:MediaQuery.of(context).size.width * 0.8,
                                 height:200,
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children:[
                                  
-                                     Text(
+                                     const Text(
                                     'What is your concerns about this community ?',
                                     style:TextStyle(
                                      fontWeight: FontWeight.w600,
@@ -344,14 +335,14 @@ void _showReportAlertDialog(BuildContext context){
                                     ),
                                     ),
                                   
-                                  SizedBox(
+                                  const SizedBox(
                                     height:20.0,
                                   
                                   ),
                                   TextField(
                                     maxLines:5,
                                     controller: _Report,
-                                    decoration: InputDecoration(
+                                    decoration: const InputDecoration(
                                        border: OutlineInputBorder(),
                                       hintText: 'Enter your concerns ...',
                                     ),
@@ -366,7 +357,7 @@ void _showReportAlertDialog(BuildContext context){
               onPressed: () {
                 _discardChanges(context);
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             ElevatedButton(
               onPressed: () {
@@ -385,7 +376,7 @@ void _showReportAlertDialog(BuildContext context){
                 }
                 
               },
-              child: Text('Submit'),
+              child: const Text('Submit'),
             ),
           ],
             );
@@ -412,7 +403,7 @@ void _navigateToInvitePage(BuildContext context){
   Navigator.push(
                           context, 
                           MaterialPageRoute(
-                            builder: (context) =>InvitationPage(),
+                            builder: (context) =>const InvitationPage(),
                           ),
                         );
 }
@@ -507,9 +498,9 @@ class _ManageNotificationState extends State<ManageNotification> {
   Widget build(BuildContext context) {
     return  Wrap(
                             children: [
-                              Center(
+                              const Center(
                                 child: Padding(
-                                  padding: const EdgeInsets.all(13.0),
+                                  padding: EdgeInsets.all(13.0),
                                   child: Text(
                                     'Manage Notification',
                                     style:TextStyle(
@@ -521,8 +512,8 @@ class _ManageNotificationState extends State<ManageNotification> {
                                 ),
                               ),
                               RadioListTile<String>(
-                            title: Text('All posts'),
-                            subtitle :Text('You will receive notifications of all posts'),
+                            title: const Text('All posts'),
+                            subtitle :const Text('You will receive notifications of all posts'),
                             value:'All',
                             controlAffinity: ListTileControlAffinity.trailing,
                             groupValue: _selectedNotificationOption,
@@ -534,8 +525,8 @@ class _ManageNotificationState extends State<ManageNotification> {
                                         },
                             ),
                                       RadioListTile<String>(
-                            title: Text('Events Only'),
-                            subtitle: Text('You will receive notifications of events only'),
+                            title: const Text('Events Only'),
+                            subtitle: const Text('You will receive notifications of events only'),
                             value:'Events',
                             controlAffinity: ListTileControlAffinity.trailing,
                             groupValue: _selectedNotificationOption,
@@ -547,8 +538,8 @@ class _ManageNotificationState extends State<ManageNotification> {
                                         },
                                       ),
                                       RadioListTile<String>(
-                            title: Text('Off'),
-                            subtitle:Text('You will receive notifications of mentions only'),
+                            title: const Text('Off'),
+                            subtitle:const Text('You will receive notifications of mentions only'),
                             value:'Off',
                             controlAffinity: ListTileControlAffinity.trailing,
                             groupValue: _selectedNotificationOption,
@@ -587,9 +578,9 @@ class _JoinWidgetState extends State<JoinWidget> {
                           ),
                         );
                       },
-                      child: Text(widget.communityData.memberCounter.toString() + ' members '),
+                      child: Text('${widget.communityData.memberCounter} members '),
                     ),
-                    SizedBox(
+                    const SizedBox(
                        height: 25.0,
                     ),
                     
@@ -597,26 +588,26 @@ class _JoinWidgetState extends State<JoinWidget> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                           ElevatedButton.icon(
-                          icon: Icon(Icons.check),
+                          icon: const Icon(Icons.check),
                           onPressed:(){
                             widget.onDisjoin(context);
                           }
-                        , label:Text('Joined') ,
+                        , label:const Text('Joined') ,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 20,
                         ),
                         ElevatedButton.icon(
-                          icon: Icon(Icons.group_add),
+                          icon: const Icon(Icons.group_add),
                           onPressed:(){
                             Navigator.push(
                           context, 
                           MaterialPageRoute(
-                            builder: (context) => InvitationPage(),
+                            builder: (context) => const InvitationPage(),
                           )
                           );
                           }
-                        , label:Text('Invite') ,
+                        , label:const Text('Invite') ,
                         ),
                        
                       ],
@@ -632,9 +623,9 @@ class _JoinWidgetState extends State<JoinWidget> {
                           ),
                         );
                       },
-                      child: Text(widget.communityData.memberCounter.toString() + ' members '),
+                      child: Text('${widget.communityData.memberCounter} members '),
                     ),
-                    SizedBox(
+                    const SizedBox(
                        height: 25.0,
                     ),
                     
@@ -648,8 +639,8 @@ class _JoinWidgetState extends State<JoinWidget> {
                         }
                     );
                       },
-                    label:Text('Join'),
-                    icon: Icon(
+                    label:const Text('Join'),
+                    icon: const Icon(
                       Icons.group_add,
                     ),
                       

@@ -1,4 +1,3 @@
-import 'package:campus_app/backend/Model/User.dart';
 
 class Comment {
 

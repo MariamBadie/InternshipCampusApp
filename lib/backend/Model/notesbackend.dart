@@ -6,6 +6,7 @@ class Note {
   String number;
   String content;
   String? attachmentUrl;
+  String? attachmentType; // New field
   List<Comment> comments;
 
   Note({
@@ -14,6 +15,7 @@ class Note {
     required this.number,
     required this.content,
     this.attachmentUrl,
+    this.attachmentType,
     this.comments = const [],
   });
 
@@ -25,6 +27,7 @@ class Note {
       number: data['number'] ?? '',
       content: data['content'] ?? '',
       attachmentUrl: data['attachmentUrl'],
+      attachmentType: data['attachmentType'],
       comments: (data['comments'] as List<dynamic>? ?? [])
           .map((c) => Comment.fromMap(c))
           .toList(),
@@ -37,6 +40,7 @@ class Note {
       'number': number,
       'content': content,
       'attachmentUrl': attachmentUrl,
+      'attachmentType': attachmentType,
       'comments': comments.map((c) => c.toMap()).toList(),
     };
   }

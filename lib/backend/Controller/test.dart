@@ -34,8 +34,8 @@ void retrieveData() async {
     QuerySnapshot snapshot = await firestore.collection(collection).get();
 
     // Print the data retrieved from each document in the collection
-    snapshot.docs.forEach((doc) {
+    for (var doc in snapshot.docs) {
       print('Collection: $collection, Document ID: ${doc.id}, Data: ${doc.data()}');
-    });
+    }
   }
 }

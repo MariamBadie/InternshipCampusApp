@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../models/User.dart';
 
@@ -13,16 +12,16 @@ class InvitationCard extends StatelessWidget {
     return Card(
                 elevation:2.0,
                 child: ListTile(
-                  contentPadding: EdgeInsets.all(15.0),
+                  contentPadding: const EdgeInsets.all(15.0),
                   trailing: InvitationCardButton(isInvited:isInvited),
                   title:Text(
                     user.name,
-                    style: TextStyle(
+                    style: const TextStyle(
                      fontWeight: FontWeight.w600,
                      letterSpacing: 0.5,
                     ),
                   ),
-                  subtitle: Text('ay haga'),
+                  subtitle: const Text('ay haga'),
                    leading:CircleAvatar(
                       backgroundImage:AssetImage(user.profilPictureUrl) ,
                     ),
@@ -35,7 +34,7 @@ class InvitationCard extends StatelessWidget {
 
 class InvitationCardButton extends StatefulWidget {
   bool isInvited;
- InvitationCardButton({required this.isInvited});
+ InvitationCardButton({super.key, required this.isInvited});
 
   @override
   State<InvitationCardButton> createState() => InvitationCardButtonState();
@@ -54,14 +53,14 @@ class InvitationCardButtonState extends State<InvitationCardButton> {
      if(widget.isInvited){
                           widget.isInvited=true;
                           buttonText='Undo';
-                          buttonColor=Color.fromARGB(255, 208, 202, 202);
-                          buttonIcon=Icon(Icons.done); 
+                          buttonColor=const Color.fromARGB(255, 208, 202, 202);
+                          buttonIcon=const Icon(Icons.done); 
                         }
                         else{
                           widget.isInvited=false;
                           buttonText='Invite';
-                          buttonColor=Color.fromARGB(255, 190, 174, 219);
-                          buttonIcon=Icon(Icons.add);
+                          buttonColor=const Color.fromARGB(255, 190, 174, 219);
+                          buttonIcon=const Icon(Icons.add);
                          
                          
                         }
@@ -80,8 +79,8 @@ class InvitationCardButtonState extends State<InvitationCardButton> {
                         if(widget.isInvited){
                           widget.isInvited=false;
                           buttonText='Invite';
-                          buttonColor=Color.fromARGB(255, 190, 174, 219);
-                          buttonIcon=Icon(Icons.add);
+                          buttonColor=const Color.fromARGB(255, 190, 174, 219);
+                          buttonIcon=const Icon(Icons.add);
                           ScaffoldMessenger.of(context).showSnackBar(
                            const SnackBar(content: Text('Invitation has been canceled')));
                           
@@ -89,8 +88,8 @@ class InvitationCardButtonState extends State<InvitationCardButton> {
                         else{
                           widget.isInvited=true;
                           buttonText='Undo';
-                          buttonColor=Color.fromARGB(255, 208, 202, 202);
-                          buttonIcon=Icon(Icons.done);
+                          buttonColor=const Color.fromARGB(255, 208, 202, 202);
+                          buttonIcon=const Icon(Icons.done);
                           ScaffoldMessenger.of(context).showSnackBar(
                            const SnackBar(content: Text(' The invitation has been sent')));
                         }

@@ -11,7 +11,8 @@ class PostDetailsPage extends StatelessWidget {
   final Function(String, String, String) onComment;
   final Function(String, int, String) onReactToComment;
 
-  PostDetailsPage({
+  const PostDetailsPage({
+    super.key,
     required this.post,
     required this.onReact,
     required this.onComment,
@@ -58,17 +59,19 @@ class PostDetailsPage extends StatelessWidget {
           ...post.comments.asMap().entries.map((entry) {
             int idx = entry.key;
             Comment comment = entry.value;
+
             return CommentCard(
               comment: comment,
               onReact: (reactionType) =>
                   onReactToComment(post.id, idx, reactionType),
+              onDelete: () => _deleteComment(post.id, idx), // Pass deletion logic
             );
           }),
           Padding(
-            padding: EdgeInsets.all(8),
+            padding: const EdgeInsets.all(8),
             child: ElevatedButton(
               onPressed: () => _showCommentDialog(context),
-              child: Text('Add Comment'),
+              child: const Text('Add Comment'),
             ),
           ),
         ],
@@ -87,7 +90,7 @@ class PostDetailsPage extends StatelessWidget {
         'https://example.com/posts/${post.id}'; // Example URL format
     Clipboard.setData(ClipboardData(text: postUrl));
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Link copied to clipboard!')),
+      const SnackBar(content: Text('Link copied to clipboard!')),
     );
   }
 
@@ -97,22 +100,22 @@ class PostDetailsPage extends StatelessWidget {
       builder: (BuildContext context) {
         String commentText = '';
         return AlertDialog(
-          title: Text('Add a Comment'),
+          title: const Text('Add a Comment'),
           content: TextField(
             onChanged: (value) {
               commentText = value;
             },
-            decoration: InputDecoration(hintText: "Enter your comment"),
+            decoration: const InputDecoration(hintText: "Enter your comment"),
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Post'),
+              child: const Text('Post'),
               onPressed: () {
                 if (commentText.isNotEmpty) {
                   onComment(post.id, 'CurrentUser',
@@ -125,6 +128,11 @@ class PostDetailsPage extends StatelessWidget {
         );
       },
     );
+  }
+
+  void _deleteComment(String postId, int commentIndex) {
+    post.comments.removeAt(commentIndex); // Remove the comment from the list
+    // You might want to add additional logic here, e.g., updating the server
   }
 
   Widget _buildReactionButton(

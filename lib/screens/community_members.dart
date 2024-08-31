@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../models/User.dart';
 import '../widgets/community/search_bar.dart' as searchBar;
@@ -11,7 +10,7 @@ class CommunityMembersPage extends StatefulWidget {
 //        User(name: 'Mohanad', profilPictureUrl:'assets/images/mohanad.jpg'),
 //        User(name: 'Ahmed Hany', profilPictureUrl:'assets/images/ahmed.jpg'),
 //        ];
- CommunityMembersPage({super.key,required this.members});
+ const CommunityMembersPage({super.key,required this.members});
 
   @override
   State<CommunityMembersPage> createState() => _CommunityMembersPageState();
@@ -47,7 +46,7 @@ class _CommunityMembersPageState extends State<CommunityMembersPage> {
        appBar: AppBar(
         
         title:
-            Row(
+            const Row(
               children: [
                 Icon(Icons.people),
                 SizedBox(width:8.0),
@@ -63,7 +62,7 @@ class _CommunityMembersPageState extends State<CommunityMembersPage> {
            ,
         actions:[
           IconButton(onPressed:(){},
-           icon:Icon(Icons.group_add_sharp))
+           icon:const Icon(Icons.group_add_sharp))
         ]
        ),
        body:
@@ -91,13 +90,13 @@ class _CommunityMembersPageState extends State<CommunityMembersPage> {
                   return Card(
                       elevation:2.0,
                       child: ListTile(
-                        contentPadding: EdgeInsets.all(15.0),
+                        contentPadding: const EdgeInsets.all(15.0),
                         onTap: (){
                         },
                 
                         title:Text(
                           members[index].name,
-                          style: TextStyle(
+                          style: const TextStyle(
                            fontWeight: FontWeight.w600,
                            letterSpacing: 0.5,
                           ),

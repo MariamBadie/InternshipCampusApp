@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:campus_app/backend/Model/notesbackend.dart';
-import 'package:campus_app/widgets/notes/note_dialog.dart';
-import 'package:campus_app/widgets/notes/EditNoteDialog.dart';
 import 'package:campus_app/backend/Controller/notescontroller.dart';
-
-import 'dart:io';
+import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'dart:io';
+
 class NotesPage extends StatefulWidget {
-  const NotesPage({Key? key}) : super(key: key);
+  const NotesPage({super.key});
 
   @override
   _NotesPageState createState() => _NotesPageState();
@@ -24,6 +23,8 @@ class _NotesPageState extends State<NotesPage> {
   final Color accentColor = const Color(0xFFFF9B50); // Soft Orange
   final Color textColor = const Color(0xFF333333); // Dark Gray
   final Color backgroundColor = const Color(0xFFE6EDED); // Pale Teal
+
+  final Map<String, bool> _expandedComments = {};
 
   @override
   void dispose() {
@@ -54,7 +55,7 @@ class _NotesPageState extends State<NotesPage> {
                   valueListenable: _notesController.filteredNotes,
                   builder: (context, notes, child) {
                     if (notes.isEmpty) {
-                      return Center(child: Text('No notes found'));
+                      return const Center(child: Text('No notes found'));
                     }
                     return _buildNotesList(notes);
                   },
@@ -66,8 +67,8 @@ class _NotesPageState extends State<NotesPage> {
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: accentColor,
-        child: Icon(Icons.add, color: secondaryColor),
         onPressed: _showAddNoteDialog,
+        child: Icon(Icons.add, color: secondaryColor),
       ),
     );
   }
@@ -114,72 +115,180 @@ class _NotesPageState extends State<NotesPage> {
   }
 
   Widget _buildNoteCard(Note note) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      color: secondaryColor,
-      child: CustomExpansionTile(
-        title: Text(
-          note.title,
-          style: TextStyle(fontWeight: FontWeight.bold, color: primaryColor),
-        ),
-        subtitle: Text(note.number,
-            style: TextStyle(color: textColor.withOpacity(0.7))),
-        deleteButton: IconButton(
-          icon: Icon(Icons.delete, color: Colors.red),
-          onPressed: () => _deleteNote(note.id!),
-        ),
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(note.content, style: TextStyle(color: textColor)),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _buildActionButton(Icons.edit, 'Edit', primaryColor,
-                        () => _showEditNoteDialog(note)),
-                    _buildActionButton(Icons.download, 'Download', accentColor,
-                        () => _downloadNote(note)),
-                    _buildActionButton(Icons.comment, 'Comment',
-                        Colors.blueGrey, () => _showAddCommentDialog(note)),
-                  ],
-                ),
-                if (note.comments.isNotEmpty) ...[
+    // Initialize the expanded state for this note if it doesn't exist
+    _expandedComments.putIfAbsent(note.id!, () => false);
+
+    return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+      return Card(
+        margin: const EdgeInsets.only(bottom: 16),
+        elevation: 4,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        color: secondaryColor,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              note.title,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                  color: primaryColor),
+                            ),
+                            Text(
+                              note.number,
+                              style:
+                                  TextStyle(color: textColor.withOpacity(0.7)),
+                            ),
+                          ],
+                        ),
+                      ),
+                      PopupMenuButton<String>(
+                        icon: Icon(Icons.more_vert, color: primaryColor),
+                        onSelected: (String result) {
+                          if (result == 'edit') {
+                            _showEditNoteDialog(note);
+                          } else if (result == 'delete') {
+                            _deleteNote(note.id!);
+                          }
+                        },
+                        itemBuilder: (BuildContext context) =>
+                            <PopupMenuEntry<String>>[
+                          const PopupMenuItem<String>(
+                            value: 'edit',
+                            child: Text('Edit'),
+                          ),
+                          const PopupMenuItem<String>(
+                            value: 'delete',
+                            child: Text('Delete'),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    note.content,
+                    style: TextStyle(color: textColor, fontSize: 16),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   const SizedBox(height: 16),
-                  Text('Comments:',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, color: primaryColor)),
-                  ...note.comments.map((comment) => ListTile(
-                        title: Text(comment.text,
-                            style: TextStyle(color: textColor)),
-                        subtitle: Text(comment.authorName,
-                            style: TextStyle(color: accentColor)),
-                      )),
+                  Row(
+                    children: [
+                      _buildIconButton(Icons.download, 'Download', accentColor,
+                          () => _downloadNote(note)),
+                      const SizedBox(width: 16),
+                      _buildIconButton(Icons.comment, 'Comment', primaryColor,
+                          () => _showAddCommentDialog(note)),
+                      if (note.comments.isNotEmpty) ...[
+                        const Spacer(),
+                        InkWell(
+                          onTap: () {
+                            setState(() {
+                              _expandedComments[note.id!] =
+                                  !_expandedComments[note.id!]!;
+                            });
+                          },
+                          child: Text(
+                            'View all Comments (${note.comments.length})',
+                            style: TextStyle(
+                              color: textColor.withOpacity(0.7),
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
                 ],
-              ],
+              ),
             ),
-          ),
-        ],
+            if (_expandedComments[note.id]! && note.comments.isNotEmpty)
+              _buildCommentsDropdown(note),
+          ],
+        ),
+      );
+    });
+  }
+
+  Widget _buildCommentsDropdown(Note note) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(12),
+          bottomRight: Radius.circular(12),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: note.comments
+            .map((comment) => Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            comment.authorName,
+                            style: TextStyle(
+                              color: accentColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                          Text(
+                            DateFormat('MMM d, yyyy h:mm a')
+                                .format(comment.createdAt.toDate()),
+                            style: TextStyle(
+                                color: textColor.withOpacity(0.7),
+                                fontSize: 10),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        comment.text,
+                        style: TextStyle(color: textColor),
+                      ),
+                    ],
+                  ),
+                ))
+            .toList(),
       ),
     );
   }
 
-  Widget _buildActionButton(
+  Widget _buildIconButton(
       IconData icon, String label, Color color, VoidCallback onPressed) {
-    return ElevatedButton.icon(
-      icon: Icon(icon, size: 16),
-      label: Text(label, style: TextStyle(fontSize: 12)),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: color,
-        foregroundColor: secondaryColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+    return InkWell(
+      onTap: onPressed,
+      child: Row(
+        children: [
+          Icon(icon, size: 20, color: color),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: TextStyle(color: color, fontSize: 14),
+          ),
+        ],
       ),
-      onPressed: onPressed,
     );
   }
 
@@ -188,13 +297,14 @@ class _NotesPageState extends State<NotesPage> {
     final numberController = TextEditingController();
     final contentController = TextEditingController();
     String? attachmentPath;
+    String? attachmentType;
 
     showDialog(
       context: context,
-      builder: (BuildContext context) =>
+      builder: (BuildContext dialogContext) =>
           StatefulBuilder(builder: (context, setState) {
         return AlertDialog(
-          title: Text('Add New Note'),
+          title: const Text('Add New Note'),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -202,61 +312,146 @@ class _NotesPageState extends State<NotesPage> {
               children: [
                 TextField(
                   controller: titleController,
-                  decoration: InputDecoration(hintText: 'Title'),
+                  decoration: const InputDecoration(hintText: 'Title'),
                 ),
                 TextField(
                   controller: numberController,
-                  decoration: InputDecoration(hintText: 'Number'),
+                  decoration: const InputDecoration(hintText: 'Number'),
                 ),
                 TextField(
                   controller: contentController,
-                  decoration: InputDecoration(hintText: 'Content'),
+                  decoration: const InputDecoration(hintText: 'Content'),
                   maxLines: 3,
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 ElevatedButton.icon(
-                  icon: Icon(Icons.attach_file),
+                  icon: const Icon(Icons.attach_file),
                   label: Text(
-                      attachmentPath != null ? 'PDF Attached' : 'Attach PDF'),
-                  onPressed: () async {
-                    String? path = await _notesController.pickPDF();
-                    if (path != null) {
+                    attachmentPath != null
+                        ? 'Attachment Added'
+                        : 'Add Attachment',
+                  ),
+                  onPressed: () => _showAttachmentSourceDialog(
+                    (path, type) {
                       setState(() {
                         attachmentPath = path;
+                        attachmentType = type;
                       });
-                    }
-                  },
+                    },
+                  ),
                 ),
               ],
             ),
           ),
           actions: [
             TextButton(
-              child: Text('Cancel'),
-              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+              onPressed: () => Navigator.of(dialogContext).pop(),
             ),
             TextButton(
-              child: Text('Add'),
-              onPressed: () async {
-                Note newNote = Note(
-                  title: titleController.text,
-                  number: numberController.text,
-                  content: contentController.text,
+              child: const Text('Add'),
+              onPressed: () {
+                Navigator.of(dialogContext)
+                    .pop(); // Close the dialog immediately
+                _addNote(
+                  titleController.text,
+                  numberController.text,
+                  contentController.text,
+                  attachmentPath,
+                  attachmentType,
                 );
-                String? attachmentUrl;
-                if (attachmentPath != null) {
-                  attachmentUrl =
-                      await _notesController.uploadPDF(attachmentPath!);
-                }
-                newNote.attachmentUrl = attachmentUrl;
-                await _notesController.addNote(newNote);
-                Navigator.of(context).pop();
               },
             ),
           ],
         );
       }),
     );
+  }
+
+  void _addNote(String title, String number, String content,
+      String? attachmentPath, String? attachmentType) async {
+    Note newNote = Note(
+      title: title,
+      number: number,
+      content: content,
+    );
+    if (attachmentPath != null && attachmentType != null) {
+      final attachment = await _notesController.uploadAttachment(
+        attachmentPath,
+        attachmentType,
+      );
+      newNote.attachmentUrl = attachment['url'];
+      newNote.attachmentType = attachment['type'];
+    }
+    await _notesController.addNote(newNote);
+    // Show a snackbar for feedback
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Note added successfully')),
+    );
+  }
+
+  void _showAttachmentSourceDialog(
+      Function(String, String) onAttachmentSelected) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Select Attachment Source'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.insert_drive_file),
+                title: const Text('Pick from File System'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _pickFile(onAttachmentSelected);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Pick from Photos'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _pickImageFromGallery(onAttachmentSelected);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Take a Photo'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _captureImageFromCamera(onAttachmentSelected);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _pickFile(Function(String, String) onAttachmentSelected) async {
+    String? filePath = await _notesController.pickFile();
+    if (filePath != null) {
+      onAttachmentSelected(filePath, 'file');
+    }
+  }
+
+  void _pickImageFromGallery(
+      Function(String, String) onAttachmentSelected) async {
+    String? imagePath = await _notesController.pickImageFromGallery();
+    if (imagePath != null) {
+      onAttachmentSelected(imagePath, 'image');
+    }
+  }
+
+  void _captureImageFromCamera(
+      Function(String, String) onAttachmentSelected) async {
+    String? imagePath = await _notesController.captureImageFromCamera();
+    if (imagePath != null) {
+      onAttachmentSelected(imagePath, 'image');
+    }
   }
 
   void _showEditNoteDialog(Note note) {
@@ -267,22 +462,22 @@ class _NotesPageState extends State<NotesPage> {
     showDialog(
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        title: Text('Edit Note'),
+        title: const Text('Edit Note'),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: titleController,
-                decoration: InputDecoration(hintText: 'Title'),
+                decoration: const InputDecoration(hintText: 'Title'),
               ),
               TextField(
                 controller: numberController,
-                decoration: InputDecoration(hintText: 'Number'),
+                decoration: const InputDecoration(hintText: 'Number'),
               ),
               TextField(
                 controller: contentController,
-                decoration: InputDecoration(hintText: 'Content'),
+                decoration: const InputDecoration(hintText: 'Content'),
                 maxLines: 3,
               ),
             ],
@@ -290,11 +485,11 @@ class _NotesPageState extends State<NotesPage> {
         ),
         actions: [
           TextButton(
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
             onPressed: () => Navigator.of(context).pop(),
           ),
           TextButton(
-            child: Text('Update'),
+            child: const Text('Update'),
             onPressed: () async {
               await _notesController.updateNote(Note(
                 id: note.id,
@@ -320,18 +515,19 @@ class _NotesPageState extends State<NotesPage> {
 
   void _downloadNote(Note note) async {
     if (note.attachmentUrl != null) {
-      File? file = await _notesController.downloadPDF(note.attachmentUrl!);
+      File? file = await _notesController.downloadAttachment(
+          note.attachmentUrl!, note.attachmentType ?? 'file');
       if (file != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('PDF downloaded: ${file.path}')),
+          SnackBar(content: Text('Attachment downloaded: ${file.path}')),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to download PDF')),
+          const SnackBar(content: Text('Failed to download attachment')),
         );
       }
     } else {
-      String result = await _notesController.downloadNote(note);
+      String result = await _notesController.downloadNoteContent(note);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(result)),
       );
@@ -341,7 +537,7 @@ class _NotesPageState extends State<NotesPage> {
   void _showAddCommentDialog(Note note) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (BuildContext dialogContext) {
         final TextEditingController controller = TextEditingController();
         return AlertDialog(
           title: Text('Add Comment', style: TextStyle(color: primaryColor)),
@@ -354,21 +550,16 @@ class _NotesPageState extends State<NotesPage> {
           ),
           actions: [
             TextButton(
-              child: Text('Cancel', style: TextStyle(color: Colors.blueGrey)),
-              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel',
+                  style: TextStyle(color: Colors.blueGrey)),
+              onPressed: () => Navigator.of(dialogContext).pop(),
             ),
             TextButton(
               child: Text('Add', style: TextStyle(color: accentColor)),
-              onPressed: () async {
-                await _notesController.addComment(
-                  note.id!,
-                  Comment(
-                    text: controller.text,
-                    authorName: 'You',
-                    isOwnComment: true,
-                  ),
-                );
-                Navigator.of(context).pop();
+              onPressed: () {
+                Navigator.of(dialogContext)
+                    .pop(); // Close the dialog immediately
+                _addComment(note, controller.text);
               },
             ),
           ],
@@ -376,51 +567,20 @@ class _NotesPageState extends State<NotesPage> {
       },
     );
   }
-}
 
-class CustomExpansionTile extends StatefulWidget {
-  final Widget title;
-  final Widget? subtitle;
-  final List<Widget> children;
-  final Widget deleteButton;
-
-  const CustomExpansionTile({
-    Key? key,
-    required this.title,
-    this.subtitle,
-    required this.children,
-    required this.deleteButton,
-  }) : super(key: key);
-
-  @override
-  _CustomExpansionTileState createState() => _CustomExpansionTileState();
-}
-
-class _CustomExpansionTileState extends State<CustomExpansionTile> {
-  bool _isExpanded = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Theme(
-      data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-      child: ExpansionTile(
-        title: widget.title,
-        subtitle: widget.subtitle,
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (_isExpanded) widget.deleteButton,
-            Icon(_isExpanded ? Icons.expand_less : Icons.expand_more,
-                color: _NotesPageState().primaryColor),
-          ],
-        ),
-        children: widget.children,
-        onExpansionChanged: (expanded) {
-          setState(() {
-            _isExpanded = expanded;
-          });
-        },
+  void _addComment(Note note, String commentText) async {
+    await _notesController.addComment(
+      note.id!,
+      Comment(
+        text: commentText,
+        authorName: 'You',
+        isOwnComment: true,
+        createdAt: Timestamp.now(),
       ),
+    );
+    // Show a snackbar for feedback
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Comment added successfully')),
     );
   }
 }

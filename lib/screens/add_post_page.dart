@@ -14,7 +14,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 class AddPostPage extends StatefulWidget {
   final String postType;
 
-  AddPostPage({Key? key, required this.postType}) : super(key: key);
+  const AddPostPage({super.key, required this.postType});
 
   @override
   _AddPostPageState createState() => _AddPostPageState();

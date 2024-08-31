@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 /// The tabs are individually titled and, when tapped, switch to that tab.
 class FlashyTabBar extends StatelessWidget {
   FlashyTabBar({
-    Key? key,
+    super.key,
     this.selectedIndex = 0,
     this.height = 60,
     this.showElevation = true,
@@ -24,7 +24,7 @@ class FlashyTabBar extends StatelessWidget {
     ],
     required this.items,
     required this.onItemSelected,
-  }) : super(key: key) {
+  }) {
     assert(height >= 55 && height <= 100);
     assert(items.length >= 2 && items.length <= 5);
     assert(iconSize >= 15 && iconSize <= 50);
@@ -107,15 +107,13 @@ class FlashyTabBarItem {
 
 class _FlashTabBarItem extends StatelessWidget {
   const _FlashTabBarItem(
-      {Key? key,
-      required this.item,
+      {required this.item,
       required this.isSelected,
       required this.tabBarHeight,
       required this.backgroundColor,
       required this.animationDuration,
       required this.animationCurve,
-      required this.iconSize})
-      : super(key: key);
+      required this.iconSize});
 
   final Curve animationCurve;
   final Duration animationDuration;
@@ -140,6 +138,7 @@ class _FlashTabBarItem extends StatelessWidget {
           children: <Widget>[
             AnimatedAlign(
               duration: animationDuration,
+              alignment: isSelected ? Alignment.topCenter : Alignment.center,
               child: AnimatedOpacity(
                   opacity: isSelected ? 1.0 : 1.0,
                   duration: animationDuration,
@@ -151,7 +150,6 @@ class _FlashTabBarItem extends StatelessWidget {
                             : item.inactiveColor),
                     child: item.icon,
                   )),
-              alignment: isSelected ? Alignment.topCenter : Alignment.center,
             ),
             AnimatedPositioned(
               curve: animationCurve,
@@ -165,11 +163,11 @@ class _FlashTabBarItem extends StatelessWidget {
                     height: iconSize,
                   ),
                   CustomPaint(
+                    painter: _CustomPath(backgroundColor, iconSize),
                     child: SizedBox(
                       width: 80,
                       height: iconSize,
                     ),
-                    painter: _CustomPath(backgroundColor, iconSize),
                   )
                 ],
               ),
@@ -192,11 +190,11 @@ class _FlashTabBarItem extends StatelessWidget {
             Positioned(
                 bottom: 0,
                 child: CustomPaint(
+                  painter: _CustomPath(backgroundColor, iconSize),
                   child: SizedBox(
                     width: 80,
                     height: iconSize,
                   ),
-                  painter: _CustomPath(backgroundColor, iconSize),
                 )),
 
             /// This is the selected item indicator
