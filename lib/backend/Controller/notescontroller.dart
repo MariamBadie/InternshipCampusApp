@@ -9,6 +9,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
+import 'package:path/path.dart' as path;
 
 class NotesController {
   final FirebaseService _firebaseService = FirebaseService.instance;
@@ -48,20 +49,42 @@ class NotesController {
 
   Future<Map<String, String?>> uploadAttachment(
       String filePath, String type) async {
+    print('Starting uploadAttachment: filePath=$filePath, type=$type');
+
     try {
+      // Check if file exists
       File file = File(filePath);
+      if (!await file.exists()) {
+        print('File does not exist: $filePath');
+        throw Exception('File does not exist');
+      }
+
+      // Generate a unique filename
       String fileName =
-          'attachment_${DateTime.now().millisecondsSinceEpoch}${type == 'image' ? '.jpg' : ''}';
+          'attachment_${DateTime.now().millisecondsSinceEpoch}${path.extension(filePath)}';
+      print('Generated fileName: $fileName');
 
-      TaskSnapshot snapshot = await FirebaseStorage.instance
-          .ref('notes_attachments/$fileName')
-          .putFile(file);
+      // Reference to storage location
+      Reference storageRef =
+          FirebaseStorage.instance.ref('notes_attachments/$fileName');
+      print('Storage reference created');
 
+      // Start upload
+      print('Starting file upload');
+      UploadTask uploadTask = storageRef.putFile(file);
+
+      // Wait for the upload to complete
+      TaskSnapshot snapshot = await uploadTask;
+      print('Upload completed');
+
+      // Get the download URL
       String downloadURL = await snapshot.ref.getDownloadURL();
-      return {'url': downloadURL, 'type': type};
+      print('Download URL obtained: $downloadURL');
+
+      return {'url': downloadURL, 'type': type, 'error': null};
     } catch (e) {
-      print('Error uploading attachment: $e');
-      return {'url': null, 'type': null};
+      print('Error in uploadAttachment: $e');
+      return {'url': null, 'type': null, 'error': e.toString()};
     }
   }
 

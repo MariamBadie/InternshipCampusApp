@@ -6,7 +6,7 @@ class Note {
   String number;
   String content;
   String? attachmentUrl;
-  String? attachmentType; // New field
+  String? attachmentType;
   List<Comment> comments;
 
   Note({
