@@ -39,6 +39,39 @@ class RatingController {
     return entityNames;
   }
 
+  Future<List<Map<String, dynamic>>> getAllRatingsWithUserNames() async {
+    await firebaseService.initialize();
+
+    // Retrieve all documents from the 'Ratings' collection
+    QuerySnapshot ratingSnapshot = await firebaseService.firestore.collection('Ratings').get();
+
+    // Create a list to hold ratings with user names
+    List<Map<String, dynamic>> ratingsWithUserNames = [];
+
+    // Loop through each rating document
+    for (var ratingDoc in ratingSnapshot.docs) {
+      // Convert the rating document to a Rating object
+      Rating rating = Rating.fromMap(ratingDoc.id, ratingDoc.data() as Map<String, dynamic>);
+
+      // Retrieve the user document based on the authorID
+      DocumentSnapshot userDoc = await firebaseService.firestore.doc(rating.authorID).get();
+
+      // Extract the user's name from the user document
+      String userName = userDoc['name'] as String;
+
+      // Create a map to hold both the rating and user name
+      Map<String, dynamic> ratingWithUserName = {
+        'rating': rating,
+        'userName': userName,
+      };
+
+      // Add the map to the list
+      ratingsWithUserNames.add(ratingWithUserName);
+    }
+
+    return ratingsWithUserNames;
+  }
+
 
 // Other rating-related functions can be added here
 }
