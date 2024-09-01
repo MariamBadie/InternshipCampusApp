@@ -1,4 +1,6 @@
 import 'package:campus_app/screens/lost_and_found_page.dart';
+import 'package:campus_app/screens/ranking_page.dart';
+import 'package:campus_app/screens/reminder_page.dart';
 import 'package:flutter/foundation.dart'; // Import for kIsWeb
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -70,6 +72,8 @@ class MyApp extends StatelessWidget {
         '/editProfile': (context) => EditProfilePage(),
         '/settings': (context) => const SettingsPage2(),
         '/lostandfoundpage': (context) => LostAndFoundPage(),
+        '/reminder_page': (context) =>  RemindersPage(),
+        '/ranking_page': (context) =>const RankingPage(),
         '/homepage': (context) => MainScreen()
       },
     );

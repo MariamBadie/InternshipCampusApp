@@ -354,5 +354,41 @@ Future<void> removeFromBlockedAccounts(String userID, String blockedUserID) asyn
     'blocked': FieldValue.arrayRemove([blockedUserRef])
   });
 }
+Future<List<List<dynamic>>> getUserKarmas() async {
+  // Ensure Firebase is initialized
+  await firebaseService.initialize();
 
+  // Get all user documents from Firestore
+  var querySnapshot = await firebaseService.firestore.collection('User').get();
 
+  List<List<dynamic>> usersList = [];
+
+  // Loop through each document in the query snapshot
+  for (var doc in querySnapshot.docs) {
+    var data = doc.data(); // Extract the document data
+    var name = data['name'];
+    var karma = data['karma'];
+
+    if (name != null && karma != null) {
+      // Ensure karma is an integer
+      if (karma is int) {
+        usersList.add([name, karma]);
+      } else {
+        // Handle cases where karma might be a string or another type
+        try {
+          int karmaInt = int.parse(karma.toString());
+          usersList.add([name, karmaInt]);
+        } catch (e) {
+          print("Error parsing karma for user $name: $e");
+          // Optionally, you can choose to skip this user
+        }
+      }
+    }
+  }
+
+  // Sort the users list by karma, in descending order
+  usersList.sort((a, b) => b[1].compareTo(a[1]));
+
+  print(usersList);
+  return usersList;
+}

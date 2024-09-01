@@ -114,14 +114,7 @@ class _RemindersPageState extends State<RemindersPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Reminders'),
-        backgroundColor: Colors.green[400],
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.of(context).pop(); // Go back to the previous page
-          },
-        ),
+        title: const Text("Reminders"),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),

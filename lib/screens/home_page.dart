@@ -2,6 +2,7 @@ import 'package:campus_app/screens/lost_and_found_page.dart';
 import 'package:campus_app/screens/note_page.dart';
 import 'package:campus_app/screens/event_details_page.dart';
 import 'package:campus_app/screens/campus_map.dart';
+import 'package:campus_app/screens/ranking_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For Clipboard
 import 'package:share_plus/share_plus.dart'; // For sharing
@@ -337,6 +338,13 @@ class _MyHomePageState extends State<MyHomePage>
                 );
               },
             ),
+            
+            _buildDrawerItem(Icons.leaderboard, 'Leaderboard', onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => RankingPage()),
+              );
+            }),
             _buildDrawerItem(Icons.forum, 'Confessions'),
 
             _buildDrawerItem(Icons.rate_review, 'View Reviews & Ratings'),
