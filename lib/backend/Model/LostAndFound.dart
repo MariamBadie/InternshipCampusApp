@@ -1,41 +1,49 @@
 import 'package:campus_app/backend/Model/Comment.dart';
 
 class LostAndFound {
-
-  // Missing the item image as the type is according to the implementation
-  String id;
   String authorID;
   bool isFound;
   String content;
-  String category; // could be changed to enum depending on need
+  String category;
   DateTime createdAt;
   List<Comment> comments;
+  String? imageUrl;
+  String lostOrFound;
 
-  LostAndFound({required this.id, required this.authorID, required this.isFound, required this.content,
-  required this.category, required this.createdAt, required this.comments});
+  LostAndFound({
+    required this.authorID,
+    required this.isFound,
+    required this.content,
+    required this.category,
+    required this.createdAt,
+    required this.comments,
+    required this.lostOrFound,
+    this.imageUrl,
+  });
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
       'authorID': authorID,
       'isFound': isFound,
       'content': content,
       'category': category,
-      'createdAt': createdAt,
-      'comments': comments
+      'createdAt': createdAt.toIso8601String(),
+      'comments': comments.map((comment) => comment.toMap()).toList(),
+      'imageUrl': imageUrl,
+      'lostOrFound': lostOrFound
     };
   }
 
-  factory LostAndFound.fromMap(Map<String, dynamic> map){
+  factory LostAndFound.fromMap(Map<String, dynamic> map, String id) {
     return LostAndFound(
-      id: map['id'],
-      authorID: map['authorID'],
-      isFound: map['isFound'],
-      content: map['content'],
-      category: map['category'],
-      createdAt: map['createdAt'],
-      comments: map['comments']
-    );
+        authorID: map['authorID'],
+        isFound: map['isFound'],
+        content: map['content'],
+        category: map['category'],
+        createdAt: DateTime.parse(map['createdAt']),
+        comments: List<Comment>.from(
+            map['comments'].map((comment) => Comment.fromMap(comment))),
+        imageUrl: map['imageUrl'],
+        lostOrFound: map['lostOrFound']);
   }
-
 }

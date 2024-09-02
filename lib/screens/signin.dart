@@ -54,7 +54,7 @@ class _SigninState extends State<Signin> {
               ),
               const SizedBox(height: 16), // Add spacing before the button
               TextButton(
-                onPressed: () {},
+                onPressed: (){},
                 child: const Text(
                   "Forgot Your Password?",
                   style: TextStyle(color: Colors.blue),
@@ -66,8 +66,8 @@ class _SigninState extends State<Signin> {
                 onPressed: () {
                   // Get the username from the controller
                   final username = _usernameController.text;
-                 _authService.signInWithEmailPassword(username,_passwordController.text);
-                },
+                 _authService.signInWithEmailPassword(username,_passwordController.text);   
+                  },
               ),
             ],
           ),

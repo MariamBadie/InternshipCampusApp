@@ -1,4 +1,6 @@
 import 'package:campus_app/screens/lost_and_found_page.dart';
+import 'package:campus_app/screens/ranking_page.dart';
+import 'package:campus_app/screens/reminder_page.dart';
 import 'package:flutter/foundation.dart'; // Import for kIsWeb
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -38,7 +40,7 @@ void main() async {
     print('Firebase initialization error: $e');
   }
   await dotenv.load(fileName: ".env");
-  
+
   runApp(ChangeNotifierProvider(
     create: (_) => ThemeNotifier(),
     child: const MyApp(),
@@ -62,7 +64,7 @@ class MyApp extends StatelessWidget {
       darkTheme: _buildTheme(Brightness.dark), // Dark theme
       themeMode:
           themeProvider.themeMode, // Use the theme mode from the provider
-      home:  MainScreen(),
+      home: MainScreen(),
       routes: {
         '/search': (context) =>  SearchPage(),
         '/notifications': (context) =>  Activities(),
@@ -73,7 +75,9 @@ class MyApp extends StatelessWidget {
     currentImageUrl: 'assets/images/anas.jpg', // Replace with actual user image URL
   ),
         '/settings': (context) => const SettingsPage2(),
-        '/lostandfoundpage': (context) =>  LostAndFound(),
+        '/lostandfoundpage': (context) => LostAndFoundPage(),
+        '/reminder_page': (context) =>const  RemindersPage(),
+        '/ranking_page': (context) =>const RankingPage(),
         '/homepage': (context) => MainScreen()
       },
     );

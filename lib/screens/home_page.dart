@@ -2,6 +2,7 @@ import 'package:campus_app/screens/lost_and_found_page.dart';
 import 'package:campus_app/screens/note_page.dart';
 import 'package:campus_app/screens/event_details_page.dart';
 import 'package:campus_app/screens/campus_map.dart';
+import 'package:campus_app/screens/ranking_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For Clipboard
 import 'package:share_plus/share_plus.dart'; // For sharing
@@ -12,6 +13,11 @@ import '../widgets/post_card.dart';
 import '../widgets/event_card.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:campus_app/screens/reminder_page.dart';
+import 'ratings_page.dart';
+
+const String _ambulanceNumber = '123';
+const String _securityNumber = '0100003421';
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
@@ -321,18 +327,35 @@ class _MyHomePageState extends State<MyHomePage>
             ),
             _buildDrawerItem(Icons.home, 'Home'),
             _buildDrawerItem(Icons.watch, 'Lost & Found', onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) =>  LostAndFound()));
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => LostAndFoundPage()),
+              );
             }),
-             _buildDrawerItem(Icons.map, 'Campus Map', onTap:() {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const MapScreen()),
-          );
-        },),
+            _buildDrawerItem(
+              Icons.map,
+              'Campus Map',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const MapScreen()),
+                );
+              },
+            ),
+
+            _buildDrawerItem(Icons.leaderboard, 'Leaderboard', onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => RankingPage()),
+              );
+            }),
             _buildDrawerItem(Icons.forum, 'Confessions'),
-          
-            _buildDrawerItem(Icons.rate_review, 'View Reviews & Ratings'),
+
+            _buildDrawerItem(Icons.rate_review, 'View Reviews & Ratings', onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const RatingsPage()),
+              );
+            }),
             _buildDrawerItem(Icons.help, 'Help'),
             _buildDrawerItem(Icons.assignment, "Notes", onTap: () {
               Navigator.push(
@@ -340,29 +363,56 @@ class _MyHomePageState extends State<MyHomePage>
                 MaterialPageRoute(builder: (context) => const NotesPage()),
               );
             }),
-            _buildDrawerItem(Icons.access_time_rounded, 'Reminders',
-                onTap: () {
-                Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) =>const RemindersPage()),
-              );  }),
+            _buildDrawerItem(Icons.access_time_rounded, 'Reminders', onTap: () {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => RemindersPage()),
+              );
+            }),
             _buildDrawerItem(Icons.event, 'Events'),
             _buildDrawerItem(Icons.logout, 'Log Out', onTap: () {
               // Add functionality to log out
             }),
             const SizedBox(height: 40), // Spacer before the last three items
             const Text("Emergency Contacts"),
-            _buildDrawerItem(Icons.medical_services, 'Call Ambulance',
-                textStyle: const TextStyle(fontSize: 12), onTap: () {
-              _makePhoneCall('911');
-            }),
-            _buildDrawerItem(Icons.local_police, 'Call Police',
-                textStyle: const TextStyle(fontSize: 12), onTap: () {
-              _makePhoneCall('911');
-            }),
-            _buildDrawerItem(Icons.fire_truck, 'Call Fire Rescue',
-                textStyle: const TextStyle(fontSize: 12), onTap: () {
-              _makePhoneCall('911');
-            }),
+            _buildDrawerItem(
+              Icons.medical_services,
+              'Call Ambulance',
+              textStyle: const TextStyle(fontSize: 12),
+              onTap: () async {
+                final Uri launchUri = Uri(
+                  scheme: 'tel',
+                  path: _ambulanceNumber,
+                );
+                if (await canLaunchUrl(launchUri)) {
+                  await launchUrl(launchUri);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text('Could not launch phone dialer')),
+                  );
+                }
+              },
+            ),
+
+            _buildDrawerItem(
+              Icons.security,
+              'Call Security',
+              textStyle: const TextStyle(fontSize: 12),
+              onTap: () async {
+                final Uri launchUri = Uri(
+                  scheme: 'tel',
+                  path: _securityNumber,
+                );
+                if (await canLaunchUrl(launchUri)) {
+                  await launchUrl(launchUri);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text('Could not launch phone dialer')),
+                  );
+                }
+              },
+            ),
           ],
         ),
       ),
