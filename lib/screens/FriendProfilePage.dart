@@ -1,23 +1,55 @@
+import 'package:campus_app/backend/Controller/highlightsController.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:campus_app/backend/Model/Highlights.dart';
+import 'package:campus_app/backend/Model/Post.dart'; // Make sure this import path is correct
 
-
-class FriendProfilePage extends StatelessWidget {
+class FriendProfilePage extends StatefulWidget {
   final String name;
   final String profilePic;
-  final String bio = 'Friend\'s Bio | Additional Info'; // Placeholder bio
-  final int numberOfPosts = 10; // Placeholder post count
-  final int numberOfFriends = 50; // Placeholder friends count
-  final int karma = 100; // Placeholder karma
+  final String bio;
+  final int numberOfPosts;
+  final int numberOfFriends;
+  final int karma;
 
-  const FriendProfilePage({super.key, required this.name, required this.profilePic});
+  FriendProfilePage({
+    super.key, 
+    required this.name, 
+    required this.profilePic,
+    this.bio = 'Friend\'s Bio | Additional Info',
+    this.numberOfPosts = 10,
+    this.numberOfFriends = 50,
+    this.karma = 100,
+  });
+
+  @override
+  _FriendProfilePageState createState() => _FriendProfilePageState();
+}
+
+class _FriendProfilePageState extends State<FriendProfilePage> {
+  List<Highlights> userHighlights = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserHighlights();
+  }
+
+  Future<void> _fetchUserHighlights() async {
+      String userID = 'upeubEqcmzSU9aThExaO';
+    // Replace `userID` with the actual user ID you want to fetch highlights for
+    final highlights = await getHighlights(userID);
+    setState(() {
+      userHighlights = highlights;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(name),
+        title: Text(widget.name),
         actions: [
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert), // 3 dots icon
@@ -30,9 +62,11 @@ class FriendProfilePage extends StatelessWidget {
                   _showBlockConfirmationDialog(context);
                   break;
                 case 'Share User':
-                  Clipboard.setData(ClipboardData(text: 'https://yourapp.com/user/$name'));
+                  Clipboard.setData(
+                      ClipboardData(text: 'https://yourapp.com/user/${widget.name}'));
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Profile URL copied to clipboard')),
+                    const SnackBar(
+                        content: Text('Profile URL copied to clipboard')),
                   );
                   break;
               }
@@ -65,9 +99,16 @@ class FriendProfilePage extends StatelessWidget {
             children: [
               _buildProfileHeader(),
               const SizedBox(height: 24),
-              _buildProfileStats(context),
+              _buildProfileStats(),
               const SizedBox(height: 24),
               _buildSendMessageButton(context),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildHighlightsRow(),
+                  ),
+                ],
+              ),
               const SizedBox(height: 24),
               _buildUserPosts(context),
             ],
@@ -77,71 +118,71 @@ class FriendProfilePage extends StatelessWidget {
     );
   }
 
- void _showReportDialog(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text('Report User'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Select a reason for reporting:'),
-            ListTile(
-              title: const Text('Spam'),
-              onTap: () {
-                Navigator.pop(context);
-                _showToast();
-              },
-            ),
-            ListTile(
-              title: const Text('Inappropriate Content'),
-              onTap: () {
-                Navigator.pop(context);
-                _showToast();
-              },
-            ),
-            ListTile(
-              title: const Text('Harassment'),
-              onTap: () {
-                Navigator.pop(context);
-                _showToast();
-              },
-            ),
-            ListTile(
-              title: const Text('Other'),
-              onTap: () {
-                Navigator.pop(context);
-                _showToast();
+  void _showReportDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Report User'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Select a reason for reporting:'),
+              ListTile(
+                title: const Text('Spam'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showToast();
+                },
+              ),
+              ListTile(
+                title: const Text('Inappropriate Content'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showToast();
+                },
+              ),
+              ListTile(
+                title: const Text('Harassment'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showToast();
+                },
+              ),
+              ListTile(
+                title: const Text('Other'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showToast();
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
               },
             ),
           ],
-        ),
-        actions: [
-          TextButton(
-            child: const Text('Cancel'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
+        );
+      },
+    );
+  }
 
-void _showToast() {
-  Fluttertoast.showToast(
-    msg: "User reported. We will check it and respond as soon as possible.",
-    toastLength: Toast.LENGTH_LONG,
-    gravity: ToastGravity.BOTTOM,
-    backgroundColor: Colors.black54,
-    textColor: Colors.white,
-    fontSize: 16.0,
-  );
-}
+  void _showToast() {
+    Fluttertoast.showToast(
+      msg: "User reported. We will check it and respond as soon as possible.",
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.BOTTOM,
+      backgroundColor: Colors.black54,
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
+  }
 
-   void _showBlockConfirmationDialog(BuildContext context) {
+  void _showBlockConfirmationDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -176,7 +217,7 @@ void _showToast() {
       children: [
         CircleAvatar(
           radius: 50,
-          backgroundImage: NetworkImage(profilePic),
+          backgroundImage: NetworkImage(widget.profilePic),
           backgroundColor: Colors.grey[200],
         ),
         const SizedBox(width: 16),
@@ -185,13 +226,12 @@ void _showToast() {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                name,
-                style:
-                    const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                widget.name,
+                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               Text(
-                bio,
+                widget.bio,
                 style: TextStyle(fontSize: 16, color: Colors.grey[600]),
               ),
             ],
@@ -201,13 +241,13 @@ void _showToast() {
     );
   }
 
-  Widget _buildProfileStats(BuildContext context) {
+  Widget _buildProfileStats() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        _buildStatColumn('Posts', numberOfPosts),
-        _buildStatColumn('Friends', numberOfFriends),
-        _buildStatColumn('Karma', karma),
+        _buildStatColumn('Posts', widget.numberOfPosts),
+        _buildStatColumn('Friends', widget.numberOfFriends),
+        _buildStatColumn('Karma', widget.karma),
       ],
     );
   }
@@ -270,6 +310,37 @@ void _showToast() {
           },
         ),
       ],
+    );
+  }
+
+  Widget _buildHighlightsRow() {
+    return SizedBox(
+      height: 81, // Adjust the height to fit your needs
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: userHighlights.length,
+        itemBuilder: (context, index) {
+          final highlight = userHighlights[index];
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Column(
+              children: [
+                CircleAvatar(
+                  radius: 30,
+                  backgroundImage: highlight.imageUrl != null
+                      ? NetworkImage(highlight.imageUrl!)
+                      : const AssetImage('assets/images/default_highlight.jpg') as ImageProvider,
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  highlight.highlightsname ?? '',
+                  style: const TextStyle(fontSize: 12),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }

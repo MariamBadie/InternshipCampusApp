@@ -60,9 +60,15 @@ Future<List<Highlights>> getHighlights(String userId) async {
   List<Highlights> highlightsList = querySnapshot.docs.map((doc) {
     return Highlights.fromMap(doc.data());
   }).toList();
-  print("highlightsList: $highlightsList");
+  
+  // Print each highlight
+  for (var highlight in highlightsList) {
+    print(highlight); // This will use the overridden toString method
+  }
+  
   return highlightsList;
 }
+
 
 Future<void> addPostToHighlights(String highlightsId, Post post) async {
   // Fetch the Highlights from Firestore using the highlightsId
