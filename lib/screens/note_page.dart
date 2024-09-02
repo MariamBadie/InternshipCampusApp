@@ -189,26 +189,27 @@ class _NotesPageState extends State<NotesPage> {
             ],
           ),
         ),
-        PopupMenuButton<String>(
-          icon: Icon(Icons.more_vert, color: primaryColor),
-          onSelected: (String result) {
-            if (result == 'edit') {
-              _showEditNoteDialog(note);
-            } else if (result == 'delete') {
-              _showDeleteConfirmationDialog(note);
-            }
-          },
-          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-            const PopupMenuItem<String>(
-              value: 'edit',
-              child: Text('Edit'),
-            ),
-            const PopupMenuItem<String>(
-              value: 'delete',
-              child: Text('Delete'),
-            ),
-          ],
-        ),
+        if (_notesController.canEditNote(note))
+          PopupMenuButton<String>(
+            icon: Icon(Icons.more_vert, color: primaryColor),
+            onSelected: (String result) {
+              if (result == 'edit') {
+                _showEditNoteDialog(note);
+              } else if (result == 'delete') {
+                _showDeleteConfirmationDialog(note);
+              }
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+              const PopupMenuItem<String>(
+                value: 'edit',
+                child: Text('Edit'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'delete',
+                child: Text('Delete'),
+              ),
+            ],
+          ),
       ],
     );
   }
@@ -406,6 +407,13 @@ class _NotesPageState extends State<NotesPage> {
   }
 
   void _showEditNoteDialog(Note note) {
+    if (!_notesController.canEditNote(note)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text('You do not have permission to edit this note.')),
+      );
+      return;
+    }
     final titleController = TextEditingController(text: note.title);
     final numberController = TextEditingController(text: note.number);
     final contentController = TextEditingController(text: note.content);
@@ -462,6 +470,13 @@ class _NotesPageState extends State<NotesPage> {
   }
 
   void _showDeleteConfirmationDialog(Note note) {
+    if (!_notesController.canEditNote(note)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text('You do not have permission to delete this note.')),
+      );
+      return;
+    }
     showDialog(
       context: context,
       builder: (BuildContext context) {

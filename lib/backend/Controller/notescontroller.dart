@@ -19,6 +19,15 @@ class NotesController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   final String testUserId = "test_user_123";
+  final bool isAdmin = true;
+  bool canEditNote(Note note) {
+    return isNoteOwner(note) || isAdmin;
+  }
+
+  bool isNoteOwner(Note note) {
+    // For now, we're using the testUserId. In a real app, you'd use the actual logged-in user's ID
+    return note.userId == testUserId;
+  }
 
   NotesController() {
     _loadNotes();
