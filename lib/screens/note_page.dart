@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:campus_app/backend/Model/notesbackend.dart';
 import 'package:campus_app/backend/Controller/notescontroller.dart';
+
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:io';
@@ -129,6 +130,21 @@ class _NotesPageState extends State<NotesPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildNoteHeader(note),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Icon(Icons.person, size: 16, color: primaryColor),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Posted by: ${note.userId}',
+                          style: TextStyle(
+                            color: primaryColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 12),
                     _buildNoteContent(note),
                     const SizedBox(height: 12),
@@ -428,11 +444,13 @@ class _NotesPageState extends State<NotesPage> {
             onPressed: () async {
               await _notesController.updateNote(Note(
                 id: note.id,
+                userId: note.userId, // Add this line
                 title: titleController.text,
                 number: numberController.text,
                 content: contentController.text,
-                attachmentUrl:
-                    note.attachmentUrl, // Preserve existing attachment
+                attachmentUrl: note.attachmentUrl,
+                attachmentType: note
+                    .attachmentType, // Add this line if it exists in your Note class
                 comments: note.comments,
               ));
               Navigator.of(context).pop();
@@ -508,6 +526,7 @@ class _NotesPageState extends State<NotesPage> {
       String? attachmentPath, String? attachmentType) async {
     try {
       Note newNote = Note(
+        userId: _notesController.testUserId,
         title: title,
         number: number,
         content: content,

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Note {
+  String userId;
   String? id;
   String title;
   String number;
@@ -10,6 +11,7 @@ class Note {
   List<Comment> comments;
 
   Note({
+    required this.userId,
     this.id,
     required this.title,
     required this.number,
@@ -22,6 +24,7 @@ class Note {
   factory Note.fromFirestore(DocumentSnapshot doc) {
     Map data = doc.data() as Map<String, dynamic>;
     return Note(
+      userId: data['userId'] ?? '',
       id: doc.id,
       title: data['title'] ?? '',
       number: data['number'] ?? '',
@@ -42,6 +45,7 @@ class Note {
       'attachmentUrl': attachmentUrl,
       'attachmentType': attachmentType,
       'comments': comments.map((c) => c.toMap()).toList(),
+      'userId': userId,
     };
   }
 }

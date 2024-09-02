@@ -18,6 +18,8 @@ class NotesController {
   final FirebaseStorage _storage = FirebaseStorage.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  final String testUserId = "test_user_123";
+
   NotesController() {
     _loadNotes();
   }
@@ -89,6 +91,7 @@ class NotesController {
   }
 
   Future<void> addNote(Note note) async {
+    note.userId = testUserId;
     await _firebaseService.firestore
         .collection('notes')
         .add(note.toFirestore());
