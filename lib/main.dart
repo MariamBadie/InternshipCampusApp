@@ -72,7 +72,7 @@ class MyApp extends StatelessWidget {
         '/editProfile': (context) => EditProfilePage(),
         '/settings': (context) => const SettingsPage2(),
         '/lostandfoundpage': (context) => LostAndFoundPage(),
-        '/reminder_page': (context) =>  RemindersPage(),
+        '/reminder_page': (context) =>const  RemindersPage(),
         '/ranking_page': (context) =>const RankingPage(),
         '/homepage': (context) => MainScreen()
       },

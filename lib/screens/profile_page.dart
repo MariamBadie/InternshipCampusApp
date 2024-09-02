@@ -1,4 +1,13 @@
+import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui';
+
+import 'package:campus_app/backend/Controller/highlightsController.dart';
+import 'package:campus_app/backend/Controller/lostAndFoundController.dart';
+import 'package:campus_app/backend/Model/Highlights.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'friends_list_page.dart';
 import '../models/post.dart';
@@ -71,6 +80,14 @@ class _ProfilePageState extends State<ProfilePage> {
               const SizedBox(height: 24),
               _buildEditProfileButton(context),
               const SizedBox(height: 24),
+              IconButton.outlined(
+                onPressed: ()=> _createHighlights(context)
+                ,
+                icon: Icon(Icons.add,
+                    size: 40), // Adjust the size of the icon here
+                iconSize: 50, // Adjust the size of the IconButton here
+              ),
+              const SizedBox(height: 24),
               _buildUserPosts(context),
             ],
           ),
@@ -94,7 +111,8 @@ class _ProfilePageState extends State<ProfilePage> {
             children: [
               Text(
                 username,
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               Text(
@@ -252,7 +270,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void _showEditDialog(BuildContext context, int index) {
     final post = userPosts[index];
-    TextEditingController textController = TextEditingController(text: post.content);
+    TextEditingController textController =
+        TextEditingController(text: post.content);
     String selectedPrivacy = post.privacy;
 
     showDialog(
@@ -261,7 +280,8 @@ class _ProfilePageState extends State<ProfilePage> {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setDialogState) {
             return AlertDialog(
-              title: const Text('Edit Post', style: TextStyle(fontWeight: FontWeight.bold)),
+              title: const Text('Edit Post',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -277,20 +297,29 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 2),
+                          borderSide: BorderSide(
+                              color: Theme.of(context).primaryColor, width: 2),
                         ),
                       ),
                     ),
                     const SizedBox(height: 24),
-                    const Text('Privacy:', style: TextStyle(fontWeight: FontWeight.bold)),
+                    const Text('Privacy:',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
                     const SizedBox(height: 8),
-                    _buildPrivacyOption(setDialogState, selectedPrivacy, 'Public', Icons.public, 'Everyone can see', (option) {
+                    _buildPrivacyOption(setDialogState, selectedPrivacy,
+                        'Public', Icons.public, 'Everyone can see', (option) {
                       setDialogState(() => selectedPrivacy = option);
                     }),
-                    _buildPrivacyOption(setDialogState, selectedPrivacy, 'Friends', Icons.people, 'Only friends can see', (option) {
+                    _buildPrivacyOption(
+                        setDialogState,
+                        selectedPrivacy,
+                        'Friends',
+                        Icons.people,
+                        'Only friends can see', (option) {
                       setDialogState(() => selectedPrivacy = option);
                     }),
-                    _buildPrivacyOption(setDialogState, selectedPrivacy, 'Only Me', Icons.lock, 'Only you can see', (option) {
+                    _buildPrivacyOption(setDialogState, selectedPrivacy,
+                        'Only Me', Icons.lock, 'Only you can see', (option) {
                       setDialogState(() => selectedPrivacy = option);
                     }),
                   ],
@@ -325,21 +354,31 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildPrivacyOption(StateSetter setState, String selectedPrivacy, String option, IconData icon, String description, Function(String) onTap) {
+  Widget _buildPrivacyOption(
+      StateSetter setState,
+      String selectedPrivacy,
+      String option,
+      IconData icon,
+      String description,
+      Function(String) onTap) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: InkWell(
         onTap: () => onTap(option),
         child: Row(
           children: [
-            Icon(icon, color: selectedPrivacy == option ? Theme.of(context).primaryColor : Colors.grey),
+            Icon(icon,
+                color: selectedPrivacy == option
+                    ? Theme.of(context).primaryColor
+                    : Colors.grey),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(option, style: TextStyle(fontWeight: FontWeight.bold)),
-                  Text(description, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+                  Text(description,
+                      style: TextStyle(fontSize: 12, color: Colors.grey[600])),
                 ],
               ),
             ),
@@ -377,6 +416,106 @@ class _ProfilePageState extends State<ProfilePage> {
       },
     );
   }
+  
+ String userID='upeubEqcmzSU9aThExaO';
+void _createHighlights(BuildContext context) async {
+  // Use a TextEditingController to capture user input for the highlight name
+  TextEditingController highlightNameController = TextEditingController();
+  final ImagePicker picker = ImagePicker();
+
+  // Pick an image using ImagePicker (accepting all image formats)
+  final XFile? pickedImage = await picker.pickImage(source: ImageSource.gallery);
+
+  if (pickedImage == null) {
+    // Handle the case where no image is selected
+    return;
+  }
+
+  File file = File(pickedImage.path);
+
+  // Show the dialog to create a highlight
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Title of the Highlights'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircleAvatar(
+              radius: 50,
+              backgroundImage: FileImage(
+                File(pickedImage.path), // Use FileImage to show the picked image
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text('How do you want to name this new Highlight?'),
+            const SizedBox(height: 14),
+            TextField(
+              controller: highlightNameController,
+              decoration: const InputDecoration(
+                labelText: 'Enter highlight name',
+              ),
+            ),
+          ],
+        ),
+        actions: <Widget>[
+          Center(
+            child: TextButton(
+              child: const Text('Create'),
+              onPressed: () async {
+                String highlightName = highlightNameController.text;
+
+                if (highlightName.isNotEmpty) {
+                  // Create a reference to the Firebase Storage with the highlight name and userID
+                  FirebaseStorage storage = FirebaseStorage.instance;
+                  Reference storageRef = storage.ref().child(
+                    'highlights/${highlightName}_${userID}.jpg'
+                  );
+
+                  String downloadUrl;
+
+                  try {
+                    // Upload the file to Firebase Storage
+                    UploadTask uploadTask = storageRef.putFile(file);
+                    TaskSnapshot snapshot = await uploadTask;
+
+                    // Get the download URL
+                    downloadUrl = await snapshot.ref.getDownloadURL();
+                  } catch (e) {
+                    // Show an error message and exit if upload fails
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Failed to upload image: $e')),
+                    );
+                    return;
+                  }
+
+                  // Create a Highlights object and call createHighlights function
+                  Highlights highlights = Highlights(
+                    imageUrl: downloadUrl,
+                    highlightsname: highlightName,
+                    userID: userID,
+                  );
+                  await createHighlights(highlights); // Ensure createHighlights is async
+                  Navigator.of(context).pop(); // Close the dialog after creation
+                } else {
+                  // Handle error (e.g., show a message to fill in the highlight name)
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Please enter a highlight name.'),
+                    ),
+                  );
+                }
+              },
+            ),
+          )
+        ],
+      );
+    },
+  );
+}
+
+// Define your Highlights class and createHighlights function according to your app's needs.
 
   void _deletePost(int index) {
     setState(() {

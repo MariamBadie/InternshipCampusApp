@@ -357,7 +357,7 @@ class _MyHomePageState extends State<MyHomePage>
             }),
             _buildDrawerItem(Icons.access_time_rounded, 'Reminders', onTap: () {
               Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => const RemindersPage()),
+                MaterialPageRoute(builder: (context) =>  RemindersPage()),
               );
             }),
             _buildDrawerItem(Icons.event, 'Events'),
