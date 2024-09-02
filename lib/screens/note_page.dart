@@ -130,28 +130,15 @@ class _NotesPageState extends State<NotesPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildNoteHeader(note),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Icon(Icons.person, size: 16, color: primaryColor),
-                        const SizedBox(width: 4),
-                        Text(
-                          'Posted by: ${note.userId}',
-                          style: TextStyle(
-                            color: primaryColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    _buildNoteContent(note),
                     const SizedBox(height: 12),
                     if (note.attachmentUrl != null &&
                         note.attachmentUrl!.isNotEmpty)
                       _buildAttachmentPreview(
                           note.attachmentUrl!, note.attachmentType ?? 'file'),
+                    const SizedBox(height: 12),
+                    _buildTitleAndNumber(note),
+                    const SizedBox(height: 8),
+                    _buildNoteContent(note),
                     const SizedBox(height: 16),
                     _buildNoteActions(note),
                   ],
@@ -166,40 +153,71 @@ class _NotesPageState extends State<NotesPage> {
     );
   }
 
+  Widget _buildTitleAndNumber(Note note) {
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            note.title,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              color: primaryColor,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          note.number,
+          style: TextStyle(
+            color: textColor.withOpacity(0.7),
+            fontSize: 14,
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildNoteHeader(Note note) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                note.title,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                  color: primaryColor,
-                ),
+        Row(
+          children: [
+            Icon(Icons.person, size: 16, color: primaryColor),
+            const SizedBox(width: 4),
+            Text(
+              'Posted by: ${note.userId}',
+              style: TextStyle(
+                color: primaryColor,
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
               ),
-              Text(
-                note.number,
-                style: TextStyle(color: textColor.withOpacity(0.7)),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
-        if (_notesController.canEditNote(note))
-          PopupMenuButton<String>(
-            icon: Icon(Icons.more_vert, color: primaryColor),
-            onSelected: (String result) {
-              if (result == 'edit') {
-                _showEditNoteDialog(note);
-              } else if (result == 'delete') {
-                _showDeleteConfirmationDialog(note);
-              }
-            },
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+        PopupMenuButton<String>(
+          icon: Icon(Icons.more_vert, color: primaryColor),
+          onSelected: (String result) {
+            switch (result) {
+              case 'edit':
+                if (_notesController.canEditNote(note)) {
+                  _showEditNoteDialog(note);
+                }
+                break;
+              case 'delete':
+                if (_notesController.canEditNote(note)) {
+                  _showDeleteConfirmationDialog(note);
+                }
+                break;
+              case 'report':
+                _showReportDialog(note);
+                break;
+            }
+          },
+          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+            if (_notesController.canEditNote(note)) ...[
               const PopupMenuItem<String>(
                 value: 'edit',
                 child: Text('Edit'),
@@ -209,8 +227,41 @@ class _NotesPageState extends State<NotesPage> {
                 child: Text('Delete'),
               ),
             ],
-          ),
+            const PopupMenuItem<String>(
+              value: 'report',
+              child: Text('Report'),
+            ),
+          ],
+        ),
       ],
+    );
+  }
+
+  void _showReportDialog(Note note) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Report Note'),
+          content: Text('Are you sure you want to report this note?'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Report'),
+              onPressed: () {
+                // TODO: Implement the report functionality
+                _reportNote(note);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -586,6 +637,14 @@ class _NotesPageState extends State<NotesPage> {
 
   void _deleteNote(String noteId) async {
     await _notesController.deleteNote(noteId);
+  }
+
+  void _reportNote(Note note) {
+    // TODO: Implement the actual reporting logic
+    print('Reporting note: ${note.id}');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Note reported successfully')),
+    );
   }
 
   void _downloadNote(Note note) async {
