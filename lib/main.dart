@@ -67,7 +67,11 @@ class MyApp extends StatelessWidget {
         '/search': (context) =>  SearchPage(),
         '/notifications': (context) =>  Activities(),
         '/profile': (context) =>  ProfilePage(),
-        '/editProfile': (context) =>EditProfilePage(),
+        '/editProfile': (context) =>const EditProfilePage(
+    currentName: 'Anas Tamer', // Replace with actual user data
+    currentBio: 'MET Major | Student at GUC', // Replace with actual user data
+    currentImageUrl: 'assets/images/anas.jpg', // Replace with actual user image URL
+  ),
         '/settings': (context) => const SettingsPage2(),
         '/lostandfoundpage': (context) =>  LostAndFound(),
         '/homepage': (context) => MainScreen()
