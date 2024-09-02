@@ -14,6 +14,9 @@ import '../widgets/event_card.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:campus_app/screens/reminder_page.dart';
 
+const String _ambulanceNumber = '123';
+const String _securityNumber = '0100003421';
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
@@ -338,7 +341,7 @@ class _MyHomePageState extends State<MyHomePage>
                 );
               },
             ),
-            
+
             _buildDrawerItem(Icons.leaderboard, 'Leaderboard', onTap: () {
               Navigator.push(
                 context,
@@ -357,7 +360,7 @@ class _MyHomePageState extends State<MyHomePage>
             }),
             _buildDrawerItem(Icons.access_time_rounded, 'Reminders', onTap: () {
               Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) =>  RemindersPage()),
+                MaterialPageRoute(builder: (context) => RemindersPage()),
               );
             }),
             _buildDrawerItem(Icons.event, 'Events'),
@@ -366,14 +369,45 @@ class _MyHomePageState extends State<MyHomePage>
             }),
             const SizedBox(height: 40), // Spacer before the last three items
             const Text("Emergency Contacts"),
-            _buildDrawerItem(Icons.medical_services, 'Call Ambulance',
-                textStyle: const TextStyle(fontSize: 12), onTap: () {
-              _makePhoneCall('911');
-            }),
-            _buildDrawerItem(Icons.security, 'Call Security',
-                textStyle: const TextStyle(fontSize: 12), onTap: () {
-              _makePhoneCall('911');
-            }),
+            _buildDrawerItem(
+              Icons.medical_services,
+              'Call Ambulance',
+              textStyle: const TextStyle(fontSize: 12),
+              onTap: () async {
+                final Uri launchUri = Uri(
+                  scheme: 'tel',
+                  path: _ambulanceNumber,
+                );
+                if (await canLaunchUrl(launchUri)) {
+                  await launchUrl(launchUri);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text('Could not launch phone dialer')),
+                  );
+                }
+              },
+            ),
+
+            _buildDrawerItem(
+              Icons.security,
+              'Call Security',
+              textStyle: const TextStyle(fontSize: 12),
+              onTap: () async {
+                final Uri launchUri = Uri(
+                  scheme: 'tel',
+                  path: _securityNumber,
+                );
+                if (await canLaunchUrl(launchUri)) {
+                  await launchUrl(launchUri);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text('Could not launch phone dialer')),
+                  );
+                }
+              },
+            ),
           ],
         ),
       ),
