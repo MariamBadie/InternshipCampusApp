@@ -13,6 +13,7 @@ import '../widgets/post_card.dart';
 import '../widgets/event_card.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:campus_app/screens/reminder_page.dart';
+import 'ratings_page.dart';
 
 const String _ambulanceNumber = '123';
 const String _securityNumber = '0100003421';
@@ -350,7 +351,11 @@ class _MyHomePageState extends State<MyHomePage>
             }),
             _buildDrawerItem(Icons.forum, 'Confessions'),
 
-            _buildDrawerItem(Icons.rate_review, 'View Reviews & Ratings'),
+            _buildDrawerItem(Icons.rate_review, 'View Reviews & Ratings', onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const RatingsPage()),
+              );
+            }),
             _buildDrawerItem(Icons.help, 'Help'),
             _buildDrawerItem(Icons.assignment, "Notes", onTap: () {
               Navigator.push(

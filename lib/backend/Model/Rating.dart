@@ -39,19 +39,26 @@ class Rating {
     };
   }
 
-  factory Rating.fromMap(String id, Map<String, dynamic> map){
+  factory Rating.fromMap(String id, Map<String, dynamic> map) {
     return Rating(
       id: id,
       entityType: map['entityType'],
-      authorID: (map['authorID'] as DocumentReference).id,
+      // Handle authorID as either DocumentReference or string
+      authorID: (map['authorID'] is DocumentReference)
+          ? (map['authorID'] as DocumentReference).id
+          : map['authorID'] as String,
       content: map['content'],
-      upCount: map['upCount'],
-      downCount: map['downCount'],
-      isAnonymous: map['isAnonymous'],
+      upCount: map['upCount'] ?? 0, // Provide default value if null
+      downCount: map['downCount'] ?? 0, // Provide default value if null
+      isAnonymous: map['isAnonymous'] ?? false, // Provide default value if null
       entityID: map['entityID'],
-      rating: map['rating'],
-      createdAt: map['createdAt']
+      rating: map['rating'] ?? 0, // Provide default value if null
+      // Convert Timestamp to DateTime if necessary
+      createdAt: (map['createdAt'] is Timestamp)
+          ? (map['createdAt'] as Timestamp).toDate()
+          : map['createdAt'],
     );
   }
+
 
 }
