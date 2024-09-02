@@ -1,12 +1,12 @@
-import 'package:campus_app/backend/Controller/lostAndFoundController.dart';
-import 'package:campus_app/backend/Model/Comment.dart';
-import 'package:campus_app/backend/Model/LostAndFound.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:campus_app/screens/post_details_page.dart';
 import '../widgets/post_card.dart';
 import 'package:intl/intl.dart';
+import 'package:campus_app/backend/Controller/lostAndFoundController.dart';
+import 'package:campus_app/backend/Model/Comment.dart';
+import 'package:campus_app/backend/Model/LostAndFound.dart';
 
 class PostCardLostAndFound extends StatelessWidget {
   final LostAndFound post;
@@ -60,6 +60,10 @@ class PostCardLostAndFound extends StatelessWidget {
           ),
         ),
         Text(
+          post.lostOrFound,
+          style: const TextStyle(color: Colors.grey),
+        ),
+        Text(
           formattedDate,
           style: const TextStyle(color: Colors.grey),
         ),
@@ -75,26 +79,15 @@ class PostCardLostAndFound extends StatelessWidget {
   }
 
   Widget _buildPostImage() {
-    // For network images
     if (post.imageUrl != null && post.imageUrl!.startsWith('http')) {
       return Image.network(post.imageUrl!);
     }
 
-// For asset images
     if (post.imageUrl != null && !post.imageUrl!.startsWith('http')) {
       return Image.asset(post.imageUrl!);
     }
 
-// Handling cases where image URL is null
     return const SizedBox.shrink();
-
-    // print(post.imageUrl);
-    // return post.imageUrl != null
-    //     ? Image.network(
-    //         post.imageUrl!,
-    //         fit: BoxFit.cover,
-    //       )
-    //     : Container();
   }
 
   Widget _buildPostActions(BuildContext context) {
@@ -126,7 +119,7 @@ class PostCardLostAndFound extends StatelessWidget {
   }
 }
 
-const String _userID = 'yq2Z9NaQdPz0djpnLynN';
+final String _userID = 'yq2Z9NaQdPz0djpnLynN';
 
 class LostAndFoundPage extends StatefulWidget {
   LostAndFoundPage({super.key});
@@ -138,8 +131,19 @@ class LostAndFoundPage extends StatefulWidget {
 class _LostAndFoundState extends State<LostAndFoundPage>
     with SingleTickerProviderStateMixin {
   List<LostAndFound> _posts = [];
-
+  List<LostAndFound> _filteredPosts = [];
+  String _searchQuery = '';
+  String? _selectedCategory;
   late TabController _tabController;
+
+  final List<String> _categories = [
+    'All',
+    'Electronics',
+    'Books',
+    'Clothing',
+    'Accessories',
+    'Keys'
+  ];
 
   @override
   void initState() {
@@ -152,6 +156,20 @@ class _LostAndFoundState extends State<LostAndFoundPage>
     final posts = await getAllLostAndFoundPosts(_userID);
     setState(() {
       _posts = posts;
+      _filteredPosts = posts;
+    });
+  }
+
+  void _filterPosts() {
+    setState(() {
+      _filteredPosts = _posts.where((post) {
+        final matchesSearch =
+            post.content.toLowerCase().contains(_searchQuery.toLowerCase());
+        final matchesCategory = _selectedCategory == null ||
+            _selectedCategory == 'All' ||
+            post.category.toLowerCase() == _selectedCategory?.toLowerCase();
+        return matchesSearch && matchesCategory;
+      }).toList();
     });
   }
 
@@ -165,22 +183,86 @@ class _LostAndFoundState extends State<LostAndFoundPage>
     await _fetchPosts();
   }
 
-  void _addNewPost(LostAndFound newPost) {
+  void _onSearchChanged(String query) {
     setState(() {
-      _posts.insert(0, newPost);
+      _searchQuery = query;
     });
+    _filterPosts();
   }
 
-  void _addCommentToPost(String postId, String content) {
+  void _onCategoryChanged(String? category) {
     setState(() {
-      final post = _posts.firstWhere((post) => post.authorID == postId);
-      // post.comments.add(Comment(
-      //   username: 'Current User',
-      //   content: content,
-      //   reactions: {'like': 0, 'dislike': 0, 'love': 0},
-      //   profilePictureUrl: 'assets/images/default_user.jpg',
-      // ));
+      _selectedCategory = category;
     });
+    _filterPosts();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Lost & Found'),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(60.0),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    decoration: const InputDecoration(
+                      hintText: 'Search...',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.search),
+                    ),
+                    onChanged: _onSearchChanged,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                DropdownButton<String>(
+                  value: _selectedCategory,
+                  hint: const Text('Filter by category'),
+                  items: _categories.map((String category) {
+                    return DropdownMenuItem<String>(
+                      value: category,
+                      child: Text(category),
+                    );
+                  }).toList(),
+                  onChanged: _onCategoryChanged,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          _buildFeedSection(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFeedSection() {
+    return RefreshIndicator(
+      onRefresh: _fetchPosts,
+      child: ListView.builder(
+        itemCount: _filteredPosts.length,
+        itemBuilder: (context, index) {
+          final post = _filteredPosts[index];
+          return GestureDetector(
+            child: PostCardLostAndFound(
+              post: post,
+              onShare: () => _sharePost(post),
+              onCopyLink: () => _copyPostLink(post),
+              onDelete: () => _deletePost(post),
+              onReport: () => _reportPost(post),
+            ),
+          );
+        },
+      ),
+    );
   }
 
   void _sharePost(LostAndFound post) {
@@ -219,7 +301,7 @@ class _LostAndFoundState extends State<LostAndFoundPage>
             TextButton(
               child: const Text('Cancel'),
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();
               },
             ),
             TextButton(
@@ -227,7 +309,7 @@ class _LostAndFoundState extends State<LostAndFoundPage>
               onPressed: () {
                 if (reportReason.isNotEmpty) {
                   // Implement your report logic here
-                  Navigator.of(context).pop(); // Close the dialog
+                  Navigator.of(context).pop();
                 }
               },
             ),
@@ -248,17 +330,14 @@ class _LostAndFoundState extends State<LostAndFoundPage>
             TextButton(
               child: const Text('Cancel'),
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();
               },
             ),
             TextButton(
               child: const Text('Delete'),
               onPressed: () {
-                // Implement your deletion logic here
-                setState(() {
-                  _posts.remove(post);
-                });
-                Navigator.of(context).pop(); // Close the dialog
+                // Implement your delete logic here
+                Navigator.of(context).pop();
               },
             ),
           ],
@@ -266,54 +345,4 @@ class _LostAndFoundState extends State<LostAndFoundPage>
       },
     );
   }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Lost & Found'),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _buildFeedSection(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFeedSection() {
-    return RefreshIndicator(
-      onRefresh: _fetchPosts,
-      child: ListView.builder(
-        itemCount: _posts.length,
-        itemBuilder: (context, index) {
-          final post = _posts[index];
-          // print(post);
-          return GestureDetector(
-            // onTap: () => navigateToPostDetails(context, post),
-            child: PostCardLostAndFound(
-              post: post,
-              onShare: () => _sharePost(post),
-              onCopyLink: () => _copyPostLink(post),
-              onDelete: () => _deletePost(post),
-              onReport: () => _reportPost(post),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  // void navigateToPostDetails(BuildContext context, LostAndFound post) {
-  //   Navigator.push(
-  //     context,
-  //     MaterialPageRoute(
-  //       builder: (context) => PostDetailsPage(
-  //         post: post,
-  //         onComment: _addCommentToPost,
-  //       ),
-  //     ),
-  //   );
-  // }
 }

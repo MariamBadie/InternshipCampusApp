@@ -116,11 +116,12 @@ class _AddPostPageState extends State<AddPostPage> {
             category: _category.toString(),
             createdAt: DateTime.now(),
             comments: [],
-            imageUrl: imageUrl);
+            imageUrl: imageUrl,
+            lostOrFound: _lostOrFound!);
 
         await saveLostAndFoundPost(post);
-        print("saved");
-        return;
+        // Navigator.pop(context);
+        // return;
       }
     }
 

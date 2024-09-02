@@ -8,6 +8,7 @@ class LostAndFound {
   DateTime createdAt;
   List<Comment> comments;
   String? imageUrl;
+  String lostOrFound;
 
   LostAndFound({
     required this.authorID,
@@ -16,6 +17,7 @@ class LostAndFound {
     required this.category,
     required this.createdAt,
     required this.comments,
+    required this.lostOrFound,
     this.imageUrl,
   });
 
@@ -28,19 +30,20 @@ class LostAndFound {
       'createdAt': createdAt.toIso8601String(),
       'comments': comments.map((comment) => comment.toMap()).toList(),
       'imageUrl': imageUrl,
+      'lostOrFound': lostOrFound
     };
   }
 
   factory LostAndFound.fromMap(Map<String, dynamic> map, String id) {
     return LostAndFound(
-      authorID: map['authorID'],
-      isFound: map['isFound'],
-      content: map['content'],
-      category: map['category'],
-      createdAt: DateTime.parse(map['createdAt']),
-      comments: List<Comment>.from(
-          map['comments'].map((comment) => Comment.fromMap(comment))),
-      imageUrl: map['imageUrl'],
-    );
+        authorID: map['authorID'],
+        isFound: map['isFound'],
+        content: map['content'],
+        category: map['category'],
+        createdAt: DateTime.parse(map['createdAt']),
+        comments: List<Comment>.from(
+            map['comments'].map((comment) => Comment.fromMap(comment))),
+        imageUrl: map['imageUrl'],
+        lostOrFound: map['lostOrFound']);
   }
 }
