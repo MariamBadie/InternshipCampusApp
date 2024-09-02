@@ -43,10 +43,10 @@ class _NotesPageState extends State<NotesPage> {
 
   AppBar _buildAppBar() {
     return AppBar(
-      title: Text('Notes', style: TextStyle(color: secondaryColor)),
+      title: const Text('Notes', style: TextStyle(color: secondaryColor)),
       backgroundColor: primaryColor,
       elevation: 0,
-      iconTheme: IconThemeData(color: secondaryColor),
+      iconTheme: const IconThemeData(color: secondaryColor),
     );
   }
 
@@ -223,13 +223,16 @@ class _NotesPageState extends State<NotesPage> {
                 child: Text('Edit'),
               ),
               const PopupMenuItem<String>(
-                value: 'delete',
-                child: Text('Delete'),
+                value: 'report',
+                child: Text('Report'),
               ),
             ],
             const PopupMenuItem<String>(
-              value: 'report',
-              child: Text('Report'),
+              value: 'delete',
+              child: Text(
+                'Delete',
+                style: TextStyle(color: Colors.red),
+              ),
             ),
           ],
         ),
@@ -242,17 +245,17 @@ class _NotesPageState extends State<NotesPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Report Note'),
-          content: Text('Are you sure you want to report this note?'),
+          title: const Text('Report Note'),
+          content: const Text('Are you sure you want to report this note?'),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Report'),
+              child: const Text('Report'),
               onPressed: () {
                 // TODO: Implement the report functionality
                 _reportNote(note);
@@ -268,7 +271,7 @@ class _NotesPageState extends State<NotesPage> {
   Widget _buildNoteContent(Note note) {
     return Text(
       note.content,
-      style: TextStyle(color: textColor, fontSize: 16),
+      style: const TextStyle(color: textColor, fontSize: 16),
       maxLines: 3,
       overflow: TextOverflow.ellipsis,
     );
@@ -323,7 +326,7 @@ class _NotesPageState extends State<NotesPage> {
   Widget _buildCommentsDropdown(Note note) {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(12),
@@ -343,7 +346,7 @@ class _NotesPageState extends State<NotesPage> {
                         children: [
                           Text(
                             comment.authorName,
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: accentColor,
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
@@ -358,10 +361,10 @@ class _NotesPageState extends State<NotesPage> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(
                         comment.text,
-                        style: TextStyle(color: textColor),
+                        style: const TextStyle(color: textColor),
                       ),
                     ],
                   ),
@@ -375,7 +378,7 @@ class _NotesPageState extends State<NotesPage> {
     return FloatingActionButton(
       backgroundColor: accentColor,
       onPressed: _showAddNoteDialog,
-      child: Icon(Icons.add, color: secondaryColor),
+      child: const Icon(Icons.add, color: secondaryColor),
     );
   }
 
@@ -460,7 +463,7 @@ class _NotesPageState extends State<NotesPage> {
   void _showEditNoteDialog(Note note) {
     if (!_notesController.canEditNote(note)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
             content: Text('You do not have permission to edit this note.')),
       );
       return;
