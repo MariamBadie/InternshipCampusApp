@@ -36,4 +36,8 @@ class Highlights {
       imageUrl: map['imageUrl'] as String?, // Retrieve the imageUrl if present
     );
   }
+    @override
+  String toString() {
+    return 'Highlights(imageUrl: $imageUrl, highlightsname: $highlightsname, userID: $userID ,posts: $posts,id: $id)';
+  }
 }
