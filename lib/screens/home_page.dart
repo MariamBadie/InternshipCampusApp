@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For Clipboard
 import 'package:share_plus/share_plus.dart'; // For sharing
 import 'package:campus_app/screens/post_details_page.dart';
-import '../models/post.dart';
+import '../backend/Model/Post.dart';
 import '../models/event.dart';
 import '../widgets/post_card.dart';
 import '../widgets/event_card.dart';
@@ -35,42 +35,47 @@ class _MyHomePageState extends State<MyHomePage>
       username: 'Hussien Haitham',
       type: 'Confession',
       content: "I really admire Professor Mervat's teaching style!",
-      reactions: {'like': 5, 'dislike': 1, 'love': 2},
+      upvotes: 7, // Update to use upvotes
+      downvotes: 1, // Update to use downvotes
       comments: [
         Comment(
           username: 'Anas',
           content: 'I agree! Her lectures are great.',
-          reactions: {'like': 2, 'dislike': 0, 'love': 1},
+          upvotes: 3, // Update to use upvotes
+          downvotes: 0, // Update to use downvotes
           profilePictureUrl: 'assets/images/anas.jpg',
         ),
         Comment(
           username: 'Mohanad',
           content: 'What subjects does she teach?',
-          reactions: {'like': 2, 'dislike': 0, 'love': 1},
+          upvotes: 3, // Update to use upvotes
+          downvotes: 0, // Update to use downvotes
           profilePictureUrl: 'assets/images/mohanad.jpg',
         )
       ],
       isAnonymous: false,
       timestamp: DateTime.now().subtract(const Duration(hours: 2)),
-      profilePictureUrl: 'assets/images/hussien.jpg',
+      profilePictureUrl: 'assets/images/hussien.jpg', isConfession: true,
     ),
     Post(
       id: '2',
       username: 'Ahmed Hany',
       type: 'Help',
       content: 'Can someone help me with Math203 problems?',
-      reactions: {'like': 3, 'dislike': 0, 'love': 1},
+      upvotes: 4, // Update to use upvotes
+      downvotes: 0, // Update to use downvotes
       comments: [
         Comment(
           username: 'Ibrahim',
           content: 'Sure, tell me how can I help?',
-          reactions: {'like': 2, 'dislike': 0, 'love': 1},
+          upvotes: 2, // Update to use upvotes
+          downvotes: 0, // Update to use downvotes
           profilePictureUrl: 'assets/images/ibrahim.jpg',
         )
       ],
       isAnonymous: false,
       timestamp: DateTime.now().subtract(const Duration(minutes: 30)),
-      profilePictureUrl: 'assets/images/ahmed.jpg',
+      profilePictureUrl: 'assets/images/ahmed.jpg', isConfession: false,
     ),
   ];
 
@@ -120,31 +125,43 @@ class _MyHomePageState extends State<MyHomePage>
   }
 
   void _reactToPost(String postId, String reactionType) {
-    setState(() {
-      final post = _posts.firstWhere((post) => post.id == postId);
-      post.reactions[reactionType] = (post.reactions[reactionType] ?? 0) + 1;
-    });
-  }
+  setState(() {
+    final post = _posts.firstWhere((post) => post.id == postId);
+    if (reactionType == 'upvote') {
+      post.upvotes += 1;
+    } else if (reactionType == 'downvote') {
+      post.downvotes += 1;
+    }
+  });
+}
+
 
   void _addCommentToPost(String postId, String username, String content) {
-    setState(() {
-      final post = _posts.firstWhere((post) => post.id == postId);
-      post.comments.add(Comment(
-        username: username,
-        content: content,
-        reactions: {'like': 0, 'dislike': 0, 'love': 0},
-        profilePictureUrl: '',
-      ));
-    });
-  }
+  setState(() {
+    final post = _posts.firstWhere((post) => post.id == postId);
+    post.comments.add(Comment(
+      username: username,
+      content: content,
+      upvotes: 0,
+      downvotes: 0,
+      profilePictureUrl: '',
+    ));
+  });
+}
+
 
   void _reactToComment(String postId, int commentIndex, String reactionType) {
-    setState(() {
-      final post = _posts.firstWhere((post) => post.id == postId);
-      post.comments[commentIndex].reactions[reactionType] =
-          (post.comments[commentIndex].reactions[reactionType] ?? 0) + 1;
-    });
-  }
+  setState(() {
+    final post = _posts.firstWhere((post) => post.id == postId);
+    final comment = post.comments[commentIndex];
+    if (reactionType == 'upvote') {
+      comment.upvotes += 1;
+    } else if (reactionType == 'downvote') {
+      comment.downvotes += 1;
+    }
+  });
+}
+
 
   void _replyToComment(String postId, int commentIndex, String replyContent) {
     setState(() {

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../models/post.dart' as post_model;
+import '../backend/Model/Post.dart';
 import '../utils/home_page_utils.dart';
 
 class PostCard extends StatelessWidget {
-  final post_model.Post post;
+  final Post post;
   final Function(String, String) onReact;
   final Function(String, String, String) onComment;
   final Function(String, int, String) onReactToComment;
@@ -87,10 +87,8 @@ class PostCard extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _buildReactionButton(context, 0, 'like', Icons.thumb_up),
-                    _buildReactionButton(context, 0, 'dislike', Icons.thumb_down),
-                    _buildReactionButton(context, 0, 'love', Icons.favorite),
-                    _buildReactionButton(context, 0, 'haha', Icons.emoji_emotions),
+                    _buildReactionButton(context, 'upvote', Icons.keyboard_arrow_up, post.upvotes),
+                    _buildReactionButton(context, 'downvote', Icons.keyboard_arrow_down, post.downvotes),
                   ],
                 ),
               ),
@@ -102,7 +100,7 @@ class PostCard extends StatelessWidget {
                   Text('Comments: ${post.comments.length}'),
                   ...post.comments.asMap().entries.map((entry) {
                     int idx = entry.key;
-                    post_model.Comment comment = entry.value;
+                    Comment comment = entry.value;
                     return _buildCommentSection(context, comment, idx);
                   }),
                 ],
@@ -114,17 +112,15 @@ class PostCard extends StatelessWidget {
     );
   }
 
-  Widget _buildReactionButton(
-      BuildContext context, int commentIndex, String type, IconData icon) {
+  Widget _buildReactionButton(BuildContext context, String type, IconData icon, int count) {
     return TextButton.icon(
-      onPressed: () => onReactToComment(post.id, commentIndex, type),
+      onPressed: () => onReact(post.id, type),
       icon: Icon(icon),
-      label: Text(post.comments[commentIndex].reactions[type].toString()),
+      label: Text(count.toString()),
     );
   }
 
-  Widget _buildCommentSection(
-      BuildContext context, post_model.Comment comment, int commentIndex) {
+  Widget _buildCommentSection(BuildContext context, Comment comment, int commentIndex) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
@@ -139,24 +135,21 @@ class PostCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(comment.username,
-                    style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text(comment.username, style: const TextStyle(fontWeight: FontWeight.bold)),
                 Text(comment.content),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _buildReactionButton(context, commentIndex, 'like', Icons.thumb_up),
-                    _buildReactionButton(context, commentIndex, 'dislike', Icons.thumb_down),
-                    _buildReactionButton(context, commentIndex, 'love', Icons.favorite),
-                    _buildReactionButton(context, commentIndex, 'haha', Icons.emoji_emotions),
+                    _buildCommentReactionButton(context, commentIndex, 'upvote', Icons.keyboard_arrow_up, comment.upvotes),
+                    _buildCommentReactionButton(context, commentIndex, 'downvote', Icons.keyboard_arrow_down, comment.downvotes),
                     IconButton(
                       icon: const Icon(Icons.reply, size: 16),
                       onPressed: () => _showReplyDialog(context, commentIndex),
                     ),
                   ],
                 ),
-                if (comment.replies != null && comment.replies!.isNotEmpty)
-                  ...comment.replies!.map((reply) {
+                if (comment.replies.isNotEmpty)
+                  ...comment.replies.map((reply) {
                     return Padding(
                       padding: const EdgeInsets.only(left: 32.0, top: 4.0),
                       child: Row(
@@ -171,18 +164,13 @@ class PostCard extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(reply.username,
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold)),
+                                Text(reply.username, style: const TextStyle(fontWeight: FontWeight.bold)),
                                 Text(reply.content),
                                 Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                                   children: [
-                                    _buildReactionButton(context, 0, 'like', Icons.thumb_up),
-                                    _buildReactionButton(context, 0, 'dislike', Icons.thumb_down),
-                                    _buildReactionButton(context, 0, 'love', Icons.favorite),
-                                    _buildReactionButton(context, 0, 'haha', Icons.emoji_emotions),
+                                    _buildReplyReactionButton(context, 'upvote', Icons.keyboard_arrow_up, reply.upvotes),
+                                    _buildReplyReactionButton(context, 'downvote', Icons.keyboard_arrow_down, reply.downvotes),
                                   ],
                                 ),
                               ],
@@ -191,12 +179,28 @@ class PostCard extends StatelessWidget {
                         ],
                       ),
                     );
-                  }),
+                  }).toList(),
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildCommentReactionButton(BuildContext context, int commentIndex, String type, IconData icon, int count) {
+    return TextButton.icon(
+      onPressed: () => onReactToComment(post.id, commentIndex, type),
+      icon: Icon(icon),
+      label: Text(count.toString()),
+    );
+  }
+
+  Widget _buildReplyReactionButton(BuildContext context, String type, IconData icon, int count) {
+    return TextButton.icon(
+      onPressed: () {},
+      icon: Icon(icon),
+      label: Text(count.toString()),
     );
   }
 

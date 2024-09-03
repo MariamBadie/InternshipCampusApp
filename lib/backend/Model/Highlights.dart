@@ -18,7 +18,7 @@ class Highlights {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'posts': posts?.map((post) => post.toMap()).toList(), // Convert posts to Map if not null
+      'posts': posts?.map((post) => post.toFirestore()).toList(), // Convert posts to Map if not null
       'userID': userID,
       'highlightsname': highlightsname,
       'imageUrl': imageUrl, // Include the imageUrl in the map
@@ -29,7 +29,7 @@ class Highlights {
     return Highlights(
       id: map['id'] as String?,
       posts: (map['posts'] as List<dynamic>?)
-          ?.map((item) => Post.fromMap(item as Map<String, dynamic>))
+          ?.map((item) => Post.fromFirestore(item as Map<String, dynamic>))
           .toList(), // Convert map to List<Post> if not null
       userID: map['userID'] as String?,
       highlightsname: map['highlightsname'] as String?,

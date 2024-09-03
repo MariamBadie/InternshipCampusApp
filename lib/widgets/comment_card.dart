@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:campus_app/models/post.dart';
+import '../backend/Model/Post.dart';
 
 class CommentCard extends StatefulWidget {
   final Comment comment;
@@ -67,10 +67,8 @@ class _CommentCardState extends State<CommentCard> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  _buildReactionButton(context, 'like', Icons.thumb_up),
-                  _buildReactionButton(context, 'dislike', Icons.thumb_down),
-                  _buildReactionButton(context, 'love', Icons.favorite),
-                  _buildReactionButton(context, 'haha', Icons.emoji_emotions),
+                  _buildReactionButton(context, 'upvote', Icons.keyboard_arrow_up),
+                  _buildReactionButton(context, 'downvote', Icons.keyboard_arrow_down),
                 ],
               ),
             ),
@@ -80,10 +78,19 @@ class _CommentCardState extends State<CommentCard> {
   }
 
   Widget _buildReactionButton(BuildContext context, String type, IconData icon) {
+    int reactionCount;
+    if (type == 'upvote') {
+      reactionCount = widget.comment.upvotes;
+    } else if (type == 'downvote') {
+      reactionCount = widget.comment.downvotes;
+    } else {
+      reactionCount = 0;
+    }
+
     return TextButton.icon(
       onPressed: () => widget.onReact(type),
       icon: Icon(icon, size: 16),
-      label: Text(widget.comment.reactions[type]?.toString() ?? '0'),
+      label: Text(reactionCount.toString()),
     );
   }
 

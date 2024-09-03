@@ -1,5 +1,8 @@
+import 'package:campus_app/backend/Controller/postController.dart';
 import 'package:flutter/material.dart';
-import '../models/post.dart';
+import 'package:http/http.dart';
+import '../backend/Model/Post.dart';
+
 
 class PostCreationPage extends StatefulWidget {
   final String type;
@@ -13,6 +16,7 @@ class PostCreationPage extends StatefulWidget {
 
 class _PostCreationPageState extends State<PostCreationPage> {
   final TextEditingController _contentController = TextEditingController();
+  final PostController _postController = PostController();
   bool _isAnonymous = false;
 
   @override
@@ -57,20 +61,29 @@ class _PostCreationPageState extends State<PostCreationPage> {
               ),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 if (_contentController.text.isNotEmpty) {
-                  final newPost = Post(
-                    id: DateTime.now().millisecondsSinceEpoch.toString(),
-                    username: 'CurrentUser', // Replace with actual username if possible
+                  print("oklahoma");
+                  Post post =Post(
+                     id: _postController.testUserId,
+                    username: 'Anas Tamer', // Replace with actual username
                     type: widget.type,
                     content: _contentController.text,
-                    reactions: {'like': 0, 'dislike': 0, 'love': 0, 'haha': 0},
-                    comments: [],
+                    profilePictureUrl: _isAnonymous 
+                        ? 'assets/images/anas.jpg' 
+                        : 'assets/images/current_user.jpg',
                     isAnonymous: _isAnonymous,
                     timestamp: DateTime.now(),
-                    profilePictureUrl: _isAnonymous ? 'assets/images/anonymous.jpg' : 'assets/images/current_user.jpg',
+                    upvotes: 2,
+                    downvotes: 0,
+                    isConfession: widget.type == 'Confession',
+                    privacy: 'Public', // Set privacy based on your requirement
                   );
-                  widget.onPostCreated(newPost);
+                  // Call the createPost function
+                   _postController.addPost(post);
+                    print("abdo");
+
+                  // After creating the post, close the page and trigger the callback
                   Navigator.pop(context);
                 } else {
                   // Show error message if content is empty

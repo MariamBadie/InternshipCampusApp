@@ -1,5 +1,5 @@
+import 'package:campus_app/backend/Model/Post.dart';
 import 'package:flutter/material.dart';
-import '../models/post.dart';
 import '../models/event.dart';
 
 import '../screens/post_creation_page.dart';

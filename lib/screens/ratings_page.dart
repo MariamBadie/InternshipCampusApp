@@ -103,22 +103,20 @@ class _RatingsPageState extends State<RatingsPage> {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        //Icon(Icons.thumb_up, color: Colors.green, size: 20),
                         GestureDetector(
                           onTap: () {
                             handleLike(rating['id']); // Increment upCount
                           },
-                          child: Icon(Icons.thumb_up, color: Colors.green, size: 20),
+                          child: Icon(Icons.keyboard_arrow_up, color: Colors.green, size: 20),
                         ),
                         const SizedBox(width: 4),
                         Text('${rating['upCount'] ?? 0}'), // Display upCount
                         const SizedBox(width: 8),
-                        //Icon(Icons.thumb_down, color: Colors.red, size: 20),
                         GestureDetector(
                           onTap: () {
                             handleDislike(rating['id']); // Increment downCount
                           },
-                          child: Icon(Icons.thumb_down, color: Colors.red, size: 20),
+                          child: Icon(Icons.keyboard_arrow_down, color: Colors.red, size: 20),
                         ),
                         const SizedBox(width: 4),
                         Text('${rating['downCount'] ?? 0}'), // Display downCount

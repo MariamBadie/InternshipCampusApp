@@ -1,5 +1,5 @@
 import 'User.dart';
-import 'post.dart';
+import '../backend/Model/Post.dart';
 class Community{
   String name;
   String pictureUrl;
@@ -13,6 +13,6 @@ class Community{
     required this.members,
     required this.posts,
     required this.memberCounter,
-    required this.goal
+    required this.goal, required String id, required DateTime createdAt
     });
 }

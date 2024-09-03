@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For Clipboard
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart'; // For sharing
-import '../models/post.dart';
+import '../backend/Model/Post.dart';
 import '../widgets/comment_card.dart';
 
 class PostDetailsPage extends StatelessWidget {
@@ -49,10 +49,9 @@ class PostDetailsPage extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  _buildReactionButton(context, 'like', Icons.thumb_up),
-                  _buildReactionButton(context, 'dislike', Icons.thumb_down),
-                  _buildReactionButton(context, 'love', Icons.favorite),
-                  _buildReactionButton(context, 'haha', Icons.emoji_emotions),
+                  _buildReactionButton(context, 'Up Vote', Icons.keyboard_arrow_up),
+                  _buildReactionButton(context, 'Down Vote', Icons.keyboard_arrow_down),
+                  
                 ],
               ),
             ),
@@ -135,12 +134,23 @@ class PostDetailsPage extends StatelessWidget {
     // You might want to add additional logic here, e.g., updating the server
   }
 
-  Widget _buildReactionButton(
-      BuildContext context, String type, IconData icon) {
-    return TextButton.icon(
-      onPressed: () => onReact(post.id, type),
-      icon: Icon(icon),
-      label: Text(post.reactions[type].toString()),
-    );
+  Widget _buildReactionButton(BuildContext context, String type, IconData icon) {
+  int reactionCount;
+  
+  // Determine whether we are dealing with upvotes or downvotes
+  if (type == 'upvote') {
+    reactionCount = post.upvotes;
+  } else if (type == 'downvote') {
+    reactionCount = post.downvotes;
+  } else {
+    reactionCount = 0; // Fallback in case an invalid type is passed
   }
+
+  return TextButton.icon(
+    onPressed: () => onReact(post.id, type),
+    icon: Icon(icon),
+    label: Text(reactionCount.toString()),
+  );
+}
+
 }

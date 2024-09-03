@@ -12,7 +12,6 @@ import 'package:campus_app/screens/activities_page.dart';
 import 'package:campus_app/screens/profile_page.dart';
 import 'package:campus_app/screens/edit_profile_page.dart';
 import 'package:device_preview/device_preview.dart';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'dart:io' show Platform; // Import for Platform
 import 'package:flutter_dotenv/flutter_dotenv.dart';

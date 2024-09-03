@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:campus_app/backend/Controller/lostAndFoundController.dart';
+import 'package:campus_app/backend/Controller/postController.dart';
 import 'package:campus_app/backend/Model/LostAndFound.dart';
+import 'package:campus_app/backend/Model/Post.dart';
 import 'package:campus_app/screens/favorites_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -22,6 +24,7 @@ class AddPostPage extends StatefulWidget {
 
 class _AddPostPageState extends State<AddPostPage> {
   final TextEditingController _textController = TextEditingController();
+  final PostController _postController = PostController();
   Uint8List? _image;
   bool _isAnonymous = false;
   final ImagePicker _picker = ImagePicker();
@@ -105,10 +108,31 @@ class _AddPostPageState extends State<AddPostPage> {
       // print('Image path: ${_image?.path}');
       print('Lost or Found: ${_lostOrFound}');
       print('Category: ${_category}');
-      String imageUrl =
-          await uploadImageToStorage("lostAndFoundImage", _image as Uint8List);
+
+          if (widget.postType == "Confession") {
+            Post post = Post(
+                     id: _postController.testUserId,
+                    username: 'Anas Tamer', // Replace with actual username
+                    type: widget.postType,
+                    content: postContent,
+                    profilePictureUrl: _isAnonymous 
+                        ? 'assets/images/anas.jpg' 
+                        : 'assets/images/current_user.jpg',
+                    isAnonymous: _isAnonymous,
+                    timestamp: DateTime.now(),
+                    upvotes: 2,
+                    downvotes: 0,
+                    isConfession:true,
+                    privacy: 'Public', // Set privacy based on your requirement
+                  );
+                  _postController.addPost(post);
+                  print("gugugu");
+          }
+
 
       if (widget.postType == "Lost & Found") {
+      String imageUrl =
+          await uploadImageToStorage("lostAndFoundImage", _image as Uint8List);
         LostAndFound post = LostAndFound(
             authorID: _userID,
             isFound: false,
@@ -118,6 +142,7 @@ class _AddPostPageState extends State<AddPostPage> {
             comments: [],
             imageUrl: imageUrl,
             lostOrFound: _lostOrFound!);
+            
 
         await saveLostAndFoundPost(post);
         // Navigator.pop(context);

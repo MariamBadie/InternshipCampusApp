@@ -1,16 +1,15 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
-
 import 'package:campus_app/backend/Controller/highlightsController.dart';
 import 'package:campus_app/backend/Controller/lostAndFoundController.dart';
 import 'package:campus_app/backend/Model/Highlights.dart';
+import 'package:campus_app/backend/Model/Post.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'friends_list_page.dart';
-import '../models/post.dart';
 import 'post_details_page.dart';
 import './points_guide.dart';
 
@@ -29,32 +28,37 @@ class _ProfilePageState extends State<ProfilePage> {
   final int karma = 350;
 
   List<Post> userPosts = [
-    Post(
-      id: '1',
-      username: 'Anas Tamer',
-      type: 'Text',
-      content: 'Had a great day exploring Flutter!',
-      reactions: {'like': 10, 'love': 5, 'haha': 2},
-      comments: [],
-      isAnonymous: false,
-      timestamp: DateTime.now().subtract(const Duration(hours: 2)),
-      profilePictureUrl: 'assets/images/anas.jpg',
-      privacy: 'Public',
-    ),
-    Post(
-      id: '2',
-      username: 'Anas Tamer',
-      type: 'Image',
-      content: 'Check out this cool picture I took!',
-      reactions: {'like': 15, 'love': 8, 'haha': 1},
-      comments: [],
-      isAnonymous: false,
-      timestamp: DateTime.now().subtract(const Duration(days: 1)),
-      profilePictureUrl: 'assets/images/anas.jpg',
-      privacy: 'Friends',
-    ),
-    // Add more posts here...
-  ];
+  Post(
+    id: '1', 
+    username: 'Anas Tamer',
+    type: 'Text',
+    content: 'Had a great day exploring Flutter!',
+    upvotes: 10,  // Replace the old reactions map with upvotes
+    downvotes: 2, // Assume some downvotes for demonstration
+    comments: [],
+    isAnonymous: false,
+    isConfession: false, // Specify if it's a confession or not
+    timestamp: DateTime.now().subtract(const Duration(hours: 2)),
+    profilePictureUrl: 'assets/images/anas.jpg',
+    
+  ),
+  Post(
+    id: '2',
+    username: 'Anas Tamer',
+    type: 'Image',
+    content: 'Check out this cool picture I took!',
+    upvotes: 7,  // Replace the old reactions map with upvotes
+    downvotes: 1, // Assume some downvotes for demonstration
+    comments: [],
+    isAnonymous: false,
+    isConfession: false, // Specify if it's a confession or not
+    timestamp: DateTime.now().subtract(const Duration(days: 1)),
+    profilePictureUrl: 'assets/images/anas.jpg',
+
+  ),
+  // Add more posts here...
+];
+
 
   List<Highlights> userHighlights = [];
 
@@ -357,7 +361,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   onPressed: () {
                     setState(() {
                       post.content = textController.text;
-                      post.privacy = selectedPrivacy;
                     });
                     Navigator.of(context).pop();
                   },

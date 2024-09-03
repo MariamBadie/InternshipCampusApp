@@ -92,7 +92,7 @@ Future<void> addPostToHighlights(String highlightsId, Post post) async {
         .collection('highlights')
         .doc(highlightsId)
         .update({
-          'posts': highlights.posts!.map((p) => p.toMap()).toList(),
+          'posts': highlights.posts!.map((p) => p.toFirestore()).toList(),
         });
   } else {
     throw Exception("Highlights with id $highlightsId not found");
@@ -122,7 +122,7 @@ Future<void> removePostFromHighlightsById(String highlightsId, Post post) async 
           .collection('highlights')
           .doc(highlightsId)
           .update({
-            'posts': highlights.posts!.map((p) => p.toMap()).toList(),
+            'posts': highlights.posts!.map((p) => p.toFirestore()).toList(),
           });
     }
   } else {

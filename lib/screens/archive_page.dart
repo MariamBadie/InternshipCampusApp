@@ -12,6 +12,7 @@ class ArchivePage extends StatefulWidget {
 class _ArchivePageState extends State<ArchivePage> {
   String type = 'All Types';
   String userID = 'upeubEqcmzSU9aThExaO'; // Initialize the common userID
+  final PostController _postController=PostController();
 
   List<Map<String, String>> posts = [];
 
@@ -166,7 +167,7 @@ class _ArchivePageState extends State<ArchivePage> {
             TextButton(
               child: const Text('DELETE'),
               onPressed: () {
-                deletePost(postID);
+                _postController.deletePost(postID);
                 Navigator.of(context).pop();
               },
             ),
@@ -217,7 +218,7 @@ class _ArchivePageState extends State<ArchivePage> {
                 onPressed: () async {
                   String updatedTitle = titleController.text;
                   String updatedContent = contentController.text;
-                  editPost(postID, updatedContent, updatedTitle);
+                  _postController.editPost(postID, updatedContent, updatedTitle);
                   Navigator.of(context).pop();
                   _fetchArchivedPosts(); // Refresh the posts after editing
                 },
