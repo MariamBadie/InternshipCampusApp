@@ -192,9 +192,11 @@ class NotesController {
           'Content:\n${note.content}\n\n'
           'Comments:\n${note.comments.map((c) => '- ${c.authorName}: ${c.text}').join('\n')}';
 
-      if (note.attachmentUrl != null) {
-        content +=
-            '\n\nAttachment: ${note.attachmentUrl} (Type: ${note.attachmentType})';
+      if (note.attachments != null && note.attachments!.isNotEmpty) {
+        content += '\n\nAttachments:\n';
+        for (var attachment in note.attachments!) {
+          content += '- ${attachment['url']} (Type: ${attachment['type']})\n';
+        }
       }
 
       await file.writeAsString(content);

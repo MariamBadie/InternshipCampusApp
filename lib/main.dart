@@ -65,10 +65,14 @@ class MyApp extends StatelessWidget {
           themeProvider.themeMode, // Use the theme mode from the provider
       home: MainScreen(),
       routes: {
-        '/search': (context) => SearchPage(),
-        '/notifications': (context) => Activities(),
-        '/profile': (context) => ProfilePage(),
-        '/editProfile': (context) => EditProfilePage(),
+        '/search': (context) =>  SearchPage(),
+        '/notifications': (context) =>  Activities(),
+        '/profile': (context) =>  ProfilePage(),
+        '/editProfile': (context) =>const EditProfilePage(
+    currentName: 'Anas Tamer', // Replace with actual user data
+    currentBio: 'MET Major | Student at GUC', // Replace with actual user data
+    currentImageUrl: 'assets/images/anas.jpg', // Replace with actual user image URL
+  ),
         '/settings': (context) => const SettingsPage2(),
         '/lostandfoundpage': (context) => LostAndFoundPage(),
         '/reminder_page': (context) =>const  RemindersPage(),

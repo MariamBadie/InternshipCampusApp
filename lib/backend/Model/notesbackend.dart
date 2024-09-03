@@ -6,9 +6,9 @@ class Note {
   String title;
   String number;
   String content;
-  String? attachmentUrl;
-  String? attachmentType;
+
   List<Comment> comments;
+  List<Map<String, String>>? attachments;
 
   Note({
     required this.userId,
@@ -16,9 +16,8 @@ class Note {
     required this.title,
     required this.number,
     required this.content,
-    this.attachmentUrl,
-    this.attachmentType,
     this.comments = const [],
+    this.attachments,
   });
 
   factory Note.fromFirestore(DocumentSnapshot doc) {
@@ -29,10 +28,11 @@ class Note {
       title: data['title'] ?? '',
       number: data['number'] ?? '',
       content: data['content'] ?? '',
-      attachmentUrl: data['attachmentUrl'],
-      attachmentType: data['attachmentType'],
       comments: (data['comments'] as List<dynamic>? ?? [])
           .map((c) => Comment.fromMap(c))
+          .toList(),
+      attachments: (data['attachments'] as List<dynamic>? ?? [])
+          .map((a) => Map<String, String>.from(a))
           .toList(),
     );
   }
@@ -42,10 +42,9 @@ class Note {
       'title': title,
       'number': number,
       'content': content,
-      'attachmentUrl': attachmentUrl,
-      'attachmentType': attachmentType,
       'comments': comments.map((c) => c.toMap()).toList(),
       'userId': userId,
+      'attachments': attachments,
     };
   }
 }

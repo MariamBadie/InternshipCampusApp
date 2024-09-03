@@ -22,7 +22,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final String username = 'Anas Tamer';
-  final String bio = 'MET Major | Student at GUC';
+   String bio = 'MET Major | Student at GUC';
   int numberOfPosts = 4;
   final int numberOfFriends = 120;
   final int karma = 350;
