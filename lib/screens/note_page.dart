@@ -133,12 +133,7 @@ class _NotesPageState extends State<NotesPage> {
                     const SizedBox(height: 12),
                     if (note.attachments != null &&
                         note.attachments!.isNotEmpty)
-                      Column(
-                        children: note.attachments!
-                            .map((attachment) => _buildAttachmentPreview(
-                                attachment['url']!, attachment['type']!))
-                            .toList(),
-                      ),
+                      _buildAttachmentPreviews(note.attachments!),
                     const SizedBox(height: 12),
                     _buildTitleAndNumber(note),
                     const SizedBox(height: 8),
@@ -151,6 +146,251 @@ class _NotesPageState extends State<NotesPage> {
               if (_expandedComments[note.id]! && note.comments.isNotEmpty)
                 _buildCommentsDropdown(note),
             ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildAttachmentPreviews(List<Map<String, String>> attachments) {
+    List<Widget> previewWidgets = [];
+    List<Widget> imageWidgets = [];
+    int imageCount = 0;
+    int totalImages =
+        attachments.where((a) => a['type']!.toLowerCase() == 'image').length;
+
+    for (var attachment in attachments) {
+      if (attachment['type']!.toLowerCase() == 'image') {
+        if (imageCount < 3) {
+          if (totalImages > 3 && imageCount == 2) {
+            // For the third image when there are more than 3
+            imageWidgets.add(
+              Expanded(
+                child: Stack(
+                  children: [
+                    _buildClickableImagePreview(attachment['url']!),
+                    Positioned.fill(
+                      child: _buildPlusButton(totalImages - 3, attachments),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          } else {
+            imageWidgets.add(
+              Expanded(
+                child: _buildClickableImagePreview(attachment['url']!),
+              ),
+            );
+          }
+          imageCount++;
+        }
+        if (imageCount == 3) {
+          break;
+        }
+      } else {
+        if (imageWidgets.isNotEmpty) {
+          if (imageWidgets.length == 3) {
+            previewWidgets
+                .add(Row(children: [imageWidgets[0], imageWidgets[1]]));
+            previewWidgets.add(SizedBox(height: 8)); // Add some spacing
+            previewWidgets.add(Row(children: [imageWidgets[2]]));
+          } else {
+            previewWidgets.add(Row(children: imageWidgets));
+          }
+          imageWidgets = [];
+        }
+        previewWidgets.add(
+          _buildAttachmentPreview(attachment['url']!, attachment['type']!),
+        );
+      }
+    }
+
+    if (imageWidgets.isNotEmpty) {
+      if (imageWidgets.length == 3) {
+        previewWidgets.add(Row(children: [imageWidgets[0], imageWidgets[1]]));
+        previewWidgets.add(SizedBox(height: 8)); // Add some spacing
+        previewWidgets.add(Row(children: [imageWidgets[2]]));
+      } else {
+        previewWidgets.add(Row(children: imageWidgets));
+      }
+    }
+
+    return Column(
+      children: previewWidgets,
+    );
+  }
+
+  Widget _buildClickableImagePreview(String path) {
+    return GestureDetector(
+      onTap: () => _showFullSizeImage(context, path),
+      child: Container(
+        margin: const EdgeInsets.all(4),
+        height: 150,
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: path.startsWith('http://') || path.startsWith('https://')
+              ? Image.network(
+                  path,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) =>
+                      Icon(Icons.error),
+                )
+              : Image.file(
+                  File(path),
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) =>
+                      Icon(Icons.error),
+                ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImagePreview(String path) {
+    return Container(
+      margin: const EdgeInsets.all(4),
+      height: 150,
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: path.startsWith('http://') || path.startsWith('https://')
+            ? Image.network(
+                path,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Icon(Icons.error),
+              )
+            : Image.file(
+                File(path),
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Icon(Icons.error),
+              ),
+      ),
+    );
+  }
+
+  Widget _buildPlusButton(
+      int remainingCount, List<Map<String, String>> attachments) {
+    return GestureDetector(
+      onTap: () => _showAllPhotos(attachments),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.6),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Center(
+          child: Text(
+            '+$remainingCount',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showAllPhotos(List<Map<String, String>> attachments) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Container(
+            width: double.maxFinite,
+            child: GridView.builder(
+              padding: EdgeInsets.all(8),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
+              ),
+              itemCount: attachments
+                  .where((a) => a['type']!.toLowerCase() == 'image')
+                  .length,
+              itemBuilder: (context, index) {
+                var imageAttachments = attachments
+                    .where((a) => a['type']!.toLowerCase() == 'image')
+                    .toList();
+                return GestureDetector(
+                  onTap: () => _showFullSizeImage(
+                      context, imageAttachments[index]['url']!),
+                  child: _buildImagePreview(imageAttachments[index]['url']!),
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showFullSizeImage(BuildContext context, String imageUrl) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          insetPadding: EdgeInsets.all(16),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return Container(
+                constraints: BoxConstraints(
+                  maxWidth: constraints.maxWidth,
+                  maxHeight: constraints.maxHeight,
+                ),
+                child: FittedBox(
+                  fit: BoxFit.contain,
+                  child: Stack(
+                    children: [
+                      InteractiveViewer(
+                        panEnabled: true,
+                        boundaryMargin: EdgeInsets.all(20),
+                        minScale: 0.5,
+                        maxScale: 4,
+                        child: Image.network(
+                          imageUrl,
+                          loadingBuilder: (BuildContext context, Widget child,
+                              ImageChunkEvent? loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return SizedBox(
+                              width: 300, // Placeholder width
+                              height: 300, // Placeholder height
+                              child: Center(
+                                child: CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          loadingProgress.expectedTotalBytes!
+                                      : null,
+                                ),
+                              ),
+                            );
+                          },
+                          errorBuilder: (context, error, stackTrace) =>
+                              Icon(Icons.error, size: 50),
+                        ),
+                      ),
+                      Positioned(
+                        top: 10,
+                        right: 10,
+                        child: IconButton(
+                          icon: Icon(Icons.close, color: Colors.white),
+                          onPressed: () => Navigator.of(context).pop(),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
           ),
         );
       },
@@ -192,7 +432,7 @@ class _NotesPageState extends State<NotesPage> {
             Icon(Icons.person, size: 16, color: primaryColor),
             const SizedBox(width: 4),
             Text(
-              'Posted by: ${note.userId}',
+              ' ${note.userId}',
               style: TextStyle(
                 color: primaryColor,
                 fontWeight: FontWeight.bold,
@@ -706,22 +946,6 @@ class _NotesPageState extends State<NotesPage> {
               ),
       ),
     );
-  }
-
-  Widget _buildImagePreview(String path) {
-    if (path.startsWith('http://') || path.startsWith('https://')) {
-      return Image.network(
-        path,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) => Icon(Icons.error),
-      );
-    } else {
-      return Image.file(
-        File(path),
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) => Icon(Icons.error),
-      );
-    }
   }
 
   IconData _getFileIcon(String url) {
