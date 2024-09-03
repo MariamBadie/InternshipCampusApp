@@ -131,10 +131,14 @@ class _NotesPageState extends State<NotesPage> {
                   children: [
                     _buildNoteHeader(note),
                     const SizedBox(height: 12),
-                    if (note.attachmentUrl != null &&
-                        note.attachmentUrl!.isNotEmpty)
-                      _buildAttachmentPreview(
-                          note.attachmentUrl!, note.attachmentType ?? 'file'),
+                    if (note.attachments != null &&
+                        note.attachments!.isNotEmpty)
+                      Column(
+                        children: note.attachments!
+                            .map((attachment) => _buildAttachmentPreview(
+                                attachment['url']!, attachment['type']!))
+                            .toList(),
+                      ),
                     const SizedBox(height: 12),
                     _buildTitleAndNumber(note),
                     const SizedBox(height: 8),
@@ -387,8 +391,7 @@ class _NotesPageState extends State<NotesPage> {
     final titleController = TextEditingController();
     final numberController = TextEditingController();
     final contentController = TextEditingController();
-    String? attachmentPath;
-    String? attachmentType;
+    List<Map<String, String>> attachments = [];
 
     showDialog(
       context: context,
@@ -417,22 +420,15 @@ class _NotesPageState extends State<NotesPage> {
                 const SizedBox(height: 16),
                 ElevatedButton.icon(
                   icon: const Icon(Icons.attach_file),
-                  label: Text(
-                    attachmentPath != null
-                        ? 'Attachment Added'
-                        : 'Add Attachment',
-                  ),
-                  onPressed: () => _showAttachmentSourceDialog(
-                    (path, type) {
-                      setState(() {
-                        attachmentPath = path;
-                        attachmentType = type;
-                      });
-                    },
-                  ),
+                  label: const Text('Add Attachment'),
+                  onPressed: () => _showAttachmentSourceDialog((path, type) {
+                    setState(() {
+                      attachments.add({'path': path, 'type': type});
+                    });
+                  }),
                 ),
-                if (attachmentPath != null)
-                  _buildAttachmentPreview(attachmentPath!, attachmentType!),
+                ...attachments.map((attachment) => _buildAttachmentPreview(
+                    attachment['path']!, attachment['type']!)),
               ],
             ),
           ),
@@ -449,8 +445,7 @@ class _NotesPageState extends State<NotesPage> {
                   titleController.text,
                   numberController.text,
                   contentController.text,
-                  attachmentPath,
-                  attachmentType,
+                  attachments,
                 );
               },
             ),
@@ -506,13 +501,11 @@ class _NotesPageState extends State<NotesPage> {
             onPressed: () async {
               await _notesController.updateNote(Note(
                 id: note.id,
-                userId: note.userId, // Add this line
+                userId: note.userId,
                 title: titleController.text,
                 number: numberController.text,
                 content: contentController.text,
-                attachmentUrl: note.attachmentUrl,
-                attachmentType: note
-                    .attachmentType, // Add this line if it exists in your Note class
+                attachments: note.attachments,
                 comments: note.comments,
               ));
               Navigator.of(context).pop();
@@ -592,7 +585,7 @@ class _NotesPageState extends State<NotesPage> {
   }
 
   void _addNote(String title, String number, String content,
-      String? attachmentPath, String? attachmentType) async {
+      List<Map<String, String>> attachments) async {
     try {
       Note newNote = Note(
         userId: _notesController.testUserId,
@@ -600,17 +593,25 @@ class _NotesPageState extends State<NotesPage> {
         number: number,
         content: content,
       );
-      if (attachmentPath != null && attachmentType != null) {
-        final attachment = await _notesController.uploadAttachment(
-          attachmentPath,
-          attachmentType,
-        );
-        if (attachment['error'] != null) {
-          throw Exception(attachment['error']);
+
+      if (attachments.isNotEmpty) {
+        List<Map<String, String>> uploadedAttachments = [];
+        for (var attachment in attachments) {
+          final uploadedAttachment = await _notesController.uploadAttachment(
+            attachment['path']!,
+            attachment['type']!,
+          );
+          if (uploadedAttachment['error'] != null) {
+            throw Exception(uploadedAttachment['error']);
+          }
+          uploadedAttachments.add({
+            'url': uploadedAttachment['url']!,
+            'type': uploadedAttachment['type']!,
+          });
         }
-        newNote.attachmentUrl = attachment['url'];
-        newNote.attachmentType = attachment['type'];
+        newNote.attachments = uploadedAttachments;
       }
+
       await _notesController.addNote(newNote);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Note added successfully')),
@@ -651,17 +652,19 @@ class _NotesPageState extends State<NotesPage> {
   }
 
   void _downloadNote(Note note) async {
-    if (note.attachmentUrl != null) {
-      File? file = await _notesController.downloadAttachment(
-          note.attachmentUrl!, note.attachmentType ?? 'file');
-      if (file != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Attachment downloaded: ${file.path}')),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to download attachment')),
-        );
+    if (note.attachments != null && note.attachments!.isNotEmpty) {
+      for (var attachment in note.attachments!) {
+        File? file = await _notesController.downloadAttachment(
+            attachment['url']!, attachment['type']!);
+        if (file != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Attachment downloaded: ${file.path}')),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to download attachment')),
+          );
+        }
       }
     } else {
       String result = await _notesController.downloadNoteContent(note);
