@@ -43,10 +43,10 @@ class _NotesPageState extends State<NotesPage> {
 
   AppBar _buildAppBar() {
     return AppBar(
-      title: Text('Notes', style: TextStyle(color: secondaryColor)),
+      title: const Text('Notes', style: TextStyle(color: secondaryColor)),
       backgroundColor: primaryColor,
       elevation: 0,
-      iconTheme: IconThemeData(color: secondaryColor),
+      iconTheme: const IconThemeData(color: secondaryColor),
     );
   }
 
@@ -131,10 +131,14 @@ class _NotesPageState extends State<NotesPage> {
                   children: [
                     _buildNoteHeader(note),
                     const SizedBox(height: 12),
-                    if (note.attachmentUrl != null &&
-                        note.attachmentUrl!.isNotEmpty)
-                      _buildAttachmentPreview(
-                          note.attachmentUrl!, note.attachmentType ?? 'file'),
+                    if (note.attachments != null &&
+                        note.attachments!.isNotEmpty)
+                      Column(
+                        children: note.attachments!
+                            .map((attachment) => _buildAttachmentPreview(
+                                attachment['url']!, attachment['type']!))
+                            .toList(),
+                      ),
                     const SizedBox(height: 12),
                     _buildTitleAndNumber(note),
                     const SizedBox(height: 8),
@@ -223,13 +227,16 @@ class _NotesPageState extends State<NotesPage> {
                 child: Text('Edit'),
               ),
               const PopupMenuItem<String>(
-                value: 'delete',
-                child: Text('Delete'),
+                value: 'report',
+                child: Text('Report'),
               ),
             ],
             const PopupMenuItem<String>(
-              value: 'report',
-              child: Text('Report'),
+              value: 'delete',
+              child: Text(
+                'Delete',
+                style: TextStyle(color: Colors.red),
+              ),
             ),
           ],
         ),
@@ -242,17 +249,17 @@ class _NotesPageState extends State<NotesPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Report Note'),
-          content: Text('Are you sure you want to report this note?'),
+          title: const Text('Report Note'),
+          content: const Text('Are you sure you want to report this note?'),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Report'),
+              child: const Text('Report'),
               onPressed: () {
                 // TODO: Implement the report functionality
                 _reportNote(note);
@@ -268,7 +275,7 @@ class _NotesPageState extends State<NotesPage> {
   Widget _buildNoteContent(Note note) {
     return Text(
       note.content,
-      style: TextStyle(color: textColor, fontSize: 16),
+      style: const TextStyle(color: textColor, fontSize: 16),
       maxLines: 3,
       overflow: TextOverflow.ellipsis,
     );
@@ -323,7 +330,7 @@ class _NotesPageState extends State<NotesPage> {
   Widget _buildCommentsDropdown(Note note) {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(12),
@@ -343,7 +350,7 @@ class _NotesPageState extends State<NotesPage> {
                         children: [
                           Text(
                             comment.authorName,
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: accentColor,
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
@@ -358,10 +365,10 @@ class _NotesPageState extends State<NotesPage> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(
                         comment.text,
-                        style: TextStyle(color: textColor),
+                        style: const TextStyle(color: textColor),
                       ),
                     ],
                   ),
@@ -375,7 +382,7 @@ class _NotesPageState extends State<NotesPage> {
     return FloatingActionButton(
       backgroundColor: accentColor,
       onPressed: _showAddNoteDialog,
-      child: Icon(Icons.add, color: secondaryColor),
+      child: const Icon(Icons.add, color: secondaryColor),
     );
   }
 
@@ -384,8 +391,7 @@ class _NotesPageState extends State<NotesPage> {
     final titleController = TextEditingController();
     final numberController = TextEditingController();
     final contentController = TextEditingController();
-    String? attachmentPath;
-    String? attachmentType;
+    List<Map<String, String>> attachments = [];
 
     showDialog(
       context: context,
@@ -414,22 +420,15 @@ class _NotesPageState extends State<NotesPage> {
                 const SizedBox(height: 16),
                 ElevatedButton.icon(
                   icon: const Icon(Icons.attach_file),
-                  label: Text(
-                    attachmentPath != null
-                        ? 'Attachment Added'
-                        : 'Add Attachment',
-                  ),
-                  onPressed: () => _showAttachmentSourceDialog(
-                    (path, type) {
-                      setState(() {
-                        attachmentPath = path;
-                        attachmentType = type;
-                      });
-                    },
-                  ),
+                  label: const Text('Add Attachment'),
+                  onPressed: () => _showAttachmentSourceDialog((path, type) {
+                    setState(() {
+                      attachments.add({'path': path, 'type': type});
+                    });
+                  }),
                 ),
-                if (attachmentPath != null)
-                  _buildAttachmentPreview(attachmentPath!, attachmentType!),
+                ...attachments.map((attachment) => _buildAttachmentPreview(
+                    attachment['path']!, attachment['type']!)),
               ],
             ),
           ),
@@ -446,8 +445,7 @@ class _NotesPageState extends State<NotesPage> {
                   titleController.text,
                   numberController.text,
                   contentController.text,
-                  attachmentPath,
-                  attachmentType,
+                  attachments,
                 );
               },
             ),
@@ -460,7 +458,7 @@ class _NotesPageState extends State<NotesPage> {
   void _showEditNoteDialog(Note note) {
     if (!_notesController.canEditNote(note)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
             content: Text('You do not have permission to edit this note.')),
       );
       return;
@@ -503,13 +501,11 @@ class _NotesPageState extends State<NotesPage> {
             onPressed: () async {
               await _notesController.updateNote(Note(
                 id: note.id,
-                userId: note.userId, // Add this line
+                userId: note.userId,
                 title: titleController.text,
                 number: numberController.text,
                 content: contentController.text,
-                attachmentUrl: note.attachmentUrl,
-                attachmentType: note
-                    .attachmentType, // Add this line if it exists in your Note class
+                attachments: note.attachments,
                 comments: note.comments,
               ));
               Navigator.of(context).pop();
@@ -589,7 +585,7 @@ class _NotesPageState extends State<NotesPage> {
   }
 
   void _addNote(String title, String number, String content,
-      String? attachmentPath, String? attachmentType) async {
+      List<Map<String, String>> attachments) async {
     try {
       Note newNote = Note(
         userId: _notesController.testUserId,
@@ -597,17 +593,25 @@ class _NotesPageState extends State<NotesPage> {
         number: number,
         content: content,
       );
-      if (attachmentPath != null && attachmentType != null) {
-        final attachment = await _notesController.uploadAttachment(
-          attachmentPath,
-          attachmentType,
-        );
-        if (attachment['error'] != null) {
-          throw Exception(attachment['error']);
+
+      if (attachments.isNotEmpty) {
+        List<Map<String, String>> uploadedAttachments = [];
+        for (var attachment in attachments) {
+          final uploadedAttachment = await _notesController.uploadAttachment(
+            attachment['path']!,
+            attachment['type']!,
+          );
+          if (uploadedAttachment['error'] != null) {
+            throw Exception(uploadedAttachment['error']);
+          }
+          uploadedAttachments.add({
+            'url': uploadedAttachment['url']!,
+            'type': uploadedAttachment['type']!,
+          });
         }
-        newNote.attachmentUrl = attachment['url'];
-        newNote.attachmentType = attachment['type'];
+        newNote.attachments = uploadedAttachments;
       }
+
       await _notesController.addNote(newNote);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Note added successfully')),
@@ -648,17 +652,19 @@ class _NotesPageState extends State<NotesPage> {
   }
 
   void _downloadNote(Note note) async {
-    if (note.attachmentUrl != null) {
-      File? file = await _notesController.downloadAttachment(
-          note.attachmentUrl!, note.attachmentType ?? 'file');
-      if (file != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Attachment downloaded: ${file.path}')),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to download attachment')),
-        );
+    if (note.attachments != null && note.attachments!.isNotEmpty) {
+      for (var attachment in note.attachments!) {
+        File? file = await _notesController.downloadAttachment(
+            attachment['url']!, attachment['type']!);
+        if (file != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Attachment downloaded: ${file.path}')),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to download attachment')),
+          );
+        }
       }
     } else {
       String result = await _notesController.downloadNoteContent(note);
