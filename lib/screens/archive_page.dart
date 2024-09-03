@@ -217,7 +217,8 @@ class _ArchivePageState extends State<ArchivePage> {
                 onPressed: () async {
                   String updatedTitle = titleController.text;
                   String updatedContent = contentController.text;
-                  editPost(postID, updatedContent, updatedTitle);
+                  String updatedPrivacy = 'Public'; // Set the privacy to public by default
+                  editPost(postID, updatedContent, updatedTitle,updatedPrivacy);
                   Navigator.of(context).pop();
                   _fetchArchivedPosts(); // Refresh the posts after editing
                 },
