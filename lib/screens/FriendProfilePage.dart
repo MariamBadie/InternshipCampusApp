@@ -1,9 +1,14 @@
+import 'dart:io';
+
 import 'package:campus_app/backend/Controller/highlightsController.dart';
+import 'package:campus_app/screens/highlights_popups.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:campus_app/backend/Model/Highlights.dart';
-import 'package:campus_app/backend/Model/Post.dart'; // Make sure this import path is correct
+import 'package:campus_app/backend/Model/Post.dart';
+import 'package:image_picker/image_picker.dart'; // Make sure this import path is correct
 
 class FriendProfilePage extends StatefulWidget {
   final String name;
@@ -35,9 +40,9 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
     super.initState();
     _fetchUserHighlights();
   }
+      String userID = 'upeubEqcmzSU9aThExaO';
 
   Future<void> _fetchUserHighlights() async {
-      String userID = 'upeubEqcmzSU9aThExaO';
     // Replace `userID` with the actual user ID you want to fetch highlights for
     final highlights = await getHighlights(userID);
     setState(() {
@@ -104,8 +109,16 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
               _buildSendMessageButton(context),
               Row(
                 children: [
+                  IconButton.outlined(
+                    onPressed: () => _createHighlights(context),
+                    icon: Icon(Icons.add,
+                        size: 50), // Adjust the size of the icon here
+                    iconSize: 50, // Adjust the size of the IconButton here
+                  ),
+                  const SizedBox(width: 16),
                   Expanded(
                     child: _buildHighlightsRow(),
+
                   ),
                 ],
               ),
@@ -312,16 +325,128 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
       ],
     );
   }
+  void _createHighlights(BuildContext context) async {
+    // Use a TextEditingController to capture user input for the highlight name
+    TextEditingController highlightNameController = TextEditingController();
+    final ImagePicker picker = ImagePicker();
 
-  Widget _buildHighlightsRow() {
-    return SizedBox(
-      height: 81, // Adjust the height to fit your needs
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: userHighlights.length,
-        itemBuilder: (context, index) {
-          final highlight = userHighlights[index];
-          return Padding(
+    // Pick an image using ImagePicker (accepting all image formats)
+    final XFile? pickedImage =
+        await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedImage == null) {
+      // Handle the case where no image is selected
+      return;
+    }
+
+    File file = File(pickedImage.path);
+
+    // Show the dialog to create a highlight
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Title of the Highlights'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircleAvatar(
+                radius: 50,
+                backgroundImage: FileImage(
+                  File(pickedImage
+                      .path), // Use FileImage to show the picked image
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text('How do you want to name this new Highlight?'),
+              const SizedBox(height: 14),
+              TextField(
+                controller: highlightNameController,
+                decoration: const InputDecoration(
+                  labelText: 'Enter highlight name',
+                ),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            Center(
+              child: TextButton(
+                child: const Text('Create'),
+                onPressed: () async {
+                  String highlightName = highlightNameController.text;
+
+                  if (highlightName.isNotEmpty) {
+                    // Create a reference to the Firebase Storage with the highlight name and userID
+                    FirebaseStorage storage = FirebaseStorage.instance;
+                    Reference storageRef = storage
+                        .ref()
+                        .child('highlights/${highlightName}_${userID}.jpg');
+
+                    String downloadUrl;
+
+                    try {
+                      // Upload the file to Firebase Storage
+                      UploadTask uploadTask = storageRef.putFile(file);
+                      TaskSnapshot snapshot = await uploadTask;
+
+                      // Get the download URL
+                      downloadUrl = await snapshot.ref.getDownloadURL();
+                    } catch (e) {
+                      // Show an error message and exit if upload fails
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Failed to upload image: $e')),
+                      );
+                      return;
+                    }
+
+                    // Create a Highlights object and call createHighlights function
+                    Highlights highlights = Highlights(
+                      imageUrl: downloadUrl,
+                      highlightsname: highlightName,
+                      userID: userID,
+                    );
+                    await createHighlights(
+                        highlights); // Ensure createHighlights is async
+                    Navigator.of(context)
+                        .pop(); // Close the dialog after creation
+                  } else {
+                    // Handle error (e.g., show a message to fill in the highlight name)
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Please enter a highlight name.'),
+                      ),
+                    );
+                  }
+                },
+              ),
+            )
+          ],
+        );
+      },
+    );
+  }
+
+Widget _buildHighlightsRow() {
+  return SizedBox(
+    height: 81, // Adjust the height to fit your needs
+    child: ListView.builder(
+      scrollDirection: Axis.horizontal,
+      itemCount: userHighlights.length,
+      itemBuilder: (context, index) {
+        final highlight = userHighlights[index];
+        return GestureDetector(
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return HighlightspopupsDialog(
+                  highlightID: highlight.id as String, 
+                  friendsOrProfile:'friends' // Pass the highlight ID here
+                );
+              },
+            );
+          },
+          child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Column(
               children: [
@@ -329,7 +454,8 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
                   radius: 30,
                   backgroundImage: highlight.imageUrl != null
                       ? NetworkImage(highlight.imageUrl!)
-                      : const AssetImage('assets/images/default_highlight.jpg') as ImageProvider,
+                      : const AssetImage('assets/images/default_highlight.jpg')
+                          as ImageProvider,
                 ),
                 const SizedBox(height: 3),
                 Text(
@@ -338,9 +464,10 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
                 ),
               ],
             ),
-          );
-        },
-      ),
-    );
-  }
+          ),
+        );
+      },
+    ),
+  );
+}
 }

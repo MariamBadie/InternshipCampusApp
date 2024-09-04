@@ -1,6 +1,7 @@
 import 'package:campus_app/backend/Controller/userController.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:campus_app/screens/feedback_screen.dart';
 import 'package:campus_app/screens/about_us_page.dart';
@@ -192,7 +193,7 @@ class _SettingsPage2State extends State<SettingsPage2> {
                     onTap: () =>{ _logOut(context)},
                   ),
                   TextButton.icon(
-                    onPressed: () => _deleteDialog(context),
+                    onPressed: () => _deleteDialog,
                     icon: const Icon(Icons.delete, color: Colors.red),
                     label: const Text(
                       'DELETE ACCOUNT',

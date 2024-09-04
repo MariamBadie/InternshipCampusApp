@@ -392,3 +392,43 @@ Future<List<List<dynamic>>> getUserKarmas() async {
   print(usersList);
   return usersList;
 }
+
+Future<List<String>> findUsersList(String userName) async {
+  await firebaseService.initialize();
+  
+  // Query Firestore to find users where the name starts with the search query
+  var querySnapshot = await firebaseService.firestore
+      .collection('User')
+      .where('name', isGreaterThanOrEqualTo: userName)
+      .where('name', isLessThanOrEqualTo: userName + '\uf8ff')
+      .get();
+
+  // Map the user names from the query snapshot
+  List<String> usersList = querySnapshot.docs
+      .map((doc) => doc['name'] as String) // Get the 'name' field from each document
+      .toList();
+
+  return usersList;
+}
+
+Future<List<String>> findPostsWithMention(String userName) async {
+  await firebaseService.initialize();
+
+  // Fetch all posts from the 'Posts' collection
+  var querySnapshot = await firebaseService.firestore
+      .collection('Posts')
+      .get();
+
+  // Extract post IDs where the content contains '@username'
+  List<String> postsList = querySnapshot.docs
+      .where((doc) => doc['content'].toString().contains('@$userName')) // Ensure the content contains the mention
+      .map((doc) => doc.id) // Return only the document ID (post ID)
+      .toList();
+
+  print("postsList: $postsList");
+  return postsList;
+}
+
+
+
+

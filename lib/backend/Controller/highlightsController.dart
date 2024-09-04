@@ -1,4 +1,3 @@
-
 import 'package:campus_app/backend/Model/Highlights.dart';
 import 'package:campus_app/backend/Model/Post.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -58,19 +57,21 @@ Future<List<Highlights>> getHighlights(String userId) async {
 
   // Map the Firestore documents to a list of Highlights objects
   List<Highlights> highlightsList = querySnapshot.docs.map((doc) {
-    return Highlights.fromMap(doc.data());
+    var highlight = Highlights.fromMap(doc.data());
+    highlight.id = doc.id; // Add the document ID to the highlight object
+    return highlight;
   }).toList();
   
-  // Print each highlight
+  // Print each highlight with its ID and all data
   for (var highlight in highlightsList) {
-    print(highlight); // This will use the overridden toString method
+    print('Highlight ID: ${highlight.id}');
+    print('Data: ${highlight.toString()}'); // Ensure toString() includes all relevant fields
   }
   
   return highlightsList;
 }
 
-
-Future<void> addPostToHighlights(String highlightsId, Post post) async {
+Future<void> addPostToHighlights(String highlightsId, String postPath) async {
   // Fetch the Highlights from Firestore using the highlightsId
   DocumentSnapshot<Map<String, dynamic>> docSnapshot = await FirebaseFirestore.instance
       .collection('highlights')
@@ -81,26 +82,25 @@ Future<void> addPostToHighlights(String highlightsId, Post post) async {
     // Convert the Firestore document to a Highlights object
     Highlights highlights = Highlights.fromMap(docSnapshot.data()!);
 
-    // Add the post to the highlights' post list
-    if (highlights.posts == null) {
-      highlights.posts = [];
-    }
-    highlights.posts!.add(post);
+    // Add the post path to the highlights' posts list
+    highlights.posts ??= [];
+    highlights.posts!.add(postPath);
 
     // Update Firestore with the modified highlights object
     await FirebaseFirestore.instance
         .collection('highlights')
         .doc(highlightsId)
         .update({
-          'posts': highlights.posts!.map((p) => p.toFirestore()).toList(),
+          'posts': highlights.posts, // Store post paths as strings
         });
   } else {
     throw Exception("Highlights with id $highlightsId not found");
   }
 }
 
-Future<void> removePostFromHighlightsById(String highlightsId, Post post) async {
+Future<void> removePostFromHighlightsById(String highlightsId, String postPath) async {
   // Fetch the Highlights from Firestore using the highlightsId
+  print('postPath:$postPath');
   DocumentSnapshot<Map<String, dynamic>> docSnapshot = await FirebaseFirestore.instance
       .collection('highlights')
       .doc(highlightsId)
@@ -110,19 +110,19 @@ Future<void> removePostFromHighlightsById(String highlightsId, Post post) async 
     // Convert the Firestore document to a Highlights object
     Highlights highlights = Highlights.fromMap(docSnapshot.data()!);
 
-    // Remove the post from the list
-    highlights.posts?.removeWhere((element) => element.id == post.id);
+    // Remove the post path from the list
+    highlights.posts?.remove(postPath);
 
-    // If there are no posts left, delete the highlights document
+    // If there are no post paths left, delete the highlights document
     if (highlights.posts == null || highlights.posts!.isEmpty) {
-      await deleteHighlights(highlightsId);
+      await FirebaseFirestore.instance.collection('highlights').doc(highlightsId).delete();
     } else {
       // Otherwise, update Firestore with the modified posts list
       await FirebaseFirestore.instance
           .collection('highlights')
           .doc(highlightsId)
           .update({
-            'posts': highlights.posts!.map((p) => p.toFirestore()).toList(),
+            'posts': highlights.posts, // Store post paths as strings
           });
     }
   } else {
@@ -130,9 +130,52 @@ Future<void> removePostFromHighlightsById(String highlightsId, Post post) async 
   }
 }
 
-Future<void> deleteHighlights(String highlightsId) async {
-  await FirebaseFirestore.instance
-      .collection('highlights')
-      .doc(highlightsId)
-      .delete();
+Future<Post?> getPostFromPath(String postPath) async {
+  try {
+    DocumentSnapshot<Map<String, dynamic>> docSnapshot = await FirebaseFirestore.instance
+        .doc(postPath)
+        .get();
+
+    if (docSnapshot.exists) {
+      return Post.fromFirestore(docSnapshot.data()!);
+    } else {
+      throw Exception("Post at path $postPath not found");
+    }
+  } catch (e) {
+    print('Error retrieving post: $e');
+    return null;
+  }
+}
+Future<List<Map<String, dynamic>>> fetchHighlightPosts(String highlightID) async {
+  try {
+    DocumentSnapshot<Map<String, dynamic>> highlightDoc = await FirebaseFirestore.instance
+        .collection('highlights')
+        .doc(highlightID)
+        .get();
+
+    if (highlightDoc.exists) {
+      List<dynamic> postRefs = highlightDoc['posts'] ?? [];
+      List<Map<String, dynamic>> fetchedPosts = [];
+
+      for (var postRef in postRefs) {
+        DocumentReference<Map<String, dynamic>> postDocRef = FirebaseFirestore.instance.doc(postRef as String);
+        DocumentSnapshot<Map<String, dynamic>> postDoc = await postDocRef.get();
+
+        if (postDoc.exists) {
+          // Add the post ID to the data
+          Map<String, dynamic> postData = postDoc.data()!;
+          postData['id'] = postDoc.id; // Insert the post ID into the data
+          fetchedPosts.add(postData);
+        }
+      }
+
+      return fetchedPosts;
+    } else {
+      print('Highlight document with ID $highlightID does not exist.');
+      return [];
+    }
+  } catch (error) {
+    print("Error fetching highlight posts: $error");
+    return [];
+  }
 }

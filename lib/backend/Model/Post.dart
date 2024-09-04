@@ -42,24 +42,25 @@ class Post {
       'isConfession': isConfession,
     };
   }
+factory Post.fromFirestore(Map<String, dynamic> map) {
+  return Post(
+    id: map['id'] ?? '',
+    username: map['username'] ?? 'Unknown User',
+    type: map['type'] ?? '',
+    content: map['content'] ?? '',
+    profilePictureUrl: map['profilePictureUrl'] ?? '',
+    isAnonymous: map['isAnonymous'] ?? false,
+    timestamp: DateTime.parse(map['timestamp'] ?? DateTime.now().toIso8601String()),
+    upvotes: map['upvotes'] ?? 0,
+    downvotes: map['downvotes'] ?? 0,
+    comments: (map['comments'] as List<dynamic>?)
+        ?.map((item) => Comment.fromMap(item as Map<String, dynamic>))
+        .toList() ?? [],
+    isConfession: map['isConfession'] ?? false,
+    privacy: map['privacy'] ?? 'Public',
+  );
+}
 
-  factory Post.fromFirestore(Map<String, dynamic> map) {
-    return Post(
-      id: map['id'],
-      username: map['username'],
-      type: map['type'],
-      content: map['content'],
-      profilePictureUrl: map['profilePictureUrl'],
-      isAnonymous: map['isAnonymous'] ?? false,
-      timestamp: DateTime.parse(map['timestamp']),
-      upvotes: map['upvotes'] ?? 0,
-      downvotes: map['downvotes'] ?? 0,
-      comments: (map['comments'] as List)
-          .map((item) => Comment.fromMap(item))
-          .toList(),
-      isConfession: map['isConfession'] ?? false,
-    );
-  }
 }
 
 class Comment {

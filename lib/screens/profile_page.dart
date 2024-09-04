@@ -5,6 +5,7 @@ import 'package:campus_app/backend/Controller/highlightsController.dart';
 import 'package:campus_app/backend/Controller/lostAndFoundController.dart';
 import 'package:campus_app/backend/Model/Highlights.dart';
 import 'package:campus_app/backend/Model/Post.dart';
+import 'package:campus_app/screens/highlights_popups.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -110,6 +111,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   const SizedBox(width: 16),
                   Expanded(
                     child: _buildHighlightsRow(),
+
                   ),
                 ],
               ),
@@ -544,15 +546,27 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildHighlightsRow() {
-    return SizedBox(
-      height: 81, // Adjust the height to fit your needs
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: userHighlights.length,
-        itemBuilder: (context, index) {
-          final highlight = userHighlights[index];
-          return Padding(
+Widget _buildHighlightsRow() {
+  return SizedBox(
+    height: 81, // Adjust the height to fit your needs
+    child: ListView.builder(
+      scrollDirection: Axis.horizontal,
+      itemCount: userHighlights.length,
+      itemBuilder: (context, index) {
+        final highlight = userHighlights[index];
+        return GestureDetector(
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return HighlightspopupsDialog(
+                  highlightID: highlight.id as String,
+                  friendsOrProfile:'profile'
+                );
+              },
+            );
+          },
+          child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Column(
               children: [
@@ -562,7 +576,6 @@ class _ProfilePageState extends State<ProfilePage> {
                       ? NetworkImage(highlight.imageUrl!)
                       : const AssetImage('assets/images/default_highlight.jpg')
                           as ImageProvider,
-                          
                 ),
                 const SizedBox(height: 3),
                 Text(
@@ -571,13 +584,13 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ],
             ),
-          );
-        },
-      ),
-    );
-  }
+          ),
+        );
+      },
+    ),
+  );
+}
 
-// Define your Highlights class and createHighlights function according to your app's needs.
 
   void _deletePost(int index) {
     setState(() {
