@@ -546,51 +546,62 @@ class _ProfilePageState extends State<ProfilePage> {
       },
     );
   }
-
 Widget _buildHighlightsRow() {
-  var name =getUsernameByID(userID);
-  return SizedBox(
-    height: 81, // Adjust the height to fit your needs
-    child: ListView.builder(
-      scrollDirection: Axis.horizontal,
-      itemCount: userHighlights.length,
-      itemBuilder: (context, index) {
-        final highlight = userHighlights[index];
-        return GestureDetector(
-          onTap: () {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return HighlightspopupsDialog(
-                  highlightID: highlight.id as String,
-                  friendsOrProfile:'profile',
-                  username: name as String,
-                );
-              },
-            );
-          },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Column(
-              children: [
-                CircleAvatar(
-                  radius: 30,
-                  backgroundImage: highlight.imageUrl != null
-                      ? NetworkImage(highlight.imageUrl!)
-                      : const AssetImage('assets/images/default_highlight.jpg')
-                          as ImageProvider,
+  return FutureBuilder<String>(
+    future: getUsernameByID(userID),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const Center(child: CircularProgressIndicator());
+      } else if (snapshot.hasError) {
+        return Center(child: Text('Error: ${snapshot.error}'));
+      } else if (snapshot.hasData) {
+        final username = snapshot.data!;
+        return SizedBox(
+          height: 81, // Adjust the height to fit your needs
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: userHighlights.length,
+            itemBuilder: (context, index) {
+              final highlight = userHighlights[index];
+              return GestureDetector(
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return HighlightspopupsDialog(
+                        highlightID: highlight.id as String,
+                        friendsOrProfile: 'profile',
+                        username: username,
+                      );
+                    },
+                  );
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Column(
+                    children: [
+                      CircleAvatar(
+                        radius: 30,
+                        backgroundImage: highlight.imageUrl != null
+                            ? NetworkImage(highlight.imageUrl!)
+                            : const AssetImage('assets/images/default_highlight.jpg') as ImageProvider,
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        highlight.highlightsname ?? '',
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 3),
-                Text(
-                  highlight.highlightsname ?? '',
-                  style: const TextStyle(fontSize: 12),
-                ),
-              ],
-            ),
+              );
+            },
           ),
         );
-      },
-    ),
+      } else {
+        return const Center(child: Text('No highlights found'));
+      }
+    },
   );
 }
 
