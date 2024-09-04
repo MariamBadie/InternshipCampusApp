@@ -265,6 +265,20 @@ Future<List<String>> getArchivedPostData(String userID) async {
   return archivedPostData;
 }
 
+Future <String> getUsernameByID(String userID) async {
+ // Ensure Firebase is initialized
+  await firebaseService.initialize();
+
+  // Create a reference to the 'User' collection and filter the document
+  var querySnapshot = await firebaseService.firestore
+      .collection('User')
+      .doc(userID)
+      .get();
+
+String username = querySnapshot.data()?['name'] ?? '';
+print("username:$username");
+return username;
+}
 
 void removeFromArchived(String postID, String userID) async {
   // Ensure Firebase is initialized

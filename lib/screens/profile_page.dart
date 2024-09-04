@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'dart:ui';
 import 'package:campus_app/backend/Controller/highlightsController.dart';
 import 'package:campus_app/backend/Controller/lostAndFoundController.dart';
+import 'package:campus_app/backend/Controller/userController.dart';
 import 'package:campus_app/backend/Model/Highlights.dart';
 import 'package:campus_app/backend/Model/Post.dart';
 import 'package:campus_app/screens/highlights_popups.dart';
@@ -547,6 +548,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
 Widget _buildHighlightsRow() {
+  var name =getUsernameByID(userID);
   return SizedBox(
     height: 81, // Adjust the height to fit your needs
     child: ListView.builder(
@@ -561,7 +563,8 @@ Widget _buildHighlightsRow() {
               builder: (BuildContext context) {
                 return HighlightspopupsDialog(
                   highlightID: highlight.id as String,
-                  friendsOrProfile:'profile'
+                  friendsOrProfile:'profile',
+                  username: name as String,
                 );
               },
             );

@@ -10,6 +10,7 @@ import 'package:path/path.dart' as path;
 import 'package:campus_app/backend/Model/Post.dart';
 import 'package:campus_app/backend/Controller/FirebaseService.dart';
 
+
 class PostController {
   final FirebaseService _firebaseService = FirebaseService.instance;
   final ValueNotifier<List<Post>> posts = ValueNotifier<List<Post>>([]);
@@ -92,24 +93,39 @@ class PostController {
       return {'url': null, 'type': null, 'error': e.toString()};
     }
   }
-
-  Future<void> addPost(Post post) async {
-    await _firebaseService.firestore
+Future<String> addPost(Post post) async {
+  try {
+    // Add the post to Firestore and get a reference to the document
+    DocumentReference docRef = await FirebaseFirestore.instance
         .collection('Posts')
         .add(post.toFirestore());
-  }
 
-  void _loadPosts() {
-    _firebaseService.firestore
-        .collection('Posts')
-        .snapshots()
-        .listen((snapshot) {
-      final postsList =
-          snapshot.docs.map((doc) => Post.fromFirestore(doc as Map<String, dynamic>)).toList();
-      posts.value = postsList;
-      filteredPosts.value = postsList;
-    });
+    // Return the ID of the newly added post
+    return docRef.id;
+  } catch (e) {
+    print("Error adding post: $e");
+    rethrow;
   }
+}
+
+
+  Future<void> _loadPosts() async {
+  try {
+    // Fetch data from Firestore (this example assumes a collection fetch)
+    QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance.collection('posts').get();
+
+    // Convert QuerySnapshot to a list of maps
+    List<Map<String, dynamic>> posts = querySnapshot.docs.map((doc) {
+      return doc.data(); // This should return a Map<String, dynamic>
+    }).toList();
+
+    // Use the fetched posts (e.g., update state)
+
+  } catch (error) {
+    print("Error loading posts: $error");
+  }
+}
+
 
   void filterPosts(String query) {
     filteredPosts.value = posts.value
