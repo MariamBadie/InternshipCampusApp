@@ -224,3 +224,17 @@ Future<String> addPost(Post post) async {
     filteredPosts.dispose();
   }
 }
+  Future<List<Map<String, dynamic>>> fetchPostsDetails(
+      List<String> postIds) async {
+    List<Map<String, dynamic>> posts = [];
+    for (String postId in postIds) {
+      var docSnapshot = await FirebaseFirestore.instance
+          .collection('Posts')
+          .doc(postId)
+          .get();
+      if (docSnapshot.exists) {
+        posts.add(docSnapshot.data() as Map<String, dynamic>);
+      }
+    }
+    return posts;
+  }

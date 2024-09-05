@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:campus_app/backend/Controller/highlightsController.dart';
+import 'package:campus_app/backend/Controller/postController.dart';
 import 'package:campus_app/backend/Controller/userController.dart';
 import 'package:campus_app/screens/highlights_popups.dart';
+import 'package:campus_app/screens/post_details_page.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -40,9 +42,10 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
   void initState() {
     super.initState();
     _fetchUserHighlights();
+    name = getUsernameByID(userID);
   }
-      String userID = 'upeubEqcmzSU9aThExaO';
-
+      String userID = 'vY1VlLrRxAfbDDGrb9wH';
+  late Future<String> name;
   Future<void> _fetchUserHighlights() async {
     // Replace `userID` with the actual user ID you want to fetch highlights for
     final highlights = await getHighlights(userID);
@@ -50,78 +53,194 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
       userHighlights = highlights;
     });
   }
-
+  
+  List<Post> userPosts = [
+    Post(
+      id: '1',
+      username: 'Anas Tamer',
+      type: 'Text',
+      content: 'Had a great day exploring Flutter!',
+      upvotes: 10, // Replace the old reactions map with upvotes
+      downvotes: 2, // Assume some downvotes for demonstration
+      comments: [],
+      isAnonymous: false,
+      isConfession: false, // Specify if it's a confession or not
+      timestamp: DateTime.now().subtract(const Duration(hours: 2)),
+      profilePictureUrl: 'assets/images/anas.jpg',
+    ),
+    Post(
+      id: '2',
+      username: 'Anas Tamer',
+      type: 'Image',
+      content: 'Check out this cool picture I took!',
+      upvotes: 7, // Replace the old reactions map with upvotes
+      downvotes: 1, // Assume some downvotes for demonstration
+      comments: [],
+      isAnonymous: false,
+      isConfession: false, // Specify if it's a confession or not
+      timestamp: DateTime.now().subtract(const Duration(days: 1)),
+      profilePictureUrl: 'assets/images/anas.jpg',
+    ),
+    // Add more posts here...
+  ];
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.name),
-        actions: [
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert), // 3 dots icon
-            onSelected: (String result) {
-              switch (result) {
-                case 'Report User':
-                  _showReportDialog(context);
-                  break;
-                case 'Block User':
-                  _showBlockConfirmationDialog(context);
-                  break;
-                case 'Share User':
-                  Clipboard.setData(
-                      ClipboardData(text: 'https://yourapp.com/user/${widget.name}'));
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('Profile URL copied to clipboard')),
-                  );
-                  break;
-              }
-            },
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-              const PopupMenuItem<String>(
-                value: 'Report User',
-                child: Text('Report User'),
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text('Profile'),
+      actions: [
+        PopupMenuButton<String>(
+          icon: const Icon(Icons.more_vert), 
+          onSelected: (String result) {
+            switch (result) {
+              case 'Report User':
+                _showReportDialog(context);
+                break;
+              case 'Block User':
+                _showBlockConfirmationDialog(context);
+                break;
+              case 'Share User':
+                Clipboard.setData(
+                    ClipboardData(text: 'https://yourapp.com/user/${widget.name}'));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content: Text('Profile URL copied to clipboard')),
+                );
+                break;
+            }
+          },
+          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+            const PopupMenuItem<String>(
+              value: 'Report User',
+              child: Text('Report User'),
+            ),
+            const PopupMenuItem<String>(
+              value: 'Block User',
+              child: Text(
+                'Block User',
+                style: TextStyle(color: Colors.red),
               ),
-              const PopupMenuItem<String>(
-                value: 'Block User',
-                child: Text(
-                  'Block User',
-                  style: TextStyle(color: Colors.red),
+            ),
+            const PopupMenuItem<String>(
+              value: 'Share User',
+              child: Text('Share User'),
+            ),
+          ],
+        ),
+      ],
+    ),
+    body: DefaultTabController(
+      length: 2,
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildProfileHeader(),
+                const SizedBox(height: 24),
+                _buildProfileStats(),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildHighlightsRow(),
+                    ),
+                  ],
                 ),
-              ),
-              const PopupMenuItem<String>(
-                value: 'Share User',
-                child: Text('Share User'),
-              ),
+              ],
+            ),
+          ),
+          // TabBar
+          const TabBar(
+            tabs: [
+              Tab(icon: Icon(Icons.grid_on)),
+              Tab(icon: Icon(Icons.alternate_email_rounded)),
             ],
+          ),
+          // TabBarView
+          Expanded(
+            child: TabBarView(
+              children: [
+                _buildUserPosts(context),
+                _buildPostsMentioningMe(context),
+              ],
+            ),
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildProfileHeader(),
-              const SizedBox(height: 24),
-              _buildProfileStats(),
-              const SizedBox(height: 24),
-              _buildSendMessageButton(context),
-              Row(
-                children: [
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _buildHighlightsRow(),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              _buildUserPosts(context),
-            ],
+    ),
+  );
+}
+
+  Widget _buildUserPosts(BuildContext context) {
+    return ListView.builder(
+      padding: const EdgeInsets.all(16.0),
+      itemCount: userPosts.length,
+      itemBuilder: (context, index) {
+        final post = userPosts[index];
+        return Card(
+          margin: const EdgeInsets.only(bottom: 16),
+          child: ListTile(
+            leading: CircleAvatar(
+              backgroundImage: AssetImage(post.profilePictureUrl),
+            ),
+            title: Text(post.isAnonymous ? 'Anonymous' : post.username),
+            subtitle: Text(
+              post.content.length > 50
+                  ? '${post.content.substring(0, 50)}...'
+                  : post.content,
+            ),
           ),
-        ),
-      ),
+        );
+      },
+    );
+  }
+Future<List<Map<String, dynamic>>> _fetchPostsMentioningMe() async {
+    // Replace this with your method to find and fetch posts mentioning the user
+    final postIds = await findPostsWithMention(await name);
+    return await fetchPostsDetails(postIds);
+  }
+
+  Widget _buildPostsMentioningMe(BuildContext context) {
+    return FutureBuilder<List<Map<String, dynamic>>>(
+      future: _fetchPostsMentioningMe(), // Implement this method to fetch posts
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (snapshot.hasData) {
+          final fetchedPosts = snapshot.data!;
+          return ListView.builder(
+            padding: const EdgeInsets.all(16.0),
+            itemCount: fetchedPosts.length,
+            itemBuilder: (context, index) {
+              final post = fetchedPosts[index];
+              return Container(
+                width: 50,
+                height: 80,
+                margin: const EdgeInsets.all(4.0),
+                child: Card(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ListTile(
+                        title: Text(post['title'] ?? 'No Title'),
+                        subtitle: Text(post['content'] ?? 'No Content'),
+                        trailing: Text(post['type'] ?? 'No Type'),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+        } else {
+          return const Center(child: Text('No posts mentioning you'));
+        }
+      },
     );
   }
 
@@ -287,38 +406,6 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
     );
   }
 
-  Widget _buildUserPosts(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Recent Posts',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 12),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: 5, // Show only 5 most recent posts
-          itemBuilder: (context, index) {
-            return Card(
-              margin: const EdgeInsets.only(bottom: 16),
-              child: ListTile(
-                leading: const Icon(Icons.post_add),
-                title: Text('Post Title ${index + 1}'),
-                subtitle: const Text('Post content preview...'),
-                onTap: () => Navigator.pushNamed(
-                  context,
-                  '/postDetails',
-                  arguments: {'postId': index},
-                ),
-              ),
-            );
-          },
-        ),
-      ],
-    );
-  }
 
 Widget _buildHighlightsRow() {
   return FutureBuilder<String>(
