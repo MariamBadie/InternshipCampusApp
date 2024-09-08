@@ -13,6 +13,8 @@ a. Bonus: tag people using their usernames and they shall receive a notification
 4. Offices and outlets: Users can search for professors, TAs, officese, finance, food outlets and so on. The app should provide their locations and possible directions or distance using your current location.
 5. Important phone numbers(clinic,ambulance,...). Also search should be supported and direct 1-click call from within the app.
 6. News, events and clubs. Posts can contain images. This tab can only be edited (adding content) by users who are approved by the admin. Users should be able to ask for approval from within the app.
+7. Notes with Attachments: Users can create notes with various types of attachments (images, documents). Attachments can be added from the file system, photo gallery, or camera. The app supports preview, full-size viewing, and downloading of attachments.
+
 ### Notes:
 • Not all the pages should be visible on the home page (in tabs). You might embed some in other pages, or hide them in app bar icons.
 
