@@ -8,6 +8,16 @@ import 'package:campus_app/backend/Controller/lostAndFoundController.dart';
 import 'package:campus_app/backend/Model/Comment.dart';
 import 'package:campus_app/backend/Model/LostAndFound.dart';
 
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:campus_app/screens/post_details_page.dart';
+import '../widgets/post_card.dart';
+import 'package:intl/intl.dart';
+import 'package:campus_app/backend/Controller/lostAndFoundController.dart';
+import 'package:campus_app/backend/Model/Comment.dart';
+import 'package:campus_app/backend/Model/LostAndFound.dart';
+
 class PostCardLostAndFound extends StatelessWidget {
   final LostAndFound post;
   final VoidCallback onShare;
@@ -79,15 +89,37 @@ class PostCardLostAndFound extends StatelessWidget {
   }
 
   Widget _buildPostImage() {
-    if (post.imageUrl != null && post.imageUrl!.startsWith('http')) {
-      return Image.network(post.imageUrl!);
+    print(post.imageUrl);
+    if (post.imageUrl != null) {
+      return FutureBuilder(
+        future: _fetchImage(post.imageUrl!), // Fetch the image URL or data
+        builder: (context, AsyncSnapshot<Image?> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError || !snapshot.hasData) {
+            return const SizedBox.shrink(); // If no image, show nothing
+          } else {
+            return snapshot.data!;
+          }
+        },
+      );
     }
-
-    if (post.imageUrl != null && !post.imageUrl!.startsWith('http')) {
-      return Image.asset(post.imageUrl!);
-    }
-
     return const SizedBox.shrink();
+  }
+
+  Future<Image?> _fetchImage(String imageUrl) async {
+    try {
+      if (imageUrl.startsWith('http')) {
+        // Image is a URL, load with Image.network
+        return Image.network(imageUrl);
+      } else {
+        // Image is an asset, load with Image.asset
+        return Image.asset(imageUrl);
+      }
+    } catch (e) {
+      print("Error loading image: $e");
+      return null;
+    }
   }
 
   Widget _buildPostActions(BuildContext context) {
