@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
@@ -48,7 +50,7 @@ class PostCardLostAndFound extends StatelessWidget {
             const SizedBox(height: 10.0),
             _buildPostContent(),
             const SizedBox(height: 10.0),
-            _buildPostImage(),
+            if (post.imageUrl != null) _buildPostImage(post.imageUrl!),
             const Divider(),
             _buildPostActions(context),
           ],
@@ -88,23 +90,29 @@ class PostCardLostAndFound extends StatelessWidget {
     );
   }
 
-  Widget _buildPostImage() {
-    print(post.imageUrl);
-    if (post.imageUrl != null) {
-      return FutureBuilder(
-        future: _fetchImage(post.imageUrl!), // Fetch the image URL or data
-        builder: (context, AsyncSnapshot<Image?> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError || !snapshot.hasData) {
-            return const SizedBox.shrink(); // If no image, show nothing
-          } else {
-            return snapshot.data!;
-          }
-        },
-      );
-    }
-    return const SizedBox.shrink();
+  Widget _buildPostImage(String path) {
+    return Container(
+      margin: const EdgeInsets.all(4),
+      height: 150,
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: path.startsWith('http://') || path.startsWith('https://')
+            ? Image.network(
+                path,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Icon(Icons.error),
+              )
+            : Image.file(
+                File(path),
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Icon(Icons.error),
+              ),
+      ),
+    );
   }
 
   Future<Image?> _fetchImage(String imageUrl) async {
