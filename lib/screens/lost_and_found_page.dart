@@ -26,15 +26,17 @@ class PostCardLostAndFound extends StatelessWidget {
   final VoidCallback onCopyLink;
   final VoidCallback onDelete;
   final VoidCallback onReport;
+  final String userName;
 
-  const PostCardLostAndFound({
-    Key? key,
-    required this.post,
-    required this.onShare,
-    required this.onCopyLink,
-    required this.onDelete,
-    required this.onReport,
-  }) : super(key: key);
+  const PostCardLostAndFound(
+      {Key? key,
+      required this.post,
+      required this.onShare,
+      required this.onCopyLink,
+      required this.onDelete,
+      required this.onReport,
+      required this.userName})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +67,7 @@ class PostCardLostAndFound extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          post.authorID, // TODO: replace with author name
+          userName, // TODO: replace with author name
           style: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16.0,
@@ -115,21 +117,6 @@ class PostCardLostAndFound extends StatelessWidget {
     );
   }
 
-  Future<Image?> _fetchImage(String imageUrl) async {
-    try {
-      if (imageUrl.startsWith('http')) {
-        // Image is a URL, load with Image.network
-        return Image.network(imageUrl);
-      } else {
-        // Image is an asset, load with Image.asset
-        return Image.asset(imageUrl);
-      }
-    } catch (e) {
-      print("Error loading image: $e");
-      return null;
-    }
-  }
-
   Widget _buildPostActions(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -170,8 +157,8 @@ class LostAndFoundPage extends StatefulWidget {
 
 class _LostAndFoundState extends State<LostAndFoundPage>
     with SingleTickerProviderStateMixin {
-  List<LostAndFound> _posts = [];
-  List<LostAndFound> _filteredPosts = [];
+  List<Map<String, dynamic>> _posts = [];
+  List<Map<String, dynamic>> _filteredPosts = [];
   String _searchQuery = '';
   String? _selectedCategory;
   late TabController _tabController;
@@ -194,24 +181,35 @@ class _LostAndFoundState extends State<LostAndFoundPage>
 
   Future<void> _fetchPosts() async {
     final posts = await getAllLostAndFoundPosts(_userID);
+
+    List<Map<String, dynamic>> postsWithNames = [];
+
+    for (var post in posts) {
+      // Fetch the name of the user who created this post
+      String userName = await getUserById(post.authorID);
+
+      // Create the object with 'name' and 'post'
+      postsWithNames.add({'name': userName, 'post': post});
+    }
+
     setState(() {
-      _posts = posts;
-      _filteredPosts = posts;
+      _posts = postsWithNames;
+      _filteredPosts = postsWithNames;
     });
   }
 
-  void _filterPosts() {
-    setState(() {
-      _filteredPosts = _posts.where((post) {
-        final matchesSearch =
-            post.content.toLowerCase().contains(_searchQuery.toLowerCase());
-        final matchesCategory = _selectedCategory == null ||
-            _selectedCategory == 'All' ||
-            post.category.toLowerCase() == _selectedCategory?.toLowerCase();
-        return matchesSearch && matchesCategory;
-      }).toList();
-    });
-  }
+  // void _filterPosts() {
+  //   setState(() {
+  //     _filteredPosts = _posts.where((post) {
+  //       final matchesSearch =
+  //           post.content.toLowerCase().contains(_searchQuery.toLowerCase());
+  //       final matchesCategory = _selectedCategory == null ||
+  //           _selectedCategory == 'All' ||
+  //           post.category.toLowerCase() == _selectedCategory?.toLowerCase();
+  //       return matchesSearch && matchesCategory;
+  //     }).toList();
+  //   });
+  // }
 
   @override
   void dispose() {
@@ -227,14 +225,14 @@ class _LostAndFoundState extends State<LostAndFoundPage>
     setState(() {
       _searchQuery = query;
     });
-    _filterPosts();
+    // _filterPosts();
   }
 
   void _onCategoryChanged(String? category) {
     setState(() {
       _selectedCategory = category;
     });
-    _filterPosts();
+    // _filterPosts();
   }
 
   @override
@@ -293,11 +291,12 @@ class _LostAndFoundState extends State<LostAndFoundPage>
           final post = _filteredPosts[index];
           return GestureDetector(
             child: PostCardLostAndFound(
-              post: post,
-              onShare: () => _sharePost(post),
-              onCopyLink: () => _copyPostLink(post),
-              onDelete: () => _deletePost(post),
-              onReport: () => _reportPost(post),
+              post: post['post'],
+              userName: post['name'],
+              onShare: () => _sharePost(post['post']),
+              onCopyLink: () => _copyPostLink(post['post']),
+              onDelete: () => _deletePost(post['post']),
+              onReport: () => _reportPost(post['post']),
             ),
           );
         },

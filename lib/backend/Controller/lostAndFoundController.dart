@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:campus_app/backend/Model/LostAndFound.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -18,7 +19,7 @@ Future<String> uploadImageToStorage(String childName, Uint8List file) async {
 
 Future<String> uploadImageToStorage1(String childName, XFile file) async {
   Reference ref = FirebaseStorage.instance.ref().child(childName);
-  
+
   // Read the file as bytes
   Uint8List fileData = await file.readAsBytes();
 
@@ -27,6 +28,7 @@ Future<String> uploadImageToStorage1(String childName, XFile file) async {
   String downloadUrl = await snapshot.ref.getDownloadURL();
   return downloadUrl;
 }
+
 Future<void> saveLostAndFoundPost(LostAndFound post) async {
   try {
     await FirebaseFirestore.instance
@@ -54,4 +56,21 @@ Future<List<LostAndFound>> getAllLostAndFoundPosts(String userID) async {
     print('Failed to get post: $e');
     return [];
   }
+}
+
+Future<String> getUserById(String userId) async {
+  try {
+    // DocumentReference<Map<String, dynamic>> user = await FirebaseFirestore.instance
+    //     .collection('User').doc('yq2Z9NaQdPz0djpnLynN');
+
+    DocumentSnapshot<Map<String, dynamic>> userSnapshot =
+        await FirebaseFirestore.instance
+            .collection('User')
+            .doc('yq2Z9NaQdPz0djpnLynN')
+            .get();
+    if (userSnapshot.exists) return userSnapshot.data()?['name'];
+  } catch (e) {
+    print('Failed to save post: $e');
+  }
+  return 'Unknown User';
 }
