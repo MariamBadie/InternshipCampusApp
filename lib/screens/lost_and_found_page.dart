@@ -27,16 +27,18 @@ class PostCardLostAndFound extends StatelessWidget {
   final VoidCallback onDelete;
   final VoidCallback onReport;
   final String userName;
+  final String userId; // Add the userId field here
 
-  const PostCardLostAndFound(
-      {Key? key,
-      required this.post,
-      required this.onShare,
-      required this.onCopyLink,
-      required this.onDelete,
-      required this.onReport,
-      required this.userName})
-      : super(key: key);
+  const PostCardLostAndFound({
+    Key? key,
+    required this.post,
+    required this.onShare,
+    required this.onCopyLink,
+    required this.onDelete,
+    required this.onReport,
+    required this.userName,
+    required this.userId, // Include this field in the constructor
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +69,7 @@ class PostCardLostAndFound extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          userName, // TODO: replace with author name
+          userName,
           style: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16.0,
@@ -106,18 +108,21 @@ class PostCardLostAndFound extends StatelessWidget {
             ? Image.network(
                 path,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Icon(Icons.error),
+                errorBuilder: (context, error, stackTrace) =>
+                    const Icon(Icons.error),
               )
             : Image.file(
                 File(path),
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Icon(Icons.error),
+                errorBuilder: (context, error, stackTrace) =>
+                    const Icon(Icons.error),
               ),
       ),
     );
   }
 
   Widget _buildPostActions(BuildContext context) {
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
@@ -131,11 +136,12 @@ class PostCardLostAndFound extends StatelessWidget {
           onPressed: onCopyLink,
           tooltip: 'Copy Link',
         ),
-        IconButton(
-          icon: const Icon(Icons.delete),
-          onPressed: onDelete,
-          tooltip: 'Delete Post',
-        ),
+        if (userId == post.authorID) // Conditionally show delete button
+          IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: onDelete,
+            tooltip: 'Delete Post',
+          ),
         IconButton(
           icon: const Icon(Icons.report),
           onPressed: onReport,
@@ -198,18 +204,18 @@ class _LostAndFoundState extends State<LostAndFoundPage>
     });
   }
 
-  // void _filterPosts() {
-  //   setState(() {
-  //     _filteredPosts = _posts.where((post) {
-  //       final matchesSearch =
-  //           post.content.toLowerCase().contains(_searchQuery.toLowerCase());
-  //       final matchesCategory = _selectedCategory == null ||
-  //           _selectedCategory == 'All' ||
-  //           post.category.toLowerCase() == _selectedCategory?.toLowerCase();
-  //       return matchesSearch && matchesCategory;
-  //     }).toList();
-  //   });
-  // }
+  void _filterPosts() {
+    setState(() {
+      _filteredPosts = _posts.where((post) {
+        final matchesSearch =
+            post['post'].content.toLowerCase().contains(_searchQuery.toLowerCase());
+        final matchesCategory = _selectedCategory == null ||
+            _selectedCategory == 'All' ||
+            post['post'].category.toLowerCase() == _selectedCategory?.toLowerCase();
+        return matchesSearch && matchesCategory;
+      }).toList();
+    });
+  }
 
   @override
   void dispose() {
@@ -225,14 +231,14 @@ class _LostAndFoundState extends State<LostAndFoundPage>
     setState(() {
       _searchQuery = query;
     });
-    // _filterPosts();
+    _filterPosts();
   }
 
   void _onCategoryChanged(String? category) {
     setState(() {
       _selectedCategory = category;
     });
-    // _filterPosts();
+    _filterPosts();
   }
 
   @override
@@ -293,6 +299,7 @@ class _LostAndFoundState extends State<LostAndFoundPage>
             child: PostCardLostAndFound(
               post: post['post'],
               userName: post['name'],
+              userId:_userID,
               onShare: () => _sharePost(post['post']),
               onCopyLink: () => _copyPostLink(post['post']),
               onDelete: () => _deletePost(post['post']),

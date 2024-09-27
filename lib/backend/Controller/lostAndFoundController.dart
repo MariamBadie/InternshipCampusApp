@@ -43,10 +43,8 @@ Future<void> saveLostAndFoundPost(LostAndFound post) async {
 
 Future<List<LostAndFound>> getAllLostAndFoundPosts(String userID) async {
   try {
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-        .collection('LostAndFound')
-        .where("authorID", isEqualTo: userID)
-        .get();
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('LostAndFound').get();
     List<LostAndFound> lostandfound = querySnapshot.docs.map((doc) {
       return LostAndFound.fromMap(doc.data() as Map<String, dynamic>, doc.id);
     }).toList();
@@ -64,10 +62,7 @@ Future<String> getUserById(String userId) async {
     //     .collection('User').doc('yq2Z9NaQdPz0djpnLynN');
 
     DocumentSnapshot<Map<String, dynamic>> userSnapshot =
-        await FirebaseFirestore.instance
-            .collection('User')
-            .doc('yq2Z9NaQdPz0djpnLynN')
-            .get();
+        await FirebaseFirestore.instance.collection('User').doc(userId).get();
     if (userSnapshot.exists) return userSnapshot.data()?['name'];
   } catch (e) {
     print('Failed to save post: $e');
