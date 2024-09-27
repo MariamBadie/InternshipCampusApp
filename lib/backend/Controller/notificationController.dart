@@ -1,4 +1,5 @@
 import 'package:campus_app/backend/Model/NotificationCustom.dart';
+import 'package:campus_app/models/NotificationObject.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
@@ -13,19 +14,27 @@ void main() async {
   retrieveNotifiData();
 }
 
-void retrieveNotifiData() async {
-  // List of collection names
+Future<List<NotificationObject>> retrieveNotifiData() async {
   String collections = 'Notification';
-
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-    QuerySnapshot snapshot = await firestore.collection(collections).get();
+  QuerySnapshot snapshot = await firestore.collection(collections).get();
 
-    // Print the data retrieved from each document in the collection
-    for (var doc in snapshot.docs) {
-      print('Document ID: ${doc.id}, Data: ${doc.data()}');
-    }
+  List<NotificationObject> notifications = [];
+
+  for (var doc in snapshot.docs) {
+    // Assuming your Firestore documents contain 'notificationText', 'notificationDate', and 'notificationImg' fields
+    //notifications.add(doc as NotificationObject);
+    //print(doc as NotificationObject);
+    notifications.add(NotificationObject(
+      notficationText: doc['content'],
+      notficationDate: (doc['createdAt'] as Timestamp).toDate(),
+      notficationImg: Image.asset('assets/images/bell.png', width: 200),  // Adjust this to how your images are stored
+    ));
   }
+
+  return notifications;
+}
 
 class FirebaseService {
   FirebaseService._privateConstructor();

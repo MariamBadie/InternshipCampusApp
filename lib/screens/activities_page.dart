@@ -1,12 +1,15 @@
 import 'package:campus_app/backend/Controller/friendrequestsController.dart';
 import 'package:campus_app/backend/Model/FriendRequests.dart';
+import 'package:campus_app/backend/Model/NotificationCustom.dart';
 import 'package:campus_app/models/NotificationObject.dart';
+import 'package:campus_app/models/notification.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/FriendRequestObject.dart';
 import '../widgets/friend_requests/friend_requests_list.dart';
 import '../widgets/notifications_files/notification_list.dart';
+import 'package:campus_app/backend/Controller/notificationController.dart';
 
 class Activities extends StatefulWidget {
   const Activities({super.key});
@@ -17,13 +20,37 @@ class Activities extends StatefulWidget {
 
 class _ActivitiesState extends State<Activities> {
   List<FriendRequestObject> _availableFriendRequests = [];
+  List<NotificationObject> _notificationsTBD = [];
   bool _isFriendRequestsLoading = true;
+  bool _isNotificationsLoading = true;
   String userID = 'yq2Z9NaQdPz0djpnLynN'; // Replace with actual user ID
 
   @override
   void initState() {
     super.initState();
     _fetchFriendRequests();
+    _fetchNotifications();
+  }
+
+  Future<void> _fetchNotifications() async {
+    try{
+      List<NotificationObject> notificationsData =
+      await retrieveNotifiData();
+
+      setState(() {
+        _notificationsTBD = notificationsData;
+        _isNotificationsLoading = false; // Stop loading once data is fetched
+      });
+    } catch(e){
+      setState(() {
+        _isNotificationsLoading =
+        false; // Stop loading even if there is an error
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to load notifications: $e')),
+      );
+    }
+
   }
 
   Future<void> _fetchFriendRequests() async {
@@ -148,13 +175,13 @@ class _ActivitiesState extends State<Activities> {
 
   void _deleteNotification(int index) {
     setState(() {
-      _notifications.removeAt(index);
+      _notificationsTBD.removeAt(index);
     });
   }
 
   void _clearAllNotifications() {
     setState(() {
-      _notifications.clear();
+      _notificationsTBD.clear();
     });
   }
 
@@ -259,7 +286,21 @@ class _ActivitiesState extends State<Activities> {
   }
 
   Widget NotificationItem() {
-    return Padding(
+    return _isNotificationsLoading
+        ? const Center(
+      child: CircularProgressIndicator(),
+    )
+        : _notificationsTBD.isEmpty
+        ? const Center(
+      child: Text(
+        'No Notifications Found',
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w400,
+        ),
+      ),
+    )
+        : Padding(
       padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
       child: Scaffold(
         appBar: AppBar(
@@ -294,7 +335,7 @@ class _ActivitiesState extends State<Activities> {
           children: [
             Expanded(
               child: NotificationsList(
-                notif: _notifications,
+                notif: _notificationsTBD,
                 onDelete: _deleteNotification,
               ),
             ),
