@@ -1,6 +1,7 @@
 import 'package:campus_app/backend/Model/Comment.dart';
 
 class LostAndFound {
+  String id;         // Firebase-generated document ID
   String authorID;
   bool isFound;
   String content;
@@ -11,6 +12,7 @@ class LostAndFound {
   String lostOrFound;
 
   LostAndFound({
+    required this.id,
     required this.authorID,
     required this.isFound,
     required this.content,
@@ -36,6 +38,7 @@ class LostAndFound {
 
   factory LostAndFound.fromMap(Map<String, dynamic> map, String id) {
     return LostAndFound(
+        id: id,                      // Firebase document ID
         authorID: map['authorID'],
         isFound: map['isFound'],
         content: map['content'],
@@ -46,4 +49,5 @@ class LostAndFound {
         imageUrl: map['imageUrl'],
         lostOrFound: map['lostOrFound']);
   }
+
 }

@@ -167,6 +167,7 @@ class _AddPostPageState extends State<AddPostPage> {
 
       if (widget.postType == "Lost & Found") {
         LostAndFound post = LostAndFound(
+            id: '',
             authorID: _userID,
             isFound: false,
             content: _textController.text,

@@ -187,7 +187,6 @@ class _LostAndFoundState extends State<LostAndFoundPage>
 
   Future<void> _fetchPosts() async {
     final posts = await getAllLostAndFoundPosts(_userID);
-
     List<Map<String, dynamic>> postsWithNames = [];
 
     for (var post in posts) {
@@ -366,6 +365,8 @@ class _LostAndFoundState extends State<LostAndFoundPage>
   }
 
   void _deletePost(LostAndFound post) {
+    var postID=post.id;
+    print("postID: ${postID}");
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -383,6 +384,8 @@ class _LostAndFoundState extends State<LostAndFoundPage>
               child: const Text('Delete'),
               onPressed: () {
                 // Implement your delete logic here
+                deleteLostAndFound(postID);
+                _refreshPosts();
                 Navigator.of(context).pop();
               },
             ),

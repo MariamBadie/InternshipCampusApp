@@ -48,7 +48,6 @@ Future<List<LostAndFound>> getAllLostAndFoundPosts(String userID) async {
     List<LostAndFound> lostandfound = querySnapshot.docs.map((doc) {
       return LostAndFound.fromMap(doc.data() as Map<String, dynamic>, doc.id);
     }).toList();
-
     return lostandfound;
   } catch (e) {
     print('Failed to get post: $e');
@@ -69,3 +68,13 @@ Future<String> getUserById(String userId) async {
   }
   return 'Unknown User';
 }
+  Future<void> deleteLostAndFound(String postId) async {
+    try{
+    print("deleted id : $postId");
+    await _firestore.collection('LostAndFound').doc(postId).delete();
+    print('done');
+    }catch (e) {
+    print('error: $e');
+    }
+
+  }
