@@ -1,4 +1,5 @@
 import 'package:campus_app/backend/Controller/userController.dart';
+import 'package:campus_app/backend/Model/User.dart';
 import 'package:flutter/material.dart';
 
 class Signin extends StatefulWidget {
@@ -13,6 +14,16 @@ class _SigninState extends State<Signin> {
   final TextEditingController _passwordController = TextEditingController();
   final AuthService _authService = AuthService();
 
+  void checkUser(String email, String password) async {
+    User? user = await _authService.signInWithEmailPassword(email, password);
+
+    if (user != null) {
+      // TODO: CALL HOME PAGE AND PASS TO IT THE USER
+    } else {
+      print('User does not exist in Firestore');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,7 +31,8 @@ class _SigninState extends State<Signin> {
         child: Padding(
           padding: const EdgeInsets.all(16.0), // Add padding for better spacing
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center, // Center the content vertically
+            mainAxisAlignment:
+                MainAxisAlignment.center, // Center the content vertically
             children: [
               SizedBox(
                 width: 250, // Adjust width as needed
@@ -30,9 +42,12 @@ class _SigninState extends State<Signin> {
                     labelText: "Email",
                     prefixIcon: const Icon(Icons.person),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(35.0), // Rounded borders
+                      borderRadius:
+                          BorderRadius.circular(35.0), // Rounded borders
                     ),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 20.0), // Adjust padding to fit inside the SizedBox
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal:
+                            20.0), // Adjust padding to fit inside the SizedBox
                   ),
                 ),
               ),
@@ -46,15 +61,18 @@ class _SigninState extends State<Signin> {
                     prefixIcon: const Icon(Icons.security),
                     labelText: "Password",
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(35.0), // Rounded borders
+                      borderRadius:
+                          BorderRadius.circular(35.0), // Rounded borders
                     ),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 20.0), // Adjust padding to fit inside the SizedBox
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal:
+                            20.0), // Adjust padding to fit inside the SizedBox
                   ),
                 ),
               ),
               const SizedBox(height: 16), // Add spacing before the button
               TextButton(
-                onPressed: (){},
+                onPressed: () {},
                 child: const Text(
                   "Forgot Your Password?",
                   style: TextStyle(color: Colors.blue),
@@ -66,8 +84,8 @@ class _SigninState extends State<Signin> {
                 onPressed: () {
                   // Get the username from the controller
                   final username = _usernameController.text;
-                 _authService.signInWithEmailPassword(username,_passwordController.text);   
-                  },
+                  checkUser(username, _passwordController.text);
+                },
               ),
             ],
           ),

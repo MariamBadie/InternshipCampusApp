@@ -57,24 +57,22 @@ Future<List<LostAndFound>> getAllLostAndFoundPosts(String userID) async {
 
 Future<String> getUserById(String userId) async {
   try {
-    // DocumentReference<Map<String, dynamic>> user = await FirebaseFirestore.instance
-    //     .collection('User').doc('yq2Z9NaQdPz0djpnLynN');
-
     DocumentSnapshot<Map<String, dynamic>> userSnapshot =
         await FirebaseFirestore.instance.collection('User').doc(userId).get();
+    print(userSnapshot.data()?['id']);
     if (userSnapshot.exists) return userSnapshot.data()?['name'];
   } catch (e) {
     print('Failed to save post: $e');
   }
   return 'Unknown User';
 }
-  Future<void> deleteLostAndFound(String postId) async {
-    try{
+
+Future<void> deleteLostAndFound(String postId) async {
+  try {
     print("deleted id : $postId");
     await _firestore.collection('LostAndFound').doc(postId).delete();
     print('done');
-    }catch (e) {
+  } catch (e) {
     print('error: $e');
-    }
-
   }
+}

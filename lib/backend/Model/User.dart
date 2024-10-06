@@ -1,4 +1,3 @@
-
 enum UserType {
   student,
   teachingAssistant,
@@ -6,7 +5,6 @@ enum UserType {
 }
 
 class User {
-
   // Missing the profile picture as the type is according to the implementation
   String id;
   String name;
@@ -16,13 +14,23 @@ class User {
   DateTime registeredAt;
   double karma;
   UserType type;
-  List<Map<String, dynamic>> favorites; // List of maps with 'post' reference and 'timestamp'
-  List<String> archived; // archived posts
-  List<String> blocked; // blocked users
+  List<Map<String, dynamic>>
+      favorites; // List of maps with 'post' reference and 'timestamp'
+  List<String>? archived; // archived posts
+  List<String>? blocked; // blocked users
 
-  User({required this.id, required this.name, required this.email, required this.password,
-  required this.year, required this.registeredAt, required this.karma, required this.type,
-    this.favorites = const [], this.archived = const[], this.blocked = const []});
+  User(
+      {required this.id,
+      required this.name,
+      required this.email,
+      required this.password,
+      required this.year,
+      required this.registeredAt,
+      required this.karma,
+      required this.type,
+      this.favorites = const [],
+      this.archived = const [],
+      this.blocked = const []});
 
   Map<String, dynamic> toMap() {
     return {
@@ -40,20 +48,19 @@ class User {
     };
   }
 
-  factory User.fromMap(Map<String, dynamic> map){
+  factory User.fromMap(Map<String, dynamic> map, String id) {
     return User(
-      id: map['id'],
+      id: id,
       name: map['name'],
       email: map['email'],
       password: map['password'],
       year: map['year'],
-      registeredAt: map['registrationDate'],
+      registeredAt: map['registeredAt'].toDate(),
       karma: map['karma'],
       type: map['type'],
       favorites: List<Map<String, dynamic>>.from(map['favorites'] ?? []),
-      archived: map['archived'],
-      blocked: map['blocked']
+      // archived: map['archived'] as List<String>,
+      // blocked: map['blocked'] as List<String>
     );
   }
-
 }
