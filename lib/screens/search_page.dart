@@ -1,3 +1,4 @@
+import 'package:campus_app/utils/getCurrentUser.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -134,6 +135,8 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    final user = getCurrentUser(context);
+
     final query = _searchController.text;
 
     if (selectedCategory != "All") {

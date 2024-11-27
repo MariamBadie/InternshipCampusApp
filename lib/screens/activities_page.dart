@@ -1,8 +1,10 @@
 import 'package:campus_app/backend/Controller/friendrequestsController.dart';
 import 'package:campus_app/backend/Model/FriendRequests.dart';
 import 'package:campus_app/backend/Model/NotificationCustom.dart';
+import 'package:campus_app/backend/Model/User.dart';
 import 'package:campus_app/models/NotificationObject.dart';
 import 'package:campus_app/models/notification.dart';
+import 'package:campus_app/utils/getCurrentUser.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -19,16 +21,17 @@ class Activities extends StatefulWidget {
 }
 
 class _ActivitiesState extends State<Activities> {
+  User? user;
   List<FriendRequestObject> _availableFriendRequests = [];
   List<NotificationObject> _notificationsTBD = [];
   bool _isFriendRequestsLoading = true;
   bool _isNotificationsLoading = true;
-  String userID = 'yq2Z9NaQdPz0djpnLynN'; // Replace with actual user ID
 
   @override
   void initState() {
     super.initState();
-    _fetchFriendRequests();
+    user = getCurrentUser(context);
+    _fetchFriendRequests(user!.id);
     _fetchNotifications();
   }
 
@@ -53,7 +56,7 @@ class _ActivitiesState extends State<Activities> {
 
   }
 
-  Future<void> _fetchFriendRequests() async {
+  Future<void> _fetchFriendRequests(String userID) async {
     try {
       List<FriendRequests> friendRequestsData =
           await getAllFriendRequests(userID);
@@ -159,7 +162,7 @@ class _ActivitiesState extends State<Activities> {
     });
   }
 
-  void _clearAllFriendRequests() async {
+  void _clearAllFriendRequests(String userID) async {
     await clearAllFriendRequests(userID);
 
     setState(() {
@@ -187,6 +190,8 @@ class _ActivitiesState extends State<Activities> {
 
   @override
   Widget build(BuildContext context) {
+    // final user = getCurrentUser(context);
+
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -202,7 +207,7 @@ class _ActivitiesState extends State<Activities> {
         ),
         body: TabBarView(
           children: [
-            FriendRequestsTab(),
+            FriendRequestsTab(user!.id),
             NotificationItem(),
           ],
         ),
@@ -210,7 +215,7 @@ class _ActivitiesState extends State<Activities> {
     );
   }
 
-  Widget FriendRequestsTab() {
+  Widget FriendRequestsTab(String userID) {
     return _isFriendRequestsLoading
         ? const Center(
             child: CircularProgressIndicator(),
@@ -259,7 +264,7 @@ class _ActivitiesState extends State<Activities> {
                     ),
                     actions: [
                       TextButton(
-                        onPressed: _clearAllFriendRequests,
+                        onPressed: () => _clearAllFriendRequests(userID),
                         child: Text(
                           'Clear All',
                           style: GoogleFonts.roboto(

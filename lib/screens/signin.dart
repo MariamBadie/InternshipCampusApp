@@ -1,6 +1,9 @@
 import 'package:campus_app/backend/Controller/userController.dart';
 import 'package:campus_app/backend/Model/User.dart';
+import 'package:campus_app/screens/main_screen.dart';
+import 'package:campus_app/utils/UserNotifier.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Signin extends StatefulWidget {
   const Signin({super.key});
@@ -18,7 +21,14 @@ class _SigninState extends State<Signin> {
     User? user = await _authService.signInWithEmailPassword(email, password);
 
     if (user != null) {
+      Provider.of<UserNotifier>(context, listen: false).setUser(user);
       // TODO: CALL HOME PAGE AND PASS TO IT THE USER
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MainScreen(),
+        ),
+      );
     } else {
       print('User does not exist in Firestore');
     }

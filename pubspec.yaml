@@ -33,7 +33,7 @@ dependencies:
   url_launcher: ^6.1.7
   firebase_storage: ^11.2.1
   envied: ^0.5.4+1
-  provider: any
+  provider: ^6.1.2
   google_maps_flutter: ^2.9.0
   location: ^6.0.2
   flutter_polyline_points: ^2.1.0

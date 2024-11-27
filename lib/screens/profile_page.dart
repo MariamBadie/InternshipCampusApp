@@ -7,7 +7,9 @@ import 'package:campus_app/backend/Controller/postController.dart';
 import 'package:campus_app/backend/Controller/userController.dart';
 import 'package:campus_app/backend/Model/Highlights.dart';
 import 'package:campus_app/backend/Model/Post.dart';
+import 'package:campus_app/backend/Model/User.dart';
 import 'package:campus_app/screens/highlights_popups.dart';
+import 'package:campus_app/utils/getCurrentUser.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -61,26 +63,28 @@ class _ProfilePageState extends State<ProfilePage> {
     ),
     // Add more posts here...
   ];
-  String userID = 'upeubEqcmzSU9aThExaO';
 
   List<Highlights> userHighlights = [];
   late Future<String> name;
+  User? user;
 
   @override
   void initState() {
     super.initState();
     _fetchUserHighlights();
-    name = getUsernameByID(userID);
+    user = getCurrentUser(context);
+    name = getUsernameByID(user!.id);
   }
 
   Future<void> _fetchUserHighlights() async {
-    final highlights = await getHighlights(userID);
+    final highlights = await getHighlights(user!.id);
     setState(() {
       userHighlights = highlights;
     });
   }
 @override
  Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
@@ -554,7 +558,7 @@ Future<List<Map<String, dynamic>>> _fetchPostsMentioningMe() async {
                     FirebaseStorage storage = FirebaseStorage.instance;
                     Reference storageRef = storage
                         .ref()
-                        .child('highlights/${highlightName}_${userID}.jpg');
+                        .child('highlights/${highlightName}_${user!.id}.jpg');
 
                     String downloadUrl;
 
@@ -577,7 +581,7 @@ Future<List<Map<String, dynamic>>> _fetchPostsMentioningMe() async {
                     Highlights highlights = Highlights(
                       imageUrl: downloadUrl,
                       highlightsname: highlightName,
-                      userID: userID,
+                      userID: user!.id,
                     );
                     await createHighlights(
                         highlights); // Ensure createHighlights is async
@@ -602,7 +606,7 @@ Future<List<Map<String, dynamic>>> _fetchPostsMentioningMe() async {
 
   Widget _buildHighlightsRow() {
     return FutureBuilder<String>(
-      future: getUsernameByID(userID),
+      future: getUsernameByID(user!.id),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());

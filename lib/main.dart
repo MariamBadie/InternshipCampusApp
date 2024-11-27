@@ -1,7 +1,9 @@
+import 'package:campus_app/backend/Model/User.dart';
 import 'package:campus_app/screens/lost_and_found_page.dart';
 import 'package:campus_app/screens/ranking_page.dart';
 import 'package:campus_app/screens/reminder_page.dart';
 import 'package:campus_app/screens/signin.dart';
+import 'package:campus_app/utils/UserNotifier.dart';
 import 'package:flutter/foundation.dart'; // Import for kIsWeb
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -41,10 +43,15 @@ void main() async {
   }
   await dotenv.load(fileName: ".env");
 
-  runApp(ChangeNotifierProvider(
-    create: (_) => ThemeNotifier(),
-    child: const MyApp(),
-  ));
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeNotifier()),
+        ChangeNotifierProvider(create: (_) => UserNotifier()), // Add UserNotifier here
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -80,7 +87,7 @@ class MyApp extends StatelessWidget {
         '/lostandfoundpage': (context) => LostAndFoundPage(),
         '/reminder_page': (context) => const RemindersPage(),
         '/ranking_page': (context) => const RankingPage(),
-        '/homepage': (context) => MainScreen()
+        // '/homepage': (context) => MainScreen(user: )
       },
     );
   }

@@ -1,3 +1,7 @@
+import 'package:campus_app/backend/Model/User.dart';
+import 'package:campus_app/screens/signin.dart';
+import 'package:campus_app/utils/UserNotifier.dart';
+import 'package:campus_app/utils/getCurrentUser.dart';
 import 'package:flutter/material.dart';
 import 'package:flashy_tab_bar2/flashy_tab_bar2.dart';
 import 'package:campus_app/screens/home_page.dart';
@@ -5,15 +9,19 @@ import 'package:campus_app/screens/search_page.dart';
 import 'package:campus_app/screens/activities_page.dart';
 import 'package:campus_app/screens/profile_page.dart';
 import 'package:campus_app/screens/add_post_page.dart';
+import 'package:provider/provider.dart';
 
 class MainScreen extends StatefulWidget {
+
   const MainScreen({super.key});
+  // const MainScreen({Key? key, required this.user}) : super(key: key);
 
   @override
   _MainScreenState createState() => _MainScreenState();
 }
 
 class _MainScreenState extends State<MainScreen> {
+
   int _selectedIndex = 0;
 
   final List<Widget> _screens = [
@@ -105,6 +113,10 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = getCurrentUser(context);
+
+    // print(user?.toMap());
+    
     return Scaffold(
       body: _screens[_selectedIndex],
       bottomNavigationBar: FlashyTabBar(
